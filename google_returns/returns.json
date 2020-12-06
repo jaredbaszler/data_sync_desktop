@@ -1,0 +1,81 @@
+{
+   "url": "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=Packerland%20Aviation%20LLC&inputtype=textquery&fields=business_status,formatted_address,geometry,icon,name,permanently_closed,photos,place_id,plus_code,types&key=AIzaSyAUoR1hu32epmid_r-h7_AiXQWhNu3zr3U",
+   "candidates": [],
+   "status": "ZERO_RESULTS"
+}
+
+{
+   "url": "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=%2B19204984880&inputtype=phonenumber&fields=business_status,formatted_address,geometry,icon,name,permanently_closed,place_id,plus_code,types&key=AIzaSyAUoR1hu32epmid_r-h7_AiXQWhNu3zr3U",
+   "candidates": [
+      {
+         "business_status": "OPERATIONAL",
+         "formatted_address": "2131 Airport Dr, Green Bay, WI 54313, USA",
+         "geometry": {
+            "location": {
+               "lat": 44.4936934,
+               "lng": -88.1296081
+            },
+            "viewport": {
+               "northeast": {
+                  "lat": 44.4951013302915,
+                  "lng": -88.12813716970849
+               },
+               "southwest": {
+                  "lat": 44.4924033697085,
+                  "lng": -88.1308351302915
+               }
+            }
+         },
+         "icon": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/generic_business-71.png",
+         "name": "Executive Air",
+         "place_id": "ChIJ43oI8gD5AogRU3iIWdpibqI",
+         "plus_code": {
+            "compound_code": "FVVC+F5 Green Bay, WI, USA",
+            "global_code": "86PHFVVC+F5"
+         },
+         "types": [
+            "point_of_interest",
+            "establishment"
+         ]
+      }
+   ],
+   "status": "OK"
+}
+
+ {
+   "candidates": [
+      {
+         "url": "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=%2B187705454724&inputtype=phonenumber&fields=business_status,formatted_address,geometry,icon,name,permanently_closed,place_id,plus_code,types&key=AIzaSyAUoR1hu32epmid_r-h7_AiXQWhNu3zr3U",
+         "business_status": "OPERATIONAL",
+         "formatted_address": "2633 Lantana Rd #41, Lantana, FL 33462, USA",
+         "geometry": {
+            "location": {
+               "lat": 26.5891232,
+               "lng": -80.085217
+            },
+            "viewport": {
+               "northeast": {
+                  "lat": 26.5899323802915,
+                  "lng": -80.08436134999999
+               },
+               "southwest": {
+                  "lat": 26.5872344197085,
+                  "lng": -80.08778395
+               }
+            }
+         },
+         "icon": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/generic_business-71.png",
+         "name": "Palm Beach Aircraft Services Inc",
+         "place_id": "ChIJ4S0GlInY2IgRuTZrggV5fA0",
+         "plus_code": {
+            "compound_code": "HWQ7+JW Lantana, FL, USA",
+            "global_code": "76RXHWQ7+JW"
+         },
+         "types": [
+            "point_of_interest",
+            "establishment"
+         ]
+      }
+   ],
+   "status": "OK"
+}
