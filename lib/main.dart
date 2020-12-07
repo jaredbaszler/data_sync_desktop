@@ -1,12 +1,17 @@
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:data_sync_desktop/models/google_candidates.dart';
 import 'package:data_sync_desktop/utils/extensions.dart';
 import 'package:excel/excel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
 
 const apiKey = 'AIzaSyAUoR1hu32epmid_r-h7_AiXQWhNu3zr3U';
+const basicGoogleFieldList = 'business_status,formatted_address,geometry,'
+    'icon,name,permanently_closed,place_id,plus_code,types';
 const originalDataColStart = 0;
 const originalDataColEnd = 42;
 
@@ -44,40 +49,39 @@ void main() async {
     writeSheet.appendRow(row);
 
     // Transform the phone number
-    //var temp = writeTable.row(i)
     final phoneCell = cellByIndex(writeSheet, rowIndex, Cols.phone);
     final countryCell = cellByIndex(writeSheet, rowIndex, Cols.shipCountry);
-    print('row $rowIndex: '
-        '${phoneCell.value.toString().toIntlPhoneFormat(countryCell.value)}');
-    phoneCell.value =
-        phoneCell.value.toString().toIntlPhoneFormat(countryCell.value);
 
+    // if header row skip the rest
     if (rowIndex == 0) {
       rowIndex++;
       continue;
-    } // if header row skip the rest
+    }
 
-    //print(row[Cols.accountName]);
+    // *** STEP 1 - SEARCH BY PHONE NUMBER ONLY ***
+    // final byPhoneUrl = googleByPhoneURL(
+    //     phoneNumber:
+    //         phoneCell.value.toString().toIntlPhoneFormat(countryCell.value));
 
-    // var tempURL =
-    //     basicGoogleFindPlaceByNameURL(businessName: row[Cols.accountName]);
-    // print(tempURL);
-    // var response = await http.get(
-    //     basicGoogleFindPlaceByNameURL(businessName: row[Cols.accountName]));
+    // print(url);
+    // final response = await http.get(byPhoneUrl);
 
-    // if (response.statusCode == 200) {
-    //   var jsonResponse = jsonDecode(response.body);
-    //   var itemCount = jsonResponse['totalItems'];
-    //   print('Number of businesses returned: $itemCount.');
-    //   print(jsonResponse);
-    // } else {
-    //   print('Request failed with status: ${response.statusCode}.');
-    // }
+    // TODO: change to read from google_returns/byPhone.json as currently there is an error below when converting jsonDecode(response.body)
+
+    if (response.statusCode == 200) {
+      final listOfCandidates = (jsonDecode(response.body) as List)
+          .map((a) => GoogleCandidates.fromJson(a))
+          .toList();
+
+      final temp = listOfCandidates;
+    } else {
+      print('Request failed with status: ${response.statusCode}.');
+    }
 
     rowIndex++;
 
-    if (rowIndex > 4) {
-      //break; // TODO: turn this on when starting to call API
+    if (rowIndex > 1) {
+      break;
     } // only do 1 iteration for now
   }
 
@@ -89,13 +93,21 @@ void main() async {
   });
 }
 
-String basicGoogleFindPlaceByNameURL({@required String businessName}) {
+String googleByPhoneURL({@required String phoneNumber}) {
+  final url =
+      'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?'
+      'input=$phoneNumber&inputtype=phonenumber&fields=$basicGoogleFieldList'
+      '&key=$apiKey';
+
+  return url;
+}
+
+String googleByNameURL({@required String businessName}) {
   final url =
       'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?'
       'input=${businessName.toURLSafeString()}'
       '&api_key=$apiKey'
-      '&inputtype=textquery;&fields=business_status,formatted_address,geometry,'
-      'icon,name,permanently_closed,photos,place_id,plus_code,types';
+      '&inputtype=textquery;&fields=$basicGoogleFieldList';
 
   return url;
 }
@@ -220,4 +232,5 @@ class Cols {
   static const int googleCountry = 56;
   static const int googleGPSCoordinates = 57;
   static const int googleImageURL = 58;
+  static const int googlePlaceID = 59;
 }

@@ -1,0 +1,36 @@
+{
+    "candidates": [
+        {
+            "business_status": "OPERATIONAL",
+            "formatted_address": "2131 Airport Dr, Green Bay, WI 54313, USA",
+            "geometry": {
+                "location": {
+                    "lat": 44.4936934,
+                    "lng": -88.1296081
+                },
+                "viewport": {
+                    "northeast": {
+                        "lat": 44.4951013302915,
+                        "lng": -88.12813716970849
+                    },
+                    "southwest": {
+                        "lat": 44.4924033697085,
+                        "lng": -88.1308351302915
+                    }
+                }
+            },
+            "icon": "https://maps.gstatic.com/mapfiles/place_api/icons/v1/png_71/generic_business-71.png",
+            "name": "Executive Air",
+            "place_id": "ChIJ43oI8gD5AogRU3iIWdpibqI",
+            "plus_code": {
+                "compound_code": "FVVC+F5 Green Bay, WI, USA",
+                "global_code": "86PHFVVC+F5"
+            },
+            "types": [
+                "point_of_interest",
+                "establishment"
+            ]
+        }
+    ],
+    "status": "OK"
+}

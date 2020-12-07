@@ -9,18 +9,19 @@ extension StringHelpers on String {
         countryLongName.isEmpty) {
       return '';
     }
+
     // This the encoding needed in the Google Places API URL
     // for a '+' sign when denoting international phone #s
     var intlFormatString = '%2B';
     switch (countryLongName?.toLowerCase()) {
       case 'united states':
+      case 'british virgin islands':
+      case 'turks and caicos islands':
+      case 'virgin islands': // US Virgin Islands
         intlFormatString += '1';
         break;
       case 'aruba':
         intlFormatString += '297';
-        break;
-      case 'british virgin islands':
-        intlFormatString += '1-284';
         break;
       case 'mexico':
         intlFormatString += '52';
@@ -31,23 +32,18 @@ extension StringHelpers on String {
       case 'thailand':
         intlFormatString += '66';
         break;
-      case 'turks and caicos islands':
-        intlFormatString += '1-649';
-        break;
-      case 'virgin islands': // US Virgin Islands
-        intlFormatString += '1-340';
-        break;
       default:
-        intlFormatString += '1';
+        intlFormatString += '';
         break;
     }
 
+    // strip out all unwanted characters
     intlFormatString = intlFormatString + replaceAll('(', '');
     intlFormatString = intlFormatString.replaceAll(')', '');
     intlFormatString = intlFormatString.replaceAll(' ', '');
     intlFormatString = intlFormatString.replaceAll('-', '');
+    intlFormatString = intlFormatString.replaceAll('+', '');
 
-    // strip out all possible characters
     return intlFormatString;
   }
 
