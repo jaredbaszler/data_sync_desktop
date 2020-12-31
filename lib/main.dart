@@ -48,36 +48,57 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   //runApp(MyApp());
 
-  final data = await rootBundle.load('assets/test_file_2020_11_26_copy.xlsx');
+  final data = await rootBundle.load('assets/temp.xlsx');
   final bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
   final wb = Excel.decodeBytes(bytes);
 
   final readSheet = wb.sheets[wb.sheets.keys.first];
   final writeSheet = wb.sheets[wb.sheets.keys.last];
-  final temp = 0;
 
-  // Steps before doing any work:
+  // *** Steps before doing any work on a data sheet
+  // *** that's never ran against this code before:
   // 1. Copy Sheet1 data into Sheet2
   // 2. Delete all columns after Col "N"
   // 3. Create new "synced by cols"
   // 4. Add JSON and URL column
   // 4. Create new "google" columns
 
-  var rowIndex = 1; // Skip header row as header row, start with first data row
-  for (final row in readSheet.rows) {
+  // rowIndex starts at 2 to skip the header row
+  for (var rowIndex = 2; rowIndex <= readSheet.rows.length; rowIndex++) {
     // Transform the phone number
-    //final phoneCell = cellByIndex(writeSheet, rowIndex, Cols.phone);
-    //final countryCell = cellByIndex(writeSheet, rowIndex, Cols.shipCountry);
+    final phoneCell = cellByIndex(writeSheet, rowIndex, AvtopiaCols.phone);
+    final countryCell =
+        cellByIndex(writeSheet, rowIndex, AvtopiaCols.shipCountry);
+
+    // *** STEP 1 - SEARCH BY PHONE NUMBER ONLY ***
+    final byPhoneUrl = googleByPhoneURL(
+        phoneNumber:
+            phoneCell.value.toString().toIntlPhoneFormat(countryCell.value));
+
+    print(url);
+    final response = await http.get(byPhoneUrl);
+    GoogleCandidates listOfCandidates;
+
+    if (response.statusCode == 200) {
+      listOfCandidates = GoogleCandidates.fromJson(jsonDecode(response.body));
+    } else {
+      print('Request failed with status: ${response.statusCode}.');
+    }
 
     // Copy this row into the new file
     for (var colIndex = 0; colIndex <= AvtopiaCols.website; colIndex++) {
       copyCell(writeSheet, readSheet, rowIndex, colIndex);
     }
 
-    final listOfCandidates = GoogleCandidates.fromJson(
-        jsonDecode(await rootBundle.loadString('google_returns/byPhone.json')));
-
     for (final result in listOfCandidates.candidates) {
+      writeSheet
+          .cell(CellIndex.indexByColumnRow(
+              rowIndex: rowIndex, columnIndex: WriteCols.googleSyncByPhone))
+          .value = 'X';
+      writeSheet
+          .cell(CellIndex.indexByColumnRow(
+              rowIndex: rowIndex, columnIndex: WriteCols.googleJSON))
+          .value = jsonEncode(result).toString();
       writeSheet
           .cell(CellIndex.indexByColumnRow(
               rowIndex: rowIndex, columnIndex: WriteCols.googleCompanyName))
@@ -105,26 +126,9 @@ void main() async {
           .value = result.geometry.location.lng;
     }
 
-    // *** STEP 1 - SEARCH BY PHONE NUMBER ONLY ***
-    // final byPhoneUrl = googleByPhoneURL(
-    //     phoneNumber:
-    //         phoneCell.value.toString().toIntlPhoneFormat(countryCell.value));
-
-    // print(url);
-    // final response = await http.get(byPhoneUrl);
-
-    // if (response.statusCode == 200) {
-    //   final listOfCandidates =
-    //       GoogleCandidates.fromJson(jsonDecode(response.body));
-
-    //   final temp = listOfCandidates;
-    // } else {
-    //   print('Request failed with status: ${response.statusCode}.');
-    // }
-
     rowIndex++;
 
-    if (rowIndex > 5) {
+    if (rowIndex >= 3) {
       break;
     } // only do 1 iteration for now
   }
