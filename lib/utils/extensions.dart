@@ -47,5 +47,21 @@ extension StringHelpers on String {
     return intlFormatString;
   }
 
-  String toURLSafeString() => replaceAll(' ', '%20');
+  String toURLSafeString() {
+    if (this == null ||
+        this == 'null' || // Excel blank values come through as "null" but
+        this.isEmpty) {
+      return '';
+    }
+
+    var returnValue = this;
+    // Formatted based on these specs:
+    // https://developers.google.com/maps/documentation/urls/url-encoding
+    // Spaces with %20, a plus sign is also acceptable
+    returnValue = returnValue.replaceAll(' ', '%20');
+    // Commas with %2C
+    returnValue = returnValue.replaceAll(',', '%2C');
+
+    return returnValue;
+  }
 }
