@@ -47,6 +47,9 @@ extension StringHelpers on String {
     return intlFormatString;
   }
 
+  /// Encodes all spaces and commas in a string to safe
+  /// character codes for a URL. Spaces get converted to %20
+  /// and commas get converted to %2C
   String toURLSafeString() {
     if (this == null ||
         this == 'null' || // Excel blank values come through as "null" but
@@ -59,8 +62,19 @@ extension StringHelpers on String {
     // https://developers.google.com/maps/documentation/urls/url-encoding
     // Spaces with %20, a plus sign is also acceptable
     returnValue = returnValue.replaceAll(' ', '%20');
-    // Commas with %2C
+    // Replace commas with %2C
     returnValue = returnValue.replaceAll(',', '%2C');
+
+    return returnValue;
+  }
+
+  /// strips URLs of the http:// prefix and also strips
+  /// out all other forward slashes with blank
+  String stripUrl() {
+    var returnValue = this;
+
+    returnValue = returnValue.replaceAll('http://', '');
+    returnValue = returnValue.replaceAll('/', '');
 
     return returnValue;
   }
