@@ -381,19 +381,20 @@ Future<bool> main() async {
         matchStreet.value = 'X';
       }
 
-      if (matchStreet.value != 'X' &&
-          avStreet2.value.toString().isNotEmpty &&
-          googleAddress.value
-              .toString()
-              .toLowerCase()
-              .contains(avStreet2.value.toString().toLowerCase())) {
-        matchStreet.value = 'X';
+      if (matchStreet.value != 'X') {
+        if (avStreet2.value.toString().isNotEmpty &&
+            googleAddress.value
+                .toString()
+                .toLowerCase()
+                .contains(avStreet2.value.toString().toLowerCase())) {
+          matchStreet.value = 'X';
+        } else {
+          matchStreet.value = ' ';
+        }
       }
 
-      if (matchStreet.value == 'X') {
-        matchStreet.cellStyle = CellStyle(
-            backgroundColorHex: numberOfMatches == 0 ? hexRed : hexGreen);
-      }
+      matchStreet.cellStyle = CellStyle(
+          backgroundColorHex: matchStreet.value == 'X' ? hexGreen : hexRed);
 
       if (avCity.value.toString().isNotEmpty &&
           googleAddress.value
@@ -401,24 +402,24 @@ Future<bool> main() async {
               .toLowerCase()
               .contains(avCity.value.toString().toLowerCase())) {
         matchCity.value = 'X';
+      } else {
+        matchCity.value = ' ';
       }
 
-      if (matchCity.value == 'X') {
-        matchCity.cellStyle = CellStyle(
-            backgroundColorHex: numberOfMatches == 0 ? hexRed : hexGreen);
-      }
+      matchCity.cellStyle = CellStyle(
+          backgroundColorHex: matchCity.value == 'X' ? hexGreen : hexRed);
 
       if (avState.value.toString().isNotEmpty &&
           googleAddress.value
               .toString()
               .contains(avState.value.toString().toUpperCase())) {
         matchState.value = 'X';
+      } else {
+        matchState.value = ' ';
       }
 
-      if (matchState.value == 'X') {
-        matchState.cellStyle = CellStyle(
-            backgroundColorHex: numberOfMatches == 0 ? hexRed : hexGreen);
-      }
+      matchState.cellStyle = CellStyle(
+          backgroundColorHex: matchState.value == 'X' ? hexGreen : hexRed);
 
       if (avZip.value.toString().isNotEmpty) {
         var zipString = avZip.value.toString();
@@ -427,13 +428,13 @@ Future<bool> main() async {
         }
         if (googleAddress.value.toString().toLowerCase().contains(zipString)) {
           matchZip.value = 'X';
+        } else {
+          matchZip.value = ' ';
         }
       }
 
-      if (matchZip.value == 'X') {
-        matchZip.cellStyle = CellStyle(
-            backgroundColorHex: numberOfMatches == 0 ? hexRed : hexGreen);
-      }
+      matchZip.cellStyle = CellStyle(
+          backgroundColorHex: matchZip.value == 'X' ? hexGreen : hexRed);
     }
   }
 
