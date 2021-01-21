@@ -374,19 +374,43 @@ Future<bool> main() async {
       final matchZip = cellByIndex(writeSheet, rowIndex, WriteCols.matchZip);
 
       if (avStreet1.value.toString().isNotEmpty &&
-          googleAddress.value
-              .toString()
-              .toLowerCase()
-              .contains(avStreet1.value.toString().toLowerCase())) {
+          (googleAddress.value
+                  .toString()
+                  .toLowerCase()
+                  .toExpandAbbreviations()
+                  .contains(avStreet1.value
+                      .toString()
+                      .toExpandAbbreviations()
+                      .toLowerCase()) ||
+              avStreet1.value
+                  .toString()
+                  .toLowerCase()
+                  .toExpandAbbreviations()
+                  .contains(googleAddress.value
+                      .toString()
+                      .toExpandAbbreviations()
+                      .toLowerCase()))) {
         matchStreet.value = 'X';
       }
 
       if (matchStreet.value != 'X') {
         if (avStreet2.value.toString().isNotEmpty &&
-            googleAddress.value
-                .toString()
-                .toLowerCase()
-                .contains(avStreet2.value.toString().toLowerCase())) {
+            (googleAddress.value
+                    .toString()
+                    .toLowerCase()
+                    .toExpandAbbreviations()
+                    .contains(avStreet2.value
+                        .toString()
+                        .toExpandAbbreviations()
+                        .toLowerCase()) ||
+                avStreet2.value
+                    .toString()
+                    .toLowerCase()
+                    .toExpandAbbreviations()
+                    .contains(googleAddress.value
+                        .toString()
+                        .toExpandAbbreviations()
+                        .toLowerCase()))) {
           matchStreet.value = 'X';
         } else {
           matchStreet.value = ' ';
@@ -410,9 +434,8 @@ Future<bool> main() async {
           backgroundColorHex: matchCity.value == 'X' ? hexGreen : hexRed);
 
       if (avState.value.toString().isNotEmpty &&
-          googleAddress.value
-              .toString()
-              .contains(avState.value.toString().toUpperCase())) {
+          googleAddress.value.toString().contains(
+              avState.value.toString().toStateAbbreviation().toUpperCase())) {
         matchState.value = 'X';
       } else {
         matchState.value = ' ';
