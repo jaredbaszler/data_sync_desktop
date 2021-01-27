@@ -373,45 +373,40 @@ Future<bool> main() async {
           cellByIndex(writeSheet, rowIndex, WriteCols.matchState);
       final matchZip = cellByIndex(writeSheet, rowIndex, WriteCols.matchZip);
 
-      if (avStreet1.value.toString().isNotEmpty &&
-          (googleAddress.value
-                  .toString()
-                  .toLowerCase()
-                  .toExpandAbbreviations()
-                  .contains(avStreet1.value
-                      .toString()
-                      .toExpandAbbreviations()
-                      .toLowerCase()) ||
-              avStreet1.value
-                  .toString()
-                  .toLowerCase()
-                  .toExpandAbbreviations()
-                  .contains(googleAddress.value
-                      .toString()
-                      .toExpandAbbreviations()
-                      .toLowerCase()))) {
-        matchStreet.value = 'X';
-      }
+      final googleAddressSplit = googleAddress.value.toString().split(',');
+      final avStreet1Expanded = avStreet1.value
+          .toString()
+          .trim()
+          .toLowerCase()
+          .toExpandAbbreviations();
+      final avStreet2Expanded = avStreet2.value
+          .toString()
+          .trim()
+          .toLowerCase()
+          .toExpandAbbreviations();
 
-      if (matchStreet.value != 'X') {
-        if (avStreet2.value.toString().isNotEmpty &&
-            (googleAddress.value
-                    .toString()
-                    .toLowerCase()
-                    .toExpandAbbreviations()
-                    .contains(avStreet2.value
-                        .toString()
-                        .toExpandAbbreviations()
-                        .toLowerCase()) ||
-                avStreet2.value
-                    .toString()
-                    .toLowerCase()
-                    .toExpandAbbreviations()
-                    .contains(googleAddress.value
-                        .toString()
-                        .toExpandAbbreviations()
-                        .toLowerCase()))) {
+      for (final googleAddressPart in googleAddressSplit) {
+        if (avStreet1.value.toString().trim().isEmpty) {
+          break;
+        }
+
+        final googleAddressPartExpanded =
+            googleAddressPart.trim().toLowerCase().toExpandAbbreviations();
+
+        if (googleAddressPartExpanded.contains(avStreet1Expanded) ||
+            avStreet1Expanded.contains(googleAddressPartExpanded)) {
           matchStreet.value = 'X';
+          break;
+        }
+
+        if (avStreet2.value.toString().trim().isEmpty) {
+          break;
+        }
+
+        if (googleAddressPartExpanded.contains(avStreet2Expanded) ||
+            avStreet2Expanded.contains(googleAddressPartExpanded)) {
+          matchStreet.value = 'X';
+          break;
         } else {
           matchStreet.value = ' ';
         }
@@ -467,6 +462,8 @@ Future<bool> main() async {
       ..createSync(recursive: true)
       ..writeAsBytesSync(value);
   });
+
+  return true; // TODO: change this
 }
 
 bool findStringMatches(String firstString, String secondString) {
