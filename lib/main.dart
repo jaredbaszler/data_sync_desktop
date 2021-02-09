@@ -11,10 +11,16 @@ import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
 
 const apiKey = 'AIzaSyAUoR1hu32epmid_r-h7_AiXQWhNu3zr3U';
-const basicGoogleFieldList = 'business_status,formatted_address,geometry,'
+const placesSearchBasicList = 'business_status,formatted_address,geometry,'
     'icon,name,permanently_closed,place_id,plus_code,types';
-const originalDataColStart = 0;
-const originalDataColEnd = 42;
+const detailsSearchBasicList =
+    'address_component, adr_address, business_status, formatted_address, '
+    'geometry, icon, name, permanently_closed, photo, place_id, plus_code, '
+    'type, url, utc_offset, vicinity';
+const detailsSearchContactList = 'formatted_phone_number, '
+    'international_phone_number, opening_hours, website';
+const detailsSearchAtmosphereList =
+    'price_level, rating, review, user_ratings_total';
 
 Data cellByIndex(Sheet writeSheet, int rowIndex, int colIndex) {
   Data returnCell;
@@ -98,7 +104,7 @@ Future<bool> searchByWebsiteUrl(
         .value = validMatch ? 'X' : '';
     writeSheet
         .cell(CellIndex.indexByColumnRow(
-            rowIndex: rowIndex, columnIndex: WriteCols.googleURL))
+            rowIndex: rowIndex, columnIndex: WriteCols.googleMapsURL))
         .value = searchUrl;
 
     if (validMatch) {
@@ -166,7 +172,7 @@ Future<bool> searchByNameAndAddress(
         .value = validMatch ? 'X' : '';
     writeSheet
         .cell(CellIndex.indexByColumnRow(
-            rowIndex: rowIndex, columnIndex: WriteCols.googleURL))
+            rowIndex: rowIndex, columnIndex: WriteCols.googleMapsURL))
         .value = searchUrl;
 
     if (validMatch) {
@@ -217,7 +223,7 @@ Future<bool> searchByPhone(
         .value = 'X';
     writeSheet
         .cell(CellIndex.indexByColumnRow(
-            rowIndex: rowIndex, columnIndex: WriteCols.googleURL))
+            rowIndex: rowIndex, columnIndex: WriteCols.googleMapsURL))
         .value = byPhoneUrl;
 
     writeGoogleCanidateInfo(candidate, writeSheet, readSheet, rowIndex);
@@ -502,7 +508,7 @@ String removeCompanyNameWords(String stringToRemove) {
 String googleByPhoneURL({@required String phoneNumber}) {
   final url =
       'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?'
-      'input=$phoneNumber&inputtype=phonenumber&fields=$basicGoogleFieldList'
+      'input=$phoneNumber&inputtype=phonenumber&fields=$placesSearchBasicList'
       '&key=$apiKey';
 
   return url;
@@ -513,7 +519,7 @@ String googleByTextQuery({@required String searchString}) {
       'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?'
       'input=${searchString.toURLSafeString()}'
       '&key=$apiKey'
-      '&inputtype=textquery&fields=$basicGoogleFieldList';
+      '&inputtype=textquery&fields=$placesSearchBasicList';
 
   return url;
 }
@@ -537,7 +543,7 @@ class WriteCols {
   static const int googleSyncByNameAndAddress = 15;
   static const int googleSyncByWebsite = 16;
   static const int googleSyncByNameOnly = 17;
-  static const int googleURL = 18;
+  static const int googleMapsURL = 18;
   static const int googleJSON = 19;
   static const int googleCompanyName = 20;
   static const int googleBusinessStatus = 21;
@@ -549,6 +555,17 @@ class WriteCols {
   static const int matchZip = 27;
   static const int googleLatitude = 28;
   static const int googleLongitude = 29;
+  static const int googleAdrAddress = 30;
+  static const int googleFormattedPhoneNumber = 31;
+  static const int googleIcon = 32;
+  static const int googleID = 33;
+  static const int googleInternationalPhoneNumber = 34;
+  static const int googleRating = 35;
+  static const int googleReference = 36;
+  static const int googleListingTypes = 37;
+  static const int googleUTCOffset = 38;
+  static const int googleVicinity = 39;
+  static const int googleBusinessURL = 40;
 }
 
 class AvtopiaCols {

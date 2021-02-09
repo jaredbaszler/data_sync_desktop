@@ -30,9 +30,6 @@ extension StringHelpers on String {
 
     var returnValue = this.toLowerCase();
 
-    // TODO: CHANGE TO REGULAR EXPRESSION - LOOK FOR ABBREVIATION FOLLOWED BY SPACE, PERIOD OR COMMA
-    // TODO: BREAK UP THE GOOGLE ADDRESS INTO CHUNKS IF POSSIBLE SO WE CAN REVERSE COMPARE TO JUST STREET OF AVTOPIA DATA.
-
     returnValue = returnValue.replaceAll('rd'.toAddressPartPattern(), ' road ');
     returnValue =
         returnValue.replaceAll('dr'.toAddressPartPattern(), ' drive ');
@@ -90,6 +87,9 @@ extension StringHelpers on String {
         returnValue.replaceAll('se'.toAddressPartPattern(), ' southeast ');
     returnValue =
         returnValue.replaceAll('sw'.toAddressPartPattern(), ' southwest ');
+
+    returnValue = returnValue.replaceAll(
+        '  ', ' '); // Replace any double spaces with single spaces
 
     print('REPLACED $this WITH $returnValue');
 
