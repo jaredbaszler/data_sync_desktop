@@ -23,6 +23,8 @@ const detailsSearchContactList = 'formatted_phone_number,'
     'international_phone_number,opening_hours,website';
 const detailsSearchAtmosphereList =
     'price_level,rating,review,user_ratings_total';
+const hexRed = '#ff9191';
+const hexGreen = '#8bd98c';
 
 Data cellByIndex(Sheet writeSheet, int rowIndex, int colIndex) {
   Data returnCell;
@@ -139,7 +141,7 @@ Future<bool> searchByWebsiteUrl(
     Sheet writeSheet, Sheet readSheet, int rowIndex) async {
   final websiteUrl = cellByIndex(writeSheet, rowIndex, AvtopiaCols.website);
 
-  if (websiteUrl.toString().isEmpty) {
+  if (websiteUrl.value == null) {
     return false;
   }
 
@@ -152,6 +154,11 @@ Future<bool> searchByWebsiteUrl(
   GoogleCandidates listOfCandidates;
 
   if (response.statusCode == 200) {
+    writeSheet
+        .cell(CellIndex.indexByColumnRow(
+            rowIndex: rowIndex, columnIndex: WriteCols.googleMapsURL))
+        .value = searchUrl;
+
     listOfCandidates = GoogleCandidates.fromJson(jsonDecode(response.body));
     if (listOfCandidates.candidates.isNotEmpty) {
       // Copy this row into the new file
@@ -179,10 +186,6 @@ Future<bool> searchByWebsiteUrl(
         .cell(CellIndex.indexByColumnRow(
             rowIndex: rowIndex, columnIndex: WriteCols.googleSyncByWebsite))
         .value = validMatch ? 'X' : '';
-    writeSheet
-        .cell(CellIndex.indexByColumnRow(
-            rowIndex: rowIndex, columnIndex: WriteCols.googleMapsURL))
-        .value = searchUrl;
 
     if (validMatch) {
       writeGoogleCanidateInfo(candidate, writeSheet, readSheet, rowIndex);
@@ -196,6 +199,9 @@ Future<bool> searchByNameAndAddress(
     Sheet writeSheet, Sheet readSheet, int rowIndex) async {
   final companyNameCell =
       cellByIndex(writeSheet, rowIndex, AvtopiaCols.accountName);
+  final dba1Cell = cellByIndex(writeSheet, rowIndex, AvtopiaCols.dba1);
+  final dba2Cell = cellByIndex(writeSheet, rowIndex, AvtopiaCols.dba2);
+  final dba3Cell = cellByIndex(writeSheet, rowIndex, AvtopiaCols.dba3);
   final shipStreet1Cell =
       cellByIndex(writeSheet, rowIndex, AvtopiaCols.shipStreet1);
   final shipStreet2Cell =
@@ -210,6 +216,8 @@ Future<bool> searchByNameAndAddress(
   }
 
   final searchString = '${companyNameCell.value ?? ''} '
+      '${dba1Cell?.value ?? ''} ${dba2Cell?.value ?? ''} '
+      '${dba3Cell?.value ?? ''} '
       '${shipStreet1Cell.value ?? ''} ${shipStreet2Cell.value ?? ''} '
       '${shipCityCell.value ?? ''} ${shipStateCell.value ?? ''} '
       '${shipZipCell.value ?? ''}';
@@ -222,6 +230,11 @@ Future<bool> searchByNameAndAddress(
   print('Searching name and address ($searchString} at URL:$searchUrl');
 
   if (response.statusCode == 200) {
+    writeSheet
+        .cell(CellIndex.indexByColumnRow(
+            rowIndex: rowIndex, columnIndex: WriteCols.googleMapsURL))
+        .value = searchUrl;
+
     listOfCandidates = GoogleCandidates.fromJson(jsonDecode(response.body));
     if (listOfCandidates.candidates.isNotEmpty) {
       // Copy this row into the new file
@@ -255,10 +268,6 @@ Future<bool> searchByNameAndAddress(
             rowIndex: rowIndex,
             columnIndex: WriteCols.googleSyncByNameAndAddress))
         .value = validMatch ? 'X' : '';
-    writeSheet
-        .cell(CellIndex.indexByColumnRow(
-            rowIndex: rowIndex, columnIndex: WriteCols.googleMapsURL))
-        .value = searchUrl;
 
     if (validMatch) {
       writeGoogleCanidateInfo(candidate, writeSheet, readSheet, rowIndex);
@@ -275,8 +284,7 @@ Future<bool> searchByPhone(
   final countryCell =
       cellByIndex(writeSheet, rowIndex, AvtopiaCols.shipCountry);
 
-  if (phoneCell.value.toString().trim().isEmpty ||
-      countryCell.value.toString().trim().isEmpty) {
+  if (phoneCell.value == null || countryCell.value == null) {
     return false;
   }
 
@@ -290,6 +298,11 @@ Future<bool> searchByPhone(
   GoogleCandidates listOfCandidates;
 
   if (response.statusCode == 200) {
+    writeSheet
+        .cell(CellIndex.indexByColumnRow(
+            rowIndex: rowIndex, columnIndex: WriteCols.googleMapsURL))
+        .value = byPhoneUrl;
+
     listOfCandidates = GoogleCandidates.fromJson(jsonDecode(response.body));
     if (listOfCandidates.candidates.isNotEmpty) {
       // Copy this row into the new file
@@ -311,10 +324,6 @@ Future<bool> searchByPhone(
         .cell(CellIndex.indexByColumnRow(
             rowIndex: rowIndex, columnIndex: WriteCols.googleSyncByPhone))
         .value = 'X';
-    writeSheet
-        .cell(CellIndex.indexByColumnRow(
-            rowIndex: rowIndex, columnIndex: WriteCols.googleMapsURL))
-        .value = byPhoneUrl;
 
     writeGoogleCanidateInfo(candidate, writeSheet, readSheet, rowIndex);
   }
@@ -381,64 +390,71 @@ Future<bool> main() async {
   // 5. Change any states that are spelled out to correct abbreviation
 
   // rowIndex starts at 2 vs. 0 to skip the header row
-  for (var rowIndex = 34; rowIndex <= readSheet.rows.length; rowIndex++) {
-    // TODO: reset to 1
-    if (rowIndex >= 148) {
-      //if (rowIndex >= 5) {
+  for (var rowIndex = 1; rowIndex <= readSheet.rows.length; rowIndex++) {
+    if (rowIndex >= 25) {
+      // 496) {
       break;
     }
 
-    var anySuccess = false;
+    const queryAPI = false;
 
-    // *** STEP 1 - SEARCH BY PHONE NUMBER ONLY ***
-    final phoneSearchresult =
-        await searchByPhone(writeSheet, readSheet, rowIndex);
+    if (queryAPI) {
+      var anySuccess = false;
 
-    if (phoneSearchresult == false) {
-      // *** STEP 2 - SEARCH BY NAME, ADDRESS, CITY AND STATE ***
-      final nameAndAddressResult =
-          await searchByNameAndAddress(writeSheet, readSheet, rowIndex);
+      // *** STEP 1 - SEARCH BY PHONE NUMBER ONLY ***
+      final phoneSearchresult =
+          await searchByPhone(writeSheet, readSheet, rowIndex);
 
-      if (nameAndAddressResult == false) {
-        // *** STEP 3 - SEARCH BY URL ONLY
-        final urlSearchResult =
-            await searchByWebsiteUrl(writeSheet, readSheet, rowIndex);
+      if (phoneSearchresult == false) {
+        // *** STEP 2 - SEARCH BY NAME, ADDRESS, CITY AND STATE ***
+        final nameAndAddressResult =
+            await searchByNameAndAddress(writeSheet, readSheet, rowIndex);
 
-        if (urlSearchResult == false) {
-          // **** STEP 4 - next search here *****
+        if (nameAndAddressResult == false) {
+          // *** STEP 3 - SEARCH BY URL ONLY
+          final urlSearchResult =
+              await searchByWebsiteUrl(writeSheet, readSheet, rowIndex);
 
+          if (urlSearchResult == false) {
+            // **** STEP 4 - next search here *****
+
+          } else {
+            print('search by URL successful');
+            anySuccess = true;
+          }
         } else {
-          print('search by URL successful');
+          print('search by name and address successful');
           anySuccess = true;
         }
       } else {
-        print('search by name and address successful');
         anySuccess = true;
+        print('search by phone successful');
       }
-    } else {
-      anySuccess = true;
-      print('search by phone successful');
+
+      // TODO: turn this on if we want to pull in place details which cost more
+      // if (anySuccess) {
+      //   // Go get the details for this line
+      //   final placeID = writeSheet
+      //       .cell(CellIndex.indexByColumnRow(
+      //           rowIndex: rowIndex, columnIndex: WriteCols.googlePlaceID))
+      //       .value
+      //       ?.toString();
+
+      //   if (placeID != null) {
+      //     await getPlaceDetails(writeSheet, readSheet, rowIndex, placeID);
+      //   }
+      // }
     }
-
-    // TODO: turn this on if we want to pull in place details which cost more
-    // if (anySuccess) {
-    //   // Go get the details for this line
-    //   final placeID = writeSheet
-    //       .cell(CellIndex.indexByColumnRow(
-    //           rowIndex: rowIndex, columnIndex: WriteCols.googlePlaceID))
-    //       .value
-    //       ?.toString();
-
-    //   if (placeID != null) {
-    //     await getPlaceDetails(writeSheet, readSheet, rowIndex, placeID);
-    //   }
-    // }
 
     final syncStatusCell =
         cellByIndex(writeSheet, rowIndex, WriteCols.syncStatus);
+    final syncStatusCellValue = syncStatusCell.value.toString().toLowerCase();
+
+    syncStatusCell.cellStyle = CellStyle(
+        backgroundColorHex: syncStatusCellValue == 'yes' ? hexGreen : hexRed);
 
     // *** COMPARATIVE ANALYSIS BETWEEN OUR DATA AND GOOGLE DATA
-    if (syncStatusCell.value.toString().toLowerCase() == 'yes') {
+    if (syncStatusCellValue == 'yes' && queryAPI == false) {
       compareToGoogleData(writeSheet, rowIndex);
     }
   }
@@ -454,8 +470,6 @@ Future<bool> main() async {
 }
 
 void compareToGoogleData(Sheet writeSheet, int rowIndex) {
-  const hexRed = '#ff9191';
-  const hexGreen = '#8bd98c';
   // * compare comapny names
   final avCompNameCell =
       cellByIndex(writeSheet, rowIndex, WriteCols.accountName);
