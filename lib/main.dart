@@ -9,12 +9,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
+import 'package:data_sync_desktop/models/place_detail_response.dart';
 
+// belongs to avtopiadev@gmail.com
 const apiKey = 'AIzaSyAUoR1hu32epmid_r-h7_AiXQWhNu3zr3U';
-const basicGoogleFieldList = 'business_status,formatted_address,geometry,'
+const placesSearchBasicList = 'business_status,formatted_address,geometry,'
     'icon,name,permanently_closed,place_id,plus_code,types';
-const originalDataColStart = 0;
-const originalDataColEnd = 42;
+const detailsSearchBasicList =
+    'address_component,adr_address,business_status,formatted_address,'
+    'geometry,icon,name,permanently_closed,photo,place_id,plus_code,'
+    'type,url,utc_offset,vicinity';
+const detailsSearchContactList = 'formatted_phone_number,'
+    'international_phone_number,opening_hours,website';
+const detailsSearchAtmosphereList =
+    'price_level,rating,review,user_ratings_total';
+const hexRed = '#ff9191';
+const hexGreen = '#8bd98c';
 
 Data cellByIndex(Sheet writeSheet, int rowIndex, int colIndex) {
   Data returnCell;
@@ -52,33 +62,103 @@ void copyRow(Sheet writeSheet, Sheet readSheet, int rowIndex) {
   }
 }
 
-Future<bool> searchByNameAndAddress(
+Future<bool> getPlaceDetails(
+    Sheet writeSheet, Sheet readSheet, int rowIndex, String placeID) async {
+  final placeDetailsURL = getPlaceDetailsURL(placeID: placeID);
+  print('Getting Place Details from: $placeDetailsURL');
+
+  final response = await http.get(placeDetailsURL);
+
+  PlaceDetailResponse placeDetailResponse;
+
+  if (response.statusCode == 200) {
+    placeDetailResponse =
+        PlaceDetailResponse.fromJson(jsonDecode(response.body));
+    final placeDetails = placeDetailResponse.result;
+
+    if (placeDetails == null) {
+      return false;
+    }
+
+    writeSheet
+        .cell(CellIndex.indexByColumnRow(
+            rowIndex: rowIndex, columnIndex: WriteCols.googlePlacesDetailsJSON))
+        .value = jsonEncode(placeDetailResponse).toString();
+    writeSheet
+        .cell(CellIndex.indexByColumnRow(
+            rowIndex: rowIndex, columnIndex: WriteCols.googleAdrAddress))
+        .value = placeDetails.adrAddress;
+    writeSheet
+        .cell(CellIndex.indexByColumnRow(
+            rowIndex: rowIndex,
+            columnIndex: WriteCols.googleFormattedPhoneNumber))
+        .value = placeDetails.formattedPhoneNumber;
+    writeSheet
+        .cell(CellIndex.indexByColumnRow(
+            rowIndex: rowIndex, columnIndex: WriteCols.googleIcon))
+        .value = placeDetails.icon;
+    writeSheet
+        .cell(CellIndex.indexByColumnRow(
+            rowIndex: rowIndex,
+            columnIndex: WriteCols.googleInternationalPhoneNumber))
+        .value = placeDetails.internationalPhoneNumber;
+    writeSheet
+        .cell(CellIndex.indexByColumnRow(
+            rowIndex: rowIndex, columnIndex: WriteCols.googleRating))
+        .value = placeDetails.rating;
+    writeSheet
+        .cell(CellIndex.indexByColumnRow(
+            rowIndex: rowIndex, columnIndex: WriteCols.googleUTCOffset))
+        .value = placeDetails.utcOffset;
+    writeSheet
+        .cell(CellIndex.indexByColumnRow(
+            rowIndex: rowIndex, columnIndex: WriteCols.googleVicinity))
+        .value = placeDetails.vicinity;
+    writeSheet
+        .cell(CellIndex.indexByColumnRow(
+            rowIndex: rowIndex, columnIndex: WriteCols.googleBusinessURL))
+        .value = placeDetails.website;
+    writeSheet
+        .cell(CellIndex.indexByColumnRow(
+            rowIndex: rowIndex, columnIndex: WriteCols.googleRating))
+        .value = placeDetails.rating;
+    writeSheet
+        .cell(CellIndex.indexByColumnRow(
+            rowIndex: rowIndex, columnIndex: WriteCols.googleNumReviews))
+        .value = placeDetails.reviews?.length ?? '';
+    // There is also a USER_RATINGS_TOTAL which didn't seem to calculate
+    // correctly on the 1 listing I did look on.
+    // Also, PRICE_LEVEL also doesn't seem to come through on listings like ours
+  } else {
+    print('Request failed with status: ${response.statusCode}.');
+    return false;
+  }
+
+  return true;
+}
+
+Future<bool> searchByWebsiteUrl(
     Sheet writeSheet, Sheet readSheet, int rowIndex) async {
-  final companyNameCell =
-      cellByIndex(writeSheet, rowIndex, AvtopiaCols.accountName);
-  final shipStreet1Cell =
-      cellByIndex(writeSheet, rowIndex, AvtopiaCols.shipStreet1);
-  final shipStreet2Cell =
-      cellByIndex(writeSheet, rowIndex, AvtopiaCols.shipStreet2);
-  final shipCityCell = cellByIndex(writeSheet, rowIndex, AvtopiaCols.shipCity);
-  final shipStateCell =
-      cellByIndex(writeSheet, rowIndex, AvtopiaCols.shipState);
-  final shipZipCell = cellByIndex(writeSheet, rowIndex, AvtopiaCols.shipZip);
+  final websiteUrl = cellByIndex(writeSheet, rowIndex, AvtopiaCols.website);
 
-  final searchString = '${companyNameCell.value} ${shipStreet1Cell.value} '
-      '${shipStreet2Cell.value} ${shipCityCell.value} '
-      '${shipStateCell.value} ${shipZipCell.value}';
+  if (websiteUrl.value == null) {
+    return false;
+  }
 
-  final searchUrl = googleByNameAndAddressURL(searchString: searchString);
+  final searchUrl = googleByTextQueryURL(
+      searchString: websiteUrl.value.toString().stripUrl());
+
+  print('rowIndex: $rowIndex / searchUrl: $searchUrl');
 
   final response = await http.get(searchUrl);
   GoogleCandidates listOfCandidates;
 
-  print('Searching name and address ($searchString} at URL:$searchUrl');
-
   if (response.statusCode == 200) {
-    // TODO: check status returned for 'invalid_request' or anything other than OK
-    // TODO: check 'types' in canidate return to look for 'premise' as that seems to just denote the address exists, need to view ""
+    writeSheet
+        .cell(CellIndex.indexByColumnRow(
+            rowIndex: rowIndex, columnIndex: WriteCols.googleMapsURL))
+        .value = searchUrl;
+
     listOfCandidates = GoogleCandidates.fromJson(jsonDecode(response.body));
     if (listOfCandidates.candidates.isNotEmpty) {
       // Copy this row into the new file
@@ -104,13 +184,90 @@ Future<bool> searchByNameAndAddress(
         .value = validMatch ? 'YES' : 'NO';
     writeSheet
         .cell(CellIndex.indexByColumnRow(
+            rowIndex: rowIndex, columnIndex: WriteCols.googleSyncByWebsite))
+        .value = validMatch ? 'X' : '';
+
+    if (validMatch) {
+      writeGoogleCanidateInfo(candidate, writeSheet, readSheet, rowIndex);
+    }
+  }
+
+  return true;
+}
+
+Future<bool> searchByNameAndAddress(
+    Sheet writeSheet, Sheet readSheet, int rowIndex) async {
+  final companyNameCell =
+      cellByIndex(writeSheet, rowIndex, AvtopiaCols.accountName);
+  final dba1Cell = cellByIndex(writeSheet, rowIndex, AvtopiaCols.dba1);
+  final dba2Cell = cellByIndex(writeSheet, rowIndex, AvtopiaCols.dba2);
+  final dba3Cell = cellByIndex(writeSheet, rowIndex, AvtopiaCols.dba3);
+  final shipStreet1Cell =
+      cellByIndex(writeSheet, rowIndex, AvtopiaCols.shipStreet1);
+  final shipStreet2Cell =
+      cellByIndex(writeSheet, rowIndex, AvtopiaCols.shipStreet2);
+  final shipCityCell = cellByIndex(writeSheet, rowIndex, AvtopiaCols.shipCity);
+  final shipStateCell =
+      cellByIndex(writeSheet, rowIndex, AvtopiaCols.shipState);
+  final shipZipCell = cellByIndex(writeSheet, rowIndex, AvtopiaCols.shipZip);
+
+  if (shipStateCell.value.toString().trim().isEmpty) {
+    return false;
+  }
+
+  final searchString = '${companyNameCell.value ?? ''} '
+      '${dba1Cell?.value ?? ''} ${dba2Cell?.value ?? ''} '
+      '${dba3Cell?.value ?? ''} '
+      '${shipStreet1Cell.value ?? ''} ${shipStreet2Cell.value ?? ''} '
+      '${shipCityCell.value ?? ''} ${shipStateCell.value ?? ''} '
+      '${shipZipCell.value ?? ''}';
+
+  final searchUrl = googleByTextQueryURL(searchString: searchString);
+
+  final response = await http.get(searchUrl);
+  GoogleCandidates listOfCandidates;
+
+  print('Searching name and address ($searchString} at URL:$searchUrl');
+
+  if (response.statusCode == 200) {
+    writeSheet
+        .cell(CellIndex.indexByColumnRow(
+            rowIndex: rowIndex, columnIndex: WriteCols.googleMapsURL))
+        .value = searchUrl;
+
+    listOfCandidates = GoogleCandidates.fromJson(jsonDecode(response.body));
+    if (listOfCandidates.candidates.isNotEmpty) {
+      // Copy this row into the new file
+      copyRow(writeSheet, readSheet, rowIndex);
+    } else {
+      return false; // return false if nothing is found
+    }
+  } else {
+    print('Request failed with status: ${response.statusCode}.');
+    return false;
+  }
+
+  for (final candidate in listOfCandidates.candidates) {
+    var validMatch = true;
+
+    if (!(candidate.types.contains('point_of_interest') ||
+        candidate.types.contains('establishment'))) {
+      // Sometimes the types of listing comes back "premise"
+      validMatch = false;
+      writeSheet
+          .cell(CellIndex.indexByColumnRow(
+              rowIndex: rowIndex, columnIndex: WriteCols.googleListingTypes))
+          .value = candidate.types.join(',');
+    }
+    writeSheet
+        .cell(CellIndex.indexByColumnRow(
+            rowIndex: rowIndex, columnIndex: WriteCols.syncStatus))
+        .value = validMatch ? 'YES' : 'NO';
+    writeSheet
+        .cell(CellIndex.indexByColumnRow(
             rowIndex: rowIndex,
             columnIndex: WriteCols.googleSyncByNameAndAddress))
         .value = validMatch ? 'X' : '';
-    writeSheet
-        .cell(CellIndex.indexByColumnRow(
-            rowIndex: rowIndex, columnIndex: WriteCols.googleURL))
-        .value = searchUrl;
 
     if (validMatch) {
       writeGoogleCanidateInfo(candidate, writeSheet, readSheet, rowIndex);
@@ -127,6 +284,10 @@ Future<bool> searchByPhone(
   final countryCell =
       cellByIndex(writeSheet, rowIndex, AvtopiaCols.shipCountry);
 
+  if (phoneCell.value == null || countryCell.value == null) {
+    return false;
+  }
+
   final byPhoneUrl = googleByPhoneURL(
       phoneNumber:
           phoneCell.value.toString().toIntlPhoneFormat(countryCell.value));
@@ -137,6 +298,11 @@ Future<bool> searchByPhone(
   GoogleCandidates listOfCandidates;
 
   if (response.statusCode == 200) {
+    writeSheet
+        .cell(CellIndex.indexByColumnRow(
+            rowIndex: rowIndex, columnIndex: WriteCols.googleMapsURL))
+        .value = byPhoneUrl;
+
     listOfCandidates = GoogleCandidates.fromJson(jsonDecode(response.body));
     if (listOfCandidates.candidates.isNotEmpty) {
       // Copy this row into the new file
@@ -158,10 +324,6 @@ Future<bool> searchByPhone(
         .cell(CellIndex.indexByColumnRow(
             rowIndex: rowIndex, columnIndex: WriteCols.googleSyncByPhone))
         .value = 'X';
-    writeSheet
-        .cell(CellIndex.indexByColumnRow(
-            rowIndex: rowIndex, columnIndex: WriteCols.googleURL))
-        .value = byPhoneUrl;
 
     writeGoogleCanidateInfo(candidate, writeSheet, readSheet, rowIndex);
   }
@@ -171,6 +333,10 @@ Future<bool> searchByPhone(
 
 void writeGoogleCanidateInfo(
     Candidates candidate, Sheet writeSheet, Sheet readSheet, int rowIndex) {
+  writeSheet
+      .cell(CellIndex.indexByColumnRow(
+          rowIndex: rowIndex, columnIndex: WriteCols.googleListingTypes))
+      .value = candidate.types.join(',');
   writeSheet
       .cell(CellIndex.indexByColumnRow(
           rowIndex: rowIndex, columnIndex: WriteCols.googleJSON))
@@ -201,17 +367,263 @@ void writeGoogleCanidateInfo(
       .value = candidate.geometry.location.lng;
 }
 
-void main() {
-  const textToSearch = 'William\nWilliam description here...\n170.00 cm';
-  final lines = textToSearch.split('\n');
-  // If your template is always the same,
-  // then your number will be at the start of line 3:
-  print(lines[2]); // Will print $170.00
-  // If you want just your 170 value then this (assuming there is always a decimal):
-  final regEx = RegExp(r'\d+');
-  final priceValueMatch = regEx.firstMatch(lines[2]);
-  final priceInt = int.parse(priceValueMatch.group(0));
-  print(priceInt);
+Future<bool> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  //runApp(MyApp());
+
+  final data = await rootBundle.load('assets/temp.xlsx');
+  final bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+  final wb = Excel.decodeBytes(bytes);
+
+  final readSheet =
+      wb.sheets[wb.sheets.keys.firstWhere((a) => a == 'BetaData')];
+  final writeSheet =
+      wb.sheets[wb.sheets.keys.firstWhere((a) => a == 'BetaDataResults')];
+
+  // *** Steps before doing any work on a data sheet
+  // *** that's never ran against this code before:
+  // 1. Copy Sheet1 data into Sheet2
+  // 2. Delete all columns after Col "N"
+  // 3. Create new "synced by cols"
+  // 4. Add JSON and URL column
+  // 4. Create new "google" columns
+  // 5. Change any states that are spelled out to correct abbreviation
+
+  // rowIndex starts at 2 vs. 0 to skip the header row
+  for (var rowIndex = 1; rowIndex <= readSheet.rows.length; rowIndex++) {
+    if (rowIndex >= 25) {
+      // 496) {
+      break;
+    }
+
+    const queryAPI = false;
+
+    if (queryAPI) {
+      var anySuccess = false;
+
+      // *** STEP 1 - SEARCH BY PHONE NUMBER ONLY ***
+      final phoneSearchresult =
+          await searchByPhone(writeSheet, readSheet, rowIndex);
+
+      if (phoneSearchresult == false) {
+        // *** STEP 2 - SEARCH BY NAME, ADDRESS, CITY AND STATE ***
+        final nameAndAddressResult =
+            await searchByNameAndAddress(writeSheet, readSheet, rowIndex);
+
+        if (nameAndAddressResult == false) {
+          // *** STEP 3 - SEARCH BY URL ONLY
+          final urlSearchResult =
+              await searchByWebsiteUrl(writeSheet, readSheet, rowIndex);
+
+          if (urlSearchResult == false) {
+            // **** STEP 4 - next search here *****
+
+          } else {
+            print('search by URL successful');
+            anySuccess = true;
+          }
+        } else {
+          print('search by name and address successful');
+          anySuccess = true;
+        }
+      } else {
+        anySuccess = true;
+        print('search by phone successful');
+      }
+
+      // TODO: turn this on if we want to pull in place details which cost more
+      // if (anySuccess) {
+      //   // Go get the details for this line
+      //   final placeID = writeSheet
+      //       .cell(CellIndex.indexByColumnRow(
+      //           rowIndex: rowIndex, columnIndex: WriteCols.googlePlaceID))
+      //       .value
+      //       ?.toString();
+
+      //   if (placeID != null) {
+      //     await getPlaceDetails(writeSheet, readSheet, rowIndex, placeID);
+      //   }
+      // }
+    }
+
+    final syncStatusCell =
+        cellByIndex(writeSheet, rowIndex, WriteCols.syncStatus);
+    final syncStatusCellValue = syncStatusCell.value.toString().toLowerCase();
+
+    syncStatusCell.cellStyle = CellStyle(
+        backgroundColorHex: syncStatusCellValue == 'yes' ? hexGreen : hexRed);
+
+    // *** COMPARATIVE ANALYSIS BETWEEN OUR DATA AND GOOGLE DATA
+    if (syncStatusCellValue == 'yes' && queryAPI == false) {
+      compareToGoogleData(writeSheet, rowIndex);
+    }
+  }
+
+  await wb.encode().then((value) {
+    File(join(
+        r'C:\Users\jared\source\repos\avtopia\data_sync_desktop\assets\temp.xlsx'))
+      ..createSync(recursive: true)
+      ..writeAsBytesSync(value);
+  });
+
+  return true;
+}
+
+void compareToGoogleData(Sheet writeSheet, int rowIndex) {
+  // * compare comapny names
+  final avCompNameCell =
+      cellByIndex(writeSheet, rowIndex, WriteCols.accountName);
+  final avDba1Cell = cellByIndex(writeSheet, rowIndex, WriteCols.dba1);
+  final avDba2Cell = cellByIndex(writeSheet, rowIndex, WriteCols.dba2);
+  final avDba3Cell = cellByIndex(writeSheet, rowIndex, WriteCols.dba3);
+  final googleCompNameCell =
+      cellByIndex(writeSheet, rowIndex, WriteCols.googleCompanyName);
+
+  var numberOfMatches = 0;
+
+  if (findStringMatches(
+      avCompNameCell.value.toString(), googleCompNameCell.value.toString())) {
+    numberOfMatches++;
+  }
+
+  if (findStringMatches(
+      avDba1Cell.value.toString(), googleCompNameCell.value.toString())) {
+    numberOfMatches++;
+  }
+
+  if (findStringMatches(
+      avDba2Cell.value.toString(), googleCompNameCell.value.toString())) {
+    numberOfMatches++;
+  }
+
+  if (findStringMatches(
+      avDba3Cell.value.toString(), googleCompNameCell.value.toString())) {
+    numberOfMatches++;
+  }
+
+  googleCompNameCell.cellStyle =
+      CellStyle(backgroundColorHex: numberOfMatches == 0 ? hexRed : hexGreen);
+
+  // * Compare addresses
+  final avStreet1 = cellByIndex(writeSheet, rowIndex, WriteCols.shipStreet1);
+  final avStreet2 = cellByIndex(writeSheet, rowIndex, WriteCols.shipStreet2);
+  final avCity = cellByIndex(writeSheet, rowIndex, WriteCols.shipCity);
+  final avState = cellByIndex(writeSheet, rowIndex, WriteCols.shipState);
+  final avZip = cellByIndex(writeSheet, rowIndex, WriteCols.shipZip);
+  final googleAddress =
+      cellByIndex(writeSheet, rowIndex, WriteCols.googleFormattedAddress);
+  final matchStreet = cellByIndex(writeSheet, rowIndex, WriteCols.matchStreet);
+  final matchCity = cellByIndex(writeSheet, rowIndex, WriteCols.matchCity);
+  final matchState = cellByIndex(writeSheet, rowIndex, WriteCols.matchState);
+  final matchZip = cellByIndex(writeSheet, rowIndex, WriteCols.matchZip);
+
+  final googleAddressSplit = googleAddress.value.toString().split(',');
+  final avStreet1Expanded =
+      avStreet1.value.toString().trim().toLowerCase().toExpandAbbreviations();
+  final avStreet2Expanded =
+      avStreet2.value.toString().trim().toLowerCase().toExpandAbbreviations();
+
+  for (final googleAddressPart in googleAddressSplit) {
+    if (avStreet1.value.toString().trim().isEmpty) {
+      break;
+    }
+
+    final googleAddressPartExpanded =
+        googleAddressPart.trim().toLowerCase().toExpandAbbreviations();
+
+    if (googleAddressPartExpanded.contains(avStreet1Expanded) ||
+        avStreet1Expanded.contains(googleAddressPartExpanded)) {
+      matchStreet.value = 'X';
+      break;
+    }
+
+    if (avStreet2.value.toString().trim().isEmpty) {
+      break;
+    }
+
+    if (googleAddressPartExpanded.contains(avStreet2Expanded) ||
+        avStreet2Expanded.contains(googleAddressPartExpanded)) {
+      matchStreet.value = 'X';
+      break;
+    } else {
+      matchStreet.value = ' ';
+    }
+  }
+
+  matchStreet.cellStyle = CellStyle(
+      backgroundColorHex: matchStreet.value == 'X' ? hexGreen : hexRed);
+
+  if (avCity.value.toString().isNotEmpty &&
+      googleAddress.value
+          .toString()
+          .toLowerCase()
+          .contains(avCity.value.toString().toLowerCase())) {
+    matchCity.value = 'X';
+  } else {
+    matchCity.value = ' ';
+  }
+
+  matchCity.cellStyle =
+      CellStyle(backgroundColorHex: matchCity.value == 'X' ? hexGreen : hexRed);
+
+  if (avState.value.toString().isNotEmpty &&
+      googleAddress.value.toString().contains(
+          avState.value.toString().toStateAbbreviation().toUpperCase())) {
+    matchState.value = 'X';
+  } else {
+    matchState.value = ' ';
+  }
+
+  matchState.cellStyle = CellStyle(
+      backgroundColorHex: matchState.value == 'X' ? hexGreen : hexRed);
+
+  if (avZip.value.toString().isNotEmpty) {
+    var zipString = avZip.value.toString();
+    if (zipString.contains('-')) {
+      zipString = zipString.substring(0, zipString.indexOf('-'));
+    }
+    if (googleAddress.value.toString().toLowerCase().contains(zipString)) {
+      matchZip.value = 'X';
+    } else {
+      matchZip.value = ' ';
+    }
+  }
+
+  matchZip.cellStyle =
+      CellStyle(backgroundColorHex: matchZip.value == 'X' ? hexGreen : hexRed);
+}
+
+bool findStringMatches(String firstString, String secondString) {
+  if (firstString.isEmpty || secondString.isEmpty) {
+    return false;
+  }
+
+  for (var firstStringWord in firstString.split(' ')) {
+    for (var secondStringWord in secondString.split(' ')) {
+      firstStringWord = firstStringWord.toLowerCase();
+      secondStringWord = secondStringWord.toLowerCase();
+
+      if (firstStringWord == secondStringWord ||
+          firstStringWord.contains(secondStringWord) ||
+          secondStringWord.contains(firstStringWord)) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+String removeCompanyNameWords(String stringToRemove) {
+  var returnValue = stringToRemove;
+
+  returnValue = stringToRemove.replaceAll('llc', '');
+  returnValue = returnValue.replaceAll('inc.', '');
+  returnValue = returnValue.replaceAll('inc', '');
+  returnValue = returnValue.replaceAll(',', '');
+  returnValue = returnValue.replaceAll('.', '');
+
+  return returnValue;
 }
 
 void googleSearchNearby() {}
@@ -269,18 +681,26 @@ void googleSearchNearby() {}
 String googleByPhoneURL({@required String phoneNumber}) {
   final url =
       'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?'
-      'input=$phoneNumber&inputtype=phonenumber&fields=$basicGoogleFieldList'
+      'input=$phoneNumber&inputtype=phonenumber&fields=$placesSearchBasicList'
       '&key=$apiKey';
 
   return url;
 }
 
-String googleByNameAndAddressURL({@required String searchString}) {
+String googleByTextQueryURL({@required String searchString}) {
   final url =
       'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?'
       'input=${searchString.toURLSafeString()}'
       '&key=$apiKey'
-      '&inputtype=textquery&fields=$basicGoogleFieldList';
+      '&inputtype=textquery&fields=$placesSearchBasicList';
+
+  return url;
+}
+
+String getPlaceDetailsURL({@required String placeID}) {
+  final url = 'https://maps.googleapis.com/maps/api/place/details/json?'
+      'place_id=$placeID&fields=$detailsSearchBasicList,'
+      '$detailsSearchContactList,$detailsSearchAtmosphereList&key=$apiKey';
 
   return url;
 }
@@ -301,17 +721,34 @@ class WriteCols {
   static const int website = 12;
   static const int syncStatus = 13; // Column N
   static const int googleSyncByPhone = 14;
-  static const int googleSyncByAddress = 15;
-  static const int googleSyncByNameAndAddress = 16;
+  static const int googleSyncByNameAndAddress = 15;
+  static const int googleSyncByWebsite = 16;
   static const int googleSyncByNameOnly = 17;
-  static const int googleURL = 18;
+  static const int googleMapsURL = 18;
   static const int googleJSON = 19;
   static const int googleCompanyName = 20;
   static const int googleBusinessStatus = 21;
   static const int googlePlaceID = 22;
   static const int googleFormattedAddress = 23;
-  static const int googleLatitude = 24;
-  static const int googleLongitude = 25;
+  static const int matchStreet = 24;
+  static const int matchCity = 25;
+  static const int matchState = 26;
+  static const int matchZip = 27;
+  static const int googleLatitude = 28;
+  static const int googleLongitude = 29;
+  static const int googlePlacesDetailsJSON = 30;
+  static const int googleAdrAddress = 31;
+  static const int googleFormattedPhoneNumber = 32;
+  static const int googleIcon = 33;
+  static const int googleID = 34;
+  static const int googleInternationalPhoneNumber = 35;
+  static const int googleListingTypes = 36;
+  static const int googleUTCOffset = 37;
+  static const int googleVicinity = 38;
+  static const int googleBusinessURL = 39;
+  static const int googleRating = 40;
+  static const int googleNumReviews = 41;
+  static const int googlePriceLevel = 42;
 }
 
 class AvtopiaCols {
@@ -359,8 +796,8 @@ class AvtopiaCols {
   static const int tag19 = 41;
   static const int tag20 = 42;
   static const int googleSyncByPhone = 43;
-  static const int googleSyncByAddress = 44;
-  static const int googleSyncByNameAndAddress = 45;
+  static const int googleSyncByNameAndAddress = 44;
+  static const int googleSyncByWebsite = 45;
   static const int googleSyncByNameOnly = 46;
   static const int googleRating = 47;
   static const int googleNumberOfReviews = 48;
