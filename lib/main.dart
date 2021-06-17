@@ -201,55 +201,70 @@ void writeGoogleCanidateInfo(
       .value = candidate.geometry.location.lng;
 }
 
-Future<bool> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  //runApp(MyApp());
-
-  final data = await rootBundle.load('assets/temp.xlsx');
-  final bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
-  final wb = Excel.decodeBytes(bytes);
-
-  final readSheet = wb.sheets[wb.sheets.keys.first];
-  final writeSheet = wb.sheets[wb.sheets.keys.last];
-
-  // *** Steps before doing any work on a data sheet
-  // *** that's never ran against this code before:
-  // 1. Copy Sheet1 data into Sheet2
-  // 2. Delete all columns after Col "N"
-  // 3. Create new "synced by cols"
-  // 4. Add JSON and URL column
-  // 4. Create new "google" columns
-
-  // rowIndex starts at 1 vs. 0 to skip the header row
-  for (var rowIndex = 1; rowIndex <= readSheet.rows.length; rowIndex++) {
-    // *** STEP 1 - SEARCH BY PHONE NUMBER ONLY ***
-    final phoneSearchresult =
-        await searchByPhone(writeSheet, readSheet, rowIndex);
-
-    if (phoneSearchresult == false) {
-      // *** STEP 2 - SEARCH BY NAME, ADDRESS, CITY AND STATE ***
-      final nameAndAddressResult =
-          await searchByNameAndAddress(writeSheet, readSheet, rowIndex);
-
-      if (nameAndAddressResult == false) {
-        print('name and address NOT FOUND - next search would go here.');
-      }
-    } else {
-      print('search by phone successful');
-    }
-
-    if (rowIndex >= 262) {
-      break;
-    } // only do 1 iteration for now
-  }
-
-  await wb.encode().then((value) {
-    File(join(
-        r'C:\Users\jared\source\repos\avtopia\data_sync_desktop\assets\temp.xlsx'))
-      ..createSync(recursive: true)
-      ..writeAsBytesSync(value);
-  });
+void main() {
+  const textToSearch = 'William\nWilliam description here...\n170.00 cm';
+  final lines = textToSearch.split('\n');
+  // If your template is always the same,
+  // then your number will be at the start of line 3:
+  print(lines[2]); // Will print $170.00
+  // If you want just your 170 value then this (assuming there is always a decimal):
+  final regEx = RegExp(r'\d+');
+  final priceValueMatch = regEx.firstMatch(lines[2]);
+  final priceInt = int.parse(priceValueMatch.group(0));
+  print(priceInt);
 }
+
+void googleSearchNearby() {}
+
+// Future<bool> main() async {
+//   WidgetsFlutterBinding.ensureInitialized();
+//   //runApp(MyApp());
+
+//   final data = await rootBundle.load('assets/temp.xlsx');
+//   final bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+//   final wb = Excel.decodeBytes(bytes);
+
+//   final readSheet = wb.sheets[wb.sheets.keys.first];
+//   final writeSheet = wb.sheets[wb.sheets.keys.last];
+
+//   // *** Steps before doing any work on a data sheet
+//   // *** that's never ran against this code before:
+//   // 1. Copy Sheet1 data into Sheet2
+//   // 2. Delete all columns after Col "N"
+//   // 3. Create new "synced by cols"
+//   // 4. Add JSON and URL column
+//   // 4. Create new "google" columns
+
+//   // rowIndex starts at 1 vs. 0 to skip the header row
+//   for (var rowIndex = 1; rowIndex <= readSheet.rows.length; rowIndex++) {
+//     // *** STEP 1 - SEARCH BY PHONE NUMBER ONLY ***
+//     final phoneSearchresult =
+//         await searchByPhone(writeSheet, readSheet, rowIndex);
+
+//     if (phoneSearchresult == false) {
+//       // *** STEP 2 - SEARCH BY NAME, ADDRESS, CITY AND STATE ***
+//       final nameAndAddressResult =
+//           await searchByNameAndAddress(writeSheet, readSheet, rowIndex);
+
+//       if (nameAndAddressResult == false) {
+//         print('name and address NOT FOUND - next search would go here.');
+//       }
+//     } else {
+//       print('search by phone successful');
+//     }
+
+//     if (rowIndex >= 262) {
+//       break;
+//     } // only do 1 iteration for now
+//   }
+
+//   await wb.encode().then((value) {
+//     File(join(
+//         r'C:\Users\jared\source\repos\avtopia\data_sync_desktop\assets\temp.xlsx'))
+//       ..createSync(recursive: true)
+//       ..writeAsBytesSync(value);
+//   });
+//}
 
 String googleByPhoneURL({@required String phoneNumber}) {
   final url =
