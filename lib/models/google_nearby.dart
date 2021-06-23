@@ -1,17 +1,17 @@
 // To parse this JSON data, do
 //
-//     final larsonStoreInfo = larsonStoreInfoFromJson(jsonString);
+//     final GoogleNearbyResult = googleNearbyResultFromJson(jsonString);
 
 import 'dart:convert';
 
-LarsonStoreInfo larsonStoreInfoFromJson(String str) =>
-    LarsonStoreInfo.fromJson(json.decode(str));
+GoogleNearbyResult googleNearbyResultFromJson(String str) =>
+    GoogleNearbyResult.fromJson(json.decode(str));
 
-String larsonStoreInfoToJson(LarsonStoreInfo data) =>
+String googleNearbyResultToJson(GoogleNearbyResult data) =>
     json.encode(data.toJson());
 
-class LarsonStoreInfo {
-  LarsonStoreInfo({
+class GoogleNearbyResult {
+  GoogleNearbyResult({
     this.nextPageToken,
     this.results,
   });
@@ -19,8 +19,8 @@ class LarsonStoreInfo {
   String nextPageToken;
   List<Result> results;
 
-  factory LarsonStoreInfo.fromJson(Map<String, dynamic> json) =>
-      LarsonStoreInfo(
+  factory GoogleNearbyResult.fromJson(Map<String, dynamic> json) =>
+      GoogleNearbyResult(
         nextPageToken: json["next_page_token"],
         results:
             List<Result>.from(json["results"].map((x) => Result.fromJson(x))),

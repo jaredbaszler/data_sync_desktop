@@ -1,15 +1,16 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:data_sync_desktop/models/google_candidates.dart';
 import 'package:data_sync_desktop/models/candidates.dart';
+import 'package:data_sync_desktop/models/google_candidates.dart';
+import 'package:data_sync_desktop/models/google_nearby.dart';
+import 'package:data_sync_desktop/models/place_detail_response.dart';
 import 'package:data_sync_desktop/utils/extensions.dart';
 import 'package:excel/excel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
-import 'package:data_sync_desktop/models/place_detail_response.dart';
 
 // belongs to avtopiadev@gmail.com
 const apiKey = 'AIzaSyAUoR1hu32epmid_r-h7_AiXQWhNu3zr3U';
@@ -285,7 +286,7 @@ Future<bool> searchNearby(Sheet readSheet, int rowIndex) async {
   final airportLong =
       cellByIndex(readSheet, rowIndex, AirportListCols.longitudeDecimalDegrees);
   // parameter must be in meters.  8000 = 5 miles, 16000, 10 miles
-  final radius = 16000;
+  const radius = 16000;
 
   if (airpotCodeCell.value == null ||
       airportLat.value == null ||
@@ -299,6 +300,14 @@ Future<bool> searchNearby(Sheet readSheet, int rowIndex) async {
       radius: radius);
 
   final response = await http.get(nearbyURL);
+  GoogleNearbyResult nearbyResults;
+
+  if (response.statusCode == 200) {
+    nearbyResults = GoogleNearbyResult.fromJson(jsonDecode(response.body));
+  } else {
+    print('Request failed with status: ${response.statusCode}.');
+    return false;
+  }
 }
 
 Future<bool> searchByPhone(
@@ -408,8 +417,7 @@ Future<bool> googleSearchNearby() async {
       break;
     }
 
-    final phoneSearchresult =
-        await searchNearby(writeSheet, readSheet, rowIndex);
+    final phoneSearchresult = await searchNearby(readSheet, rowIndex);
   }
 
   return true;
