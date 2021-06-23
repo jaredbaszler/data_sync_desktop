@@ -26,10 +26,10 @@ const detailsSearchAtmosphereList =
 const hexRed = '#ff9191';
 const hexGreen = '#8bd98c';
 
-Data cellByIndex(Sheet writeSheet, int rowIndex, int colIndex) {
+Data cellByIndex(Sheet sheet, int rowIndex, int colIndex) {
   Data returnCell;
 
-  for (final cell in writeSheet.row(rowIndex)) {
+  for (final cell in sheet.row(rowIndex)) {
     if (cell.colIndex == colIndex) {
       returnCell = cell;
       break;
@@ -277,6 +277,30 @@ Future<bool> searchByNameAndAddress(
   return true;
 }
 
+Future<bool> searchNearby(Sheet readSheet, int rowIndex) async {
+  final airpotCodeCell =
+      cellByIndex(readSheet, rowIndex, AirportListCols.airportCode);
+  final airportLat =
+      cellByIndex(readSheet, rowIndex, AirportListCols.latitudeDecimalDegrees);
+  final airportLong =
+      cellByIndex(readSheet, rowIndex, AirportListCols.longitudeDecimalDegrees);
+  // parameter must be in meters.  8000 = 5 miles, 16000, 10 miles
+  final radius = 16000;
+
+  if (airpotCodeCell.value == null ||
+      airportLat.value == null ||
+      airportLong.value == null) {
+    return false;
+  }
+
+  final nearbyURL = googleByNearbyURL(
+      airportLat: airportLat.value,
+      airportLong: airportLong.value,
+      radius: radius);
+
+  final response = await http.get(nearbyURL);
+}
+
 Future<bool> searchByPhone(
     Sheet writeSheet, Sheet readSheet, int rowIndex) async {
   // Transform the phone number
@@ -367,7 +391,31 @@ void writeGoogleCanidateInfo(
       .value = candidate.geometry.location.lng;
 }
 
-Future<bool> main() async {
+Future<bool> googleSearchNearby() async {
+  final data =
+      await rootBundle.load('assets/Partner Launch - Airport list.xlsx');
+  final bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+  final wb = Excel.decodeBytes(bytes);
+
+  final readSheet =
+      wb.sheets[wb.sheets.keys.firstWhere((a) => a == 'Partner Launch')];
+  final writeSheet =
+      wb.sheets[wb.sheets.keys.firstWhere((a) => a == 'NearbyResults')];
+
+  for (var rowIndex = 1; rowIndex <= readSheet.rows.length; rowIndex++) {
+    if (rowIndex >= 2) {
+      // 496) {
+      break;
+    }
+
+    final phoneSearchresult =
+        await searchNearby(writeSheet, readSheet, rowIndex);
+  }
+
+  return true;
+}
+
+Future<bool> getGooglePlacesData() async {
   WidgetsFlutterBinding.ensureInitialized();
   //runApp(MyApp());
 
@@ -467,6 +515,10 @@ Future<bool> main() async {
   });
 
   return true;
+}
+
+Future<bool> main() async {
+  googleSearchNearby();
 }
 
 void compareToGoogleData(Sheet writeSheet, int rowIndex) {
@@ -626,8 +678,6 @@ String removeCompanyNameWords(String stringToRemove) {
   return returnValue;
 }
 
-void googleSearchNearby() {}
-
 // Future<bool> main() async {
 //   WidgetsFlutterBinding.ensureInitialized();
 //   //runApp(MyApp());
@@ -677,6 +727,17 @@ void googleSearchNearby() {}
 //       ..writeAsBytesSync(value);
 //   });
 //}
+
+String googleByNearbyURL(
+    {@required String airportLat,
+    @required String airportLong,
+    @required int radius}) {
+  final url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?'
+      'location=$airportLat,$airportLong&radius=$radius&keyword=aviation&'
+      'key=$apiKey';
+
+  return url;
+}
 
 String googleByPhoneURL({@required String phoneNumber}) {
   final url =
@@ -749,6 +810,14 @@ class WriteCols {
   static const int googleRating = 40;
   static const int googleNumReviews = 41;
   static const int googlePriceLevel = 42;
+}
+
+class AirportListCols {
+  static const int airportName = 0;
+  static const int airportCode = 1;
+  static const int airportState = 2;
+  static const int latitudeDecimalDegrees = 3;
+  static const int longitudeDecimalDegrees = 4;
 }
 
 class AvtopiaCols {
