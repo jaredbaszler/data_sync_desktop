@@ -68,7 +68,7 @@ Future<bool> getPlaceDetails(
   final placeDetailsURL = getPlaceDetailsURL(placeID: placeID);
   print('Getting Place Details from: $placeDetailsURL');
 
-  final response = await http.get(placeDetailsURL);
+  final response = await http.get(Uri.parse(placeDetailsURL));
 
   PlaceDetailResponse placeDetailResponse;
 
@@ -151,7 +151,7 @@ Future<bool> searchByWebsiteUrl(
 
   print('rowIndex: $rowIndex / searchUrl: $searchUrl');
 
-  final response = await http.get(searchUrl);
+  final response = await http.get(Uri.parse(searchUrl));
   GoogleCandidates listOfCandidates;
 
   if (response.statusCode == 200) {
@@ -225,7 +225,7 @@ Future<bool> searchByNameAndAddress(
 
   final searchUrl = googleByTextQueryURL(searchString: searchString);
 
-  final response = await http.get(searchUrl);
+  final response = await http.get(Uri.parse(searchUrl));
   GoogleCandidates listOfCandidates;
 
   print('Searching name and address ($searchString} at URL:$searchUrl');
@@ -278,7 +278,7 @@ Future<bool> searchByNameAndAddress(
   return true;
 }
 
-Future<bool> searchNearby(Sheet readSheet, int rowIndex) async {
+Future<GoogleNearbyResult> searchNearby(Sheet readSheet, int rowIndex) async {
   final airpotCodeCell =
       cellByIndex(readSheet, rowIndex, AirportListCols.airportCode);
   final airportLat =
@@ -287,11 +287,12 @@ Future<bool> searchNearby(Sheet readSheet, int rowIndex) async {
       cellByIndex(readSheet, rowIndex, AirportListCols.longitudeDecimalDegrees);
   // parameter must be in meters.  8000 = 5 miles, 16000, 10 miles
   const radius = 16000;
+  var nearbyResults = GoogleNearbyResult();
 
   if (airpotCodeCell.value == null ||
       airportLat.value == null ||
       airportLong.value == null) {
-    return false;
+    return nearbyResults;
   }
 
   final nearbyURL = googleByNearbyURL(
@@ -299,15 +300,24 @@ Future<bool> searchNearby(Sheet readSheet, int rowIndex) async {
       airportLong: airportLong.value,
       radius: radius);
 
-  final response = await http.get(nearbyURL);
-  GoogleNearbyResult nearbyResults;
+  print(nearbyURL);
 
-  if (response.statusCode == 200) {
-    nearbyResults = GoogleNearbyResult.fromJson(jsonDecode(response.body));
-  } else {
-    print('Request failed with status: ${response.statusCode}.');
-    return false;
+  try {
+    // TODO: start here - getting XMLRequestError - might be CORS related hence the header parameter
+    final response = await http.get(Uri.parse(nearbyURL), headers: {
+      'Accept': 'application/json',
+      'Access-Control-Allow-Origin': '*'
+    });
+    if (response.statusCode == 200) {
+      nearbyResults = GoogleNearbyResult.fromJson(jsonDecode(response.body));
+    } else {
+      print('Request failed with status: ${response.statusCode}.');
+    }
+  } catch (err) {
+    print('HTTP Get Errored: $err');
   }
+
+  return nearbyResults;
 }
 
 Future<bool> searchByPhone(
@@ -327,7 +337,7 @@ Future<bool> searchByPhone(
 
   print('Searching phone number ${phoneCell.value} at URL:$byPhoneUrl');
 
-  final response = await http.get(byPhoneUrl);
+  final response = await http.get(Uri.parse(byPhoneUrl));
   GoogleCandidates listOfCandidates;
 
   if (response.statusCode == 200) {
@@ -401,8 +411,9 @@ void writeGoogleCanidateInfo(
 }
 
 Future<bool> googleSearchNearby() async {
-  final data =
-      await rootBundle.load('assets/Partner Launch - Airport list.xlsx');
+  WidgetsFlutterBinding.ensureInitialized();
+
+  final data = await rootBundle.load('assets/PartnerLaunchAirportList.xlsx');
   final bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
   final wb = Excel.decodeBytes(bytes);
 
@@ -413,11 +424,11 @@ Future<bool> googleSearchNearby() async {
 
   for (var rowIndex = 1; rowIndex <= readSheet.rows.length; rowIndex++) {
     if (rowIndex >= 2) {
-      // 496) {
       break;
     }
 
-    final phoneSearchresult = await searchNearby(readSheet, rowIndex);
+    final nearbyResults = await searchNearby(readSheet, rowIndex);
+    print(nearbyResults.results);
   }
 
   return true;
@@ -425,7 +436,6 @@ Future<bool> googleSearchNearby() async {
 
 Future<bool> getGooglePlacesData() async {
   WidgetsFlutterBinding.ensureInitialized();
-  //runApp(MyApp());
 
   final data = await rootBundle.load('assets/temp.xlsx');
   final bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
@@ -488,18 +498,18 @@ Future<bool> getGooglePlacesData() async {
       }
 
       // TODO: turn this on if we want to pull in place details which cost more
-      // if (anySuccess) {
-      //   // Go get the details for this line
-      //   final placeID = writeSheet
-      //       .cell(CellIndex.indexByColumnRow(
-      //           rowIndex: rowIndex, columnIndex: WriteCols.googlePlaceID))
-      //       .value
-      //       ?.toString();
+      if (anySuccess) {
+        //   // Go get the details for this line
+        //   final placeID = writeSheet
+        //       .cell(CellIndex.indexByColumnRow(
+        //           rowIndex: rowIndex, columnIndex: WriteCols.googlePlaceID))
+        //       .value
+        //       ?.toString();
 
-      //   if (placeID != null) {
-      //     await getPlaceDetails(writeSheet, readSheet, rowIndex, placeID);
-      //   }
-      // }
+        //   if (placeID != null) {
+        //     await getPlaceDetails(writeSheet, readSheet, rowIndex, placeID);
+        //   }
+      }
     }
 
     final syncStatusCell =
@@ -526,7 +536,7 @@ Future<bool> getGooglePlacesData() async {
 }
 
 Future<bool> main() async {
-  googleSearchNearby();
+  return googleSearchNearby();
 }
 
 void compareToGoogleData(Sheet writeSheet, int rowIndex) {
@@ -737,8 +747,8 @@ String removeCompanyNameWords(String stringToRemove) {
 //}
 
 String googleByNearbyURL(
-    {@required String airportLat,
-    @required String airportLong,
+    {@required double airportLat,
+    @required double airportLong,
     @required int radius}) {
   final url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?'
       'location=$airportLat,$airportLong&radius=$radius&keyword=aviation&'
