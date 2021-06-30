@@ -309,12 +309,13 @@ Future<GoogleNearbyResult> searchNearby(Sheet readSheet, int rowIndex) async {
       'Access-Control-Allow-Origin': '*'
     });
     if (response.statusCode == 200) {
+      print('http get successful');
       nearbyResults = GoogleNearbyResult.fromJson(jsonDecode(response.body));
     } else {
       print('Request failed with status: ${response.statusCode}.');
     }
-  } catch (err) {
-    print('HTTP Get Errored: $err');
+  } on Exception catch (err, st) {
+    print('HTTP Get Errored: $err / Stack Trace: $st');
   }
 
   return nearbyResults;
