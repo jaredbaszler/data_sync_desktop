@@ -281,35 +281,30 @@ Future<bool> searchByNameAndAddress(
 Future<GoogleNearbyResult> searchNearby(Sheet readSheet, int rowIndex) async {
   final airpotCodeCell =
       cellByIndex(readSheet, rowIndex, AirportListCols.airportCode);
-  final airportLat =
+  final airportLatCell =
       cellByIndex(readSheet, rowIndex, AirportListCols.latitudeDecimalDegrees);
-  final airportLong =
+  final airportLongCell =
       cellByIndex(readSheet, rowIndex, AirportListCols.longitudeDecimalDegrees);
   // parameter must be in meters.  8000 = 5 miles, 16000, 10 miles
   const radius = 16000;
   var nearbyResults = GoogleNearbyResult();
 
   if (airpotCodeCell.value == null ||
-      airportLat.value == null ||
-      airportLong.value == null) {
+      airportLatCell.value == null ||
+      airportLongCell.value == null) {
     return nearbyResults;
   }
 
   final nearbyURL = googleByNearbyURL(
-      airportLat: airportLat.value,
-      airportLong: airportLong.value,
+      airportLat: airportLatCell.value,
+      airportLong: airportLongCell.value,
       radius: radius);
 
   print(nearbyURL);
 
   try {
-    // TODO: start here - getting XMLRequestError - might be CORS related hence the header parameter
-    final response = await http.get(Uri.parse(nearbyURL), headers: {
-      'Accept': 'application/json',
-      'Access-Control-Allow-Origin': '*'
-    });
+    final response = await http.get(Uri.parse(nearbyURL));
     if (response.statusCode == 200) {
-      print('http get successful');
       nearbyResults = GoogleNearbyResult.fromJson(jsonDecode(response.body));
     } else {
       print('Request failed with status: ${response.statusCode}.');
@@ -414,7 +409,8 @@ void writeGoogleCanidateInfo(
 Future<bool> googleSearchNearby() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  final data = await rootBundle.load('assets/PartnerLaunchAirportList.xlsx');
+  final data =
+      await rootBundle.load('assets/Partner Launch - Airport List.xlsx');
   final bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
   final wb = Excel.decodeBytes(bytes);
 
@@ -423,13 +419,36 @@ Future<bool> googleSearchNearby() async {
   final writeSheet =
       wb.sheets[wb.sheets.keys.firstWhere((a) => a == 'NearbyResults')];
 
-  for (var rowIndex = 1; rowIndex <= readSheet.rows.length; rowIndex++) {
-    if (rowIndex >= 2) {
+  var writeIndex = 1;
+
+  for (var readIndex = 1; readIndex <= readSheet.rows.length; readIndex++) {
+    if (readIndex >= 2) {
       break;
     }
 
-    final nearbyResults = await searchNearby(readSheet, rowIndex);
-    print(nearbyResults.results);
+    final nearbyResults = await searchNearby(readSheet, readIndex);
+
+    for (final nearbyResult in nearbyResults.results) {
+      writeSheet
+          .cell(CellIndex.indexByColumnRow(
+              rowIndex: writeIndex, columnIndex: WriteCols.accountName))
+          .value = nearbyResult.name;
+
+      writeSheet
+          .cell(CellIndex.indexByColumnRow(
+              rowIndex: writeIndex, columnIndex: WriteCols.shipStreet1))
+          .value = nearbyResult.vicinity;
+
+      writeSheet
+              .cell(CellIndex.indexByColumnRow(
+                  rowIndex: writeIndex, columnIndex: WriteCols.shipStreet1))
+              .value =
+          cellByIndex(readSheet, readIndex, AirportListCols.airportCode).value;
+
+      // TODO: Start here.  Lots of missing Google data in this data set.  And some we have to add/include.  Also need to add more columns to excel sheet for Google cols.
+
+      writeIndex++;
+    }
   }
 
   return true;
@@ -799,36 +818,43 @@ class WriteCols {
   static const int shipCountry = 10;
   static const int phone = 11;
   static const int website = 12;
-  static const int syncStatus = 13; // Column N
-  static const int googleSyncByPhone = 14;
-  static const int googleSyncByNameAndAddress = 15;
-  static const int googleSyncByWebsite = 16;
-  static const int googleSyncByNameOnly = 17;
-  static const int googleMapsURL = 18;
-  static const int googleJSON = 19;
-  static const int googleCompanyName = 20;
-  static const int googleBusinessStatus = 21;
-  static const int googlePlaceID = 22;
-  static const int googleFormattedAddress = 23;
-  static const int matchStreet = 24;
-  static const int matchCity = 25;
-  static const int matchState = 26;
-  static const int matchZip = 27;
-  static const int googleLatitude = 28;
-  static const int googleLongitude = 29;
-  static const int googlePlacesDetailsJSON = 30;
-  static const int googleAdrAddress = 31;
-  static const int googleFormattedPhoneNumber = 32;
-  static const int googleIcon = 33;
-  static const int googleID = 34;
-  static const int googleInternationalPhoneNumber = 35;
-  static const int googleListingTypes = 36;
-  static const int googleUTCOffset = 37;
-  static const int googleVicinity = 38;
-  static const int googleBusinessURL = 39;
-  static const int googleRating = 40;
-  static const int googleNumReviews = 41;
-  static const int googlePriceLevel = 42;
+  static const int airportCode = 13;
+  static const int busCat1 = 14;
+  static const int busCat2 = 15;
+  static const int busCat3 = 16;
+  static const int busCat4 = 17;
+  static const int busCat5 = 18;
+  static const int syncStatus = 19;
+  static const int googleSyncByPhone = 20;
+  static const int googleSyncByNameAndAddress = 21;
+  static const int googleSyncByWebsite = 22;
+  static const int googleSyncByNameOnly = 23;
+  static const int googleMapsURL = 24;
+  static const int googleJSON = 25;
+  static const int googleCompanyName = 26;
+  static const int googleBusinessStatus = 27;
+  static const int googlePlaceID = 28;
+  static const int googleFormattedAddress = 29;
+  static const int matchStreet = 30;
+  static const int matchCity = 31;
+  static const int matchState = 32;
+  static const int matchZip = 33;
+  static const int googleLatitude = 34;
+  static const int googleLongitude = 35;
+  static const int googlePlacesDetailsJSON = 36;
+  static const int googleAdrAddress = 37;
+  static const int googleFormattedPhoneNumber = 38;
+  static const int googleIcon = 39;
+  static const int googleID = 40;
+  static const int googleInternationalPhoneNumber = 41;
+  static const int googleListingTypes = 42;
+  static const int googleUTCOffset = 43;
+  static const int googleVicinity = 44;
+  static const int googleBusinessURL = 45;
+  static const int googleRating = 46;
+  static const int googleNumReviews = 47;
+  // currently don't know if we are pulling this in as of start of nearby import
+  static const int googlePriceLevel = 48;
 }
 
 class AirportListCols {

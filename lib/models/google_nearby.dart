@@ -1,6 +1,6 @@
 // To parse this JSON data, do
 //
-//     final GoogleNearbyResult = googleNearbyResultFromJson(jsonString);
+//     final googleNearbyResult = googleNearbyResultFromJson(jsonString);
 
 import 'dart:convert';
 
@@ -14,21 +14,25 @@ class GoogleNearbyResult {
   GoogleNearbyResult({
     this.nextPageToken,
     this.results,
+    this.status,
   });
 
   String nextPageToken;
   List<Result> results;
+  String status;
 
   factory GoogleNearbyResult.fromJson(Map<String, dynamic> json) =>
       GoogleNearbyResult(
         nextPageToken: json["next_page_token"],
         results:
             List<Result>.from(json["results"].map((x) => Result.fromJson(x))),
+        status: json["status"],
       );
 
   Map<String, dynamic> toJson() => {
         "next_page_token": nextPageToken,
         "results": List<dynamic>.from(results.map((x) => x.toJson())),
+        "status": status,
       };
 }
 
@@ -50,7 +54,7 @@ class Result {
     this.vicinity,
   });
 
-  String businessStatus;
+  BusinessStatus businessStatus;
   Geometry geometry;
   String icon;
   String name;
@@ -60,45 +64,56 @@ class Result {
   PlusCode plusCode;
   double rating;
   String reference;
-  String scope;
-  List<String> types;
+  Scope scope;
+  List<Type> types;
   int userRatingsTotal;
   String vicinity;
 
   factory Result.fromJson(Map<String, dynamic> json) => Result(
-        businessStatus: json["business_status"],
+        businessStatus: businessStatusValues.map[json["business_status"]],
         geometry: Geometry.fromJson(json["geometry"]),
         icon: json["icon"],
         name: json["name"],
-        openingHours: OpeningHours.fromJson(json["opening_hours"]),
-        photos: List<Photo>.from(json["photos"].map((x) => Photo.fromJson(x))),
+        openingHours: json["opening_hours"] == null
+            ? null
+            : OpeningHours.fromJson(json["opening_hours"]),
+        photos: json["photos"] == null
+            ? null
+            : List<Photo>.from(json["photos"].map((x) => Photo.fromJson(x))),
         placeId: json["place_id"],
         plusCode: PlusCode.fromJson(json["plus_code"]),
         rating: json["rating"].toDouble(),
         reference: json["reference"],
-        scope: json["scope"],
-        types: List<String>.from(json["types"].map((x) => x)),
+        scope: scopeValues.map[json["scope"]],
+        types: List<Type>.from(json["types"].map((x) => typeValues.map[x])),
         userRatingsTotal: json["user_ratings_total"],
         vicinity: json["vicinity"],
       );
 
   Map<String, dynamic> toJson() => {
-        "business_status": businessStatus,
+        "business_status": businessStatusValues.reverse[businessStatus],
         "geometry": geometry.toJson(),
         "icon": icon,
         "name": name,
-        "opening_hours": openingHours.toJson(),
-        "photos": List<dynamic>.from(photos.map((x) => x.toJson())),
+        "opening_hours": openingHours == null ? null : openingHours.toJson(),
+        "photos": photos == null
+            ? null
+            : List<dynamic>.from(photos.map((x) => x.toJson())),
         "place_id": placeId,
         "plus_code": plusCode.toJson(),
         "rating": rating,
         "reference": reference,
-        "scope": scope,
-        "types": List<dynamic>.from(types.map((x) => x)),
+        "scope": scopeValues.reverse[scope],
+        "types": List<dynamic>.from(types.map((x) => typeValues.reverse[x])),
         "user_ratings_total": userRatingsTotal,
         "vicinity": vicinity,
       };
 }
+
+enum BusinessStatus { OPERATIONAL }
+
+final businessStatusValues =
+    EnumValues({"OPERATIONAL": BusinessStatus.OPERATIONAL});
 
 class Geometry {
   Geometry({
@@ -223,4 +238,38 @@ class PlusCode {
         "compound_code": compoundCode,
         "global_code": globalCode,
       };
+}
+
+enum Scope { GOOGLE }
+
+final scopeValues = EnumValues({"GOOGLE": Scope.GOOGLE});
+
+enum Type {
+  UNIVERSITY,
+  POINT_OF_INTEREST,
+  ESTABLISHMENT,
+  REAL_ESTATE_AGENCY,
+  AIRPORT
+}
+
+final typeValues = EnumValues({
+  "airport": Type.AIRPORT,
+  "establishment": Type.ESTABLISHMENT,
+  "point_of_interest": Type.POINT_OF_INTEREST,
+  "real_estate_agency": Type.REAL_ESTATE_AGENCY,
+  "university": Type.UNIVERSITY
+});
+
+class EnumValues<T> {
+  Map<String, T> map;
+  Map<T, String> reverseMap;
+
+  EnumValues(this.map);
+
+  Map<T, String> get reverse {
+    if (reverseMap == null) {
+      reverseMap = map.map((k, v) => new MapEntry(v, k));
+    }
+    return reverseMap;
+  }
 }
