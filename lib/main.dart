@@ -429,23 +429,85 @@ Future<bool> googleSearchNearby() async {
     final nearbyResults = await searchNearby(readSheet, readIndex);
 
     for (final nearbyResult in nearbyResults.results) {
+      // Company Name
       writeSheet
           .cell(CellIndex.indexByColumnRow(
               rowIndex: writeIndex, columnIndex: WriteCols.accountName))
           .value = nearbyResult.name;
 
+      // "Vincinity - using the street address to display for now"
       writeSheet
           .cell(CellIndex.indexByColumnRow(
               rowIndex: writeIndex, columnIndex: WriteCols.shipStreet1))
           .value = nearbyResult.vicinity;
 
+      // Airport Code - copied from "July 1 Launch" which is the read sheet
       writeSheet
               .cell(CellIndex.indexByColumnRow(
-                  rowIndex: writeIndex, columnIndex: WriteCols.shipStreet1))
+                  rowIndex: writeIndex, columnIndex: WriteCols.airportCode))
               .value =
           cellByIndex(readSheet, readIndex, AirportListCols.airportCode).value;
 
-      // TODO: Start here.  Lots of missing Google data in this data set.  And some we have to add/include.  Also need to add more columns to excel sheet for Google cols.
+      // Business Status
+      writeSheet
+          .cell(CellIndex.indexByColumnRow(
+              rowIndex: writeIndex,
+              columnIndex: WriteCols.googleBusinessStatus))
+          .value = nearbyResult.businessStatus;
+
+      // Latitude
+      writeSheet
+          .cell(CellIndex.indexByColumnRow(
+              rowIndex: writeIndex, columnIndex: WriteCols.googleLatitude))
+          .value = nearbyResult.geometry.location.lat;
+
+      // Longitude
+      writeSheet
+          .cell(CellIndex.indexByColumnRow(
+              rowIndex: writeIndex, columnIndex: WriteCols.googleLongitude))
+          .value = nearbyResult.geometry.location.lng;
+
+      // Longitude
+      writeSheet
+          .cell(CellIndex.indexByColumnRow(
+              rowIndex: writeIndex, columnIndex: WriteCols.googleLongitude))
+          .value = nearbyResult.geometry.location.lng;
+
+      // PlaceID
+      writeSheet
+          .cell(CellIndex.indexByColumnRow(
+              rowIndex: writeIndex, columnIndex: WriteCols.googlePlaceID))
+          .value = nearbyResult.placeId;
+
+      // PlusCode (Global Code)
+      writeSheet
+          .cell(CellIndex.indexByColumnRow(
+              rowIndex: writeIndex, columnIndex: WriteCols.googleGlobalCode))
+          .value = nearbyResult.plusCode.globalCode;
+
+      // PlusCode (Compound Code)
+      writeSheet
+          .cell(CellIndex.indexByColumnRow(
+              rowIndex: writeIndex, columnIndex: WriteCols.googleCompoundCode))
+          .value = nearbyResult.plusCode.compoundCode;
+
+      // Google Overall Rating
+      writeSheet
+          .cell(CellIndex.indexByColumnRow(
+              rowIndex: writeIndex, columnIndex: WriteCols.googleRating))
+          .value = nearbyResult.rating;
+
+      // Business Types
+      writeSheet
+          .cell(CellIndex.indexByColumnRow(
+              rowIndex: writeIndex, columnIndex: WriteCols.googleListingTypes))
+          .value = nearbyResult.types.join(',');
+
+      // Num Reviews
+      writeSheet
+          .cell(CellIndex.indexByColumnRow(
+              rowIndex: writeIndex, columnIndex: WriteCols.googleNumReviews))
+          .value = nearbyResult.userRatingsTotal;
 
       writeIndex++;
     }
@@ -853,8 +915,10 @@ class WriteCols {
   static const int googleBusinessURL = 45;
   static const int googleRating = 46;
   static const int googleNumReviews = 47;
-  // currently don't know if we are pulling this in as of start of nearby import
   static const int googlePriceLevel = 48;
+  static const int googleGlobalCode = 49;
+  static const int googleCompoundCode = 50;
+  static const int googleOpeningHours = 51;
 }
 
 class AirportListCols {
