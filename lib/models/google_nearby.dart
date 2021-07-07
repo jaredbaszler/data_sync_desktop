@@ -23,16 +23,20 @@ class GoogleNearbyResult {
 
   factory GoogleNearbyResult.fromJson(Map<String, dynamic> json) =>
       GoogleNearbyResult(
-        nextPageToken: json["next_page_token"],
-        results:
-            List<Result>.from(json["results"].map((x) => Result.fromJson(x))),
-        status: json["status"],
+        nextPageToken:
+            json["next_page_token"] == null ? null : json["next_page_token"],
+        results: json["results"] == null
+            ? null
+            : List<Result>.from(json["results"].map((x) => Result.fromJson(x))),
+        status: json["status"] == null ? null : json["status"],
       );
 
   Map<String, dynamic> toJson() => {
-        "next_page_token": nextPageToken,
-        "results": List<dynamic>.from(results.map((x) => x.toJson())),
-        "status": status,
+        "next_page_token": nextPageToken == null ? null : nextPageToken,
+        "results": results == null
+            ? null
+            : List<dynamic>.from(results.map((x) => x.toJson())),
+        "status": status == null ? null : status,
       };
 }
 
@@ -54,7 +58,7 @@ class Result {
     this.vicinity,
   });
 
-  BusinessStatus businessStatus;
+  String businessStatus;
   Geometry geometry;
   String icon;
   String name;
@@ -64,56 +68,61 @@ class Result {
   PlusCode plusCode;
   double rating;
   String reference;
-  Scope scope;
-  List<Type> types;
+  String scope;
+  List<String> types;
   int userRatingsTotal;
   String vicinity;
 
   factory Result.fromJson(Map<String, dynamic> json) => Result(
-        businessStatus: businessStatusValues.map[json["business_status"]],
-        geometry: Geometry.fromJson(json["geometry"]),
-        icon: json["icon"],
-        name: json["name"],
+        businessStatus:
+            json["business_status"] == null ? null : json["business_status"],
+        geometry: json["geometry"] == null
+            ? null
+            : Geometry.fromJson(json["geometry"]),
+        icon: json["icon"] == null ? null : json["icon"],
+        name: json["name"] == null ? null : json["name"],
         openingHours: json["opening_hours"] == null
             ? null
             : OpeningHours.fromJson(json["opening_hours"]),
         photos: json["photos"] == null
             ? null
             : List<Photo>.from(json["photos"].map((x) => Photo.fromJson(x))),
-        placeId: json["place_id"],
-        plusCode: PlusCode.fromJson(json["plus_code"]),
-        rating: json["rating"].toDouble(),
-        reference: json["reference"],
-        scope: scopeValues.map[json["scope"]],
-        types: List<Type>.from(json["types"].map((x) => typeValues.map[x])),
-        userRatingsTotal: json["user_ratings_total"],
-        vicinity: json["vicinity"],
+        placeId: json["place_id"] == null ? null : json["place_id"],
+        plusCode: json["plus_code"] == null
+            ? null
+            : PlusCode.fromJson(json["plus_code"]),
+        rating: json["rating"] == null ? null : json["rating"].toDouble(),
+        reference: json["reference"] == null ? null : json["reference"],
+        scope: json["scope"] == null ? null : json["scope"],
+        types: json["types"] == null
+            ? null
+            : List<String>.from(json["types"].map((x) => x)),
+        userRatingsTotal: json["user_ratings_total"] == null
+            ? null
+            : json["user_ratings_total"],
+        vicinity: json["vicinity"] == null ? null : json["vicinity"],
       );
 
   Map<String, dynamic> toJson() => {
-        "business_status": businessStatusValues.reverse[businessStatus],
-        "geometry": geometry.toJson(),
-        "icon": icon,
-        "name": name,
+        "business_status": businessStatus == null ? null : businessStatus,
+        "geometry": geometry == null ? null : geometry.toJson(),
+        "icon": icon == null ? null : icon,
+        "name": name == null ? null : name,
         "opening_hours": openingHours == null ? null : openingHours.toJson(),
         "photos": photos == null
             ? null
             : List<dynamic>.from(photos.map((x) => x.toJson())),
-        "place_id": placeId,
-        "plus_code": plusCode.toJson(),
-        "rating": rating,
-        "reference": reference,
-        "scope": scopeValues.reverse[scope],
-        "types": List<dynamic>.from(types.map((x) => typeValues.reverse[x])),
-        "user_ratings_total": userRatingsTotal,
-        "vicinity": vicinity,
+        "place_id": placeId == null ? null : placeId,
+        "plus_code": plusCode == null ? null : plusCode.toJson(),
+        "rating": rating == null ? null : rating,
+        "reference": reference == null ? null : reference,
+        "scope": scope == null ? null : scope,
+        "types": types == null ? null : List<dynamic>.from(types.map((x) => x)),
+        "user_ratings_total":
+            userRatingsTotal == null ? null : userRatingsTotal,
+        "vicinity": vicinity == null ? null : vicinity,
       };
 }
-
-enum BusinessStatus { OPERATIONAL }
-
-final businessStatusValues =
-    EnumValues({"OPERATIONAL": BusinessStatus.OPERATIONAL});
 
 class Geometry {
   Geometry({
@@ -125,13 +134,17 @@ class Geometry {
   Viewport viewport;
 
   factory Geometry.fromJson(Map<String, dynamic> json) => Geometry(
-        location: Location.fromJson(json["location"]),
-        viewport: Viewport.fromJson(json["viewport"]),
+        location: json["location"] == null
+            ? null
+            : Location.fromJson(json["location"]),
+        viewport: json["viewport"] == null
+            ? null
+            : Viewport.fromJson(json["viewport"]),
       );
 
   Map<String, dynamic> toJson() => {
-        "location": location.toJson(),
-        "viewport": viewport.toJson(),
+        "location": location == null ? null : location.toJson(),
+        "viewport": viewport == null ? null : viewport.toJson(),
       };
 }
 
@@ -145,13 +158,13 @@ class Location {
   double lng;
 
   factory Location.fromJson(Map<String, dynamic> json) => Location(
-        lat: json["lat"].toDouble(),
-        lng: json["lng"].toDouble(),
+        lat: json["lat"] == null ? null : json["lat"].toDouble(),
+        lng: json["lng"] == null ? null : json["lng"].toDouble(),
       );
 
   Map<String, dynamic> toJson() => {
-        "lat": lat,
-        "lng": lng,
+        "lat": lat == null ? null : lat,
+        "lng": lng == null ? null : lng,
       };
 }
 
@@ -165,13 +178,17 @@ class Viewport {
   Location southwest;
 
   factory Viewport.fromJson(Map<String, dynamic> json) => Viewport(
-        northeast: Location.fromJson(json["northeast"]),
-        southwest: Location.fromJson(json["southwest"]),
+        northeast: json["northeast"] == null
+            ? null
+            : Location.fromJson(json["northeast"]),
+        southwest: json["southwest"] == null
+            ? null
+            : Location.fromJson(json["southwest"]),
       );
 
   Map<String, dynamic> toJson() => {
-        "northeast": northeast.toJson(),
-        "southwest": southwest.toJson(),
+        "northeast": northeast == null ? null : northeast.toJson(),
+        "southwest": southwest == null ? null : southwest.toJson(),
       };
 }
 
@@ -183,11 +200,11 @@ class OpeningHours {
   bool openNow;
 
   factory OpeningHours.fromJson(Map<String, dynamic> json) => OpeningHours(
-        openNow: json["open_now"],
+        openNow: json["open_now"] == null ? null : json["open_now"],
       );
 
   Map<String, dynamic> toJson() => {
-        "open_now": openNow,
+        "open_now": openNow == null ? null : openNow,
       };
 }
 
@@ -205,18 +222,22 @@ class Photo {
   int width;
 
   factory Photo.fromJson(Map<String, dynamic> json) => Photo(
-        height: json["height"],
-        htmlAttributions:
-            List<String>.from(json["html_attributions"].map((x) => x)),
-        photoReference: json["photo_reference"],
-        width: json["width"],
+        height: json["height"] == null ? null : json["height"],
+        htmlAttributions: json["html_attributions"] == null
+            ? null
+            : List<String>.from(json["html_attributions"].map((x) => x)),
+        photoReference:
+            json["photo_reference"] == null ? null : json["photo_reference"],
+        width: json["width"] == null ? null : json["width"],
       );
 
   Map<String, dynamic> toJson() => {
-        "height": height,
-        "html_attributions": List<dynamic>.from(htmlAttributions.map((x) => x)),
-        "photo_reference": photoReference,
-        "width": width,
+        "height": height == null ? null : height,
+        "html_attributions": htmlAttributions == null
+            ? null
+            : List<dynamic>.from(htmlAttributions.map((x) => x)),
+        "photo_reference": photoReference == null ? null : photoReference,
+        "width": width == null ? null : width,
       };
 }
 
@@ -230,46 +251,13 @@ class PlusCode {
   String globalCode;
 
   factory PlusCode.fromJson(Map<String, dynamic> json) => PlusCode(
-        compoundCode: json["compound_code"],
-        globalCode: json["global_code"],
+        compoundCode:
+            json["compound_code"] == null ? null : json["compound_code"],
+        globalCode: json["global_code"] == null ? null : json["global_code"],
       );
 
   Map<String, dynamic> toJson() => {
-        "compound_code": compoundCode,
-        "global_code": globalCode,
+        "compound_code": compoundCode == null ? null : compoundCode,
+        "global_code": globalCode == null ? null : globalCode,
       };
-}
-
-enum Scope { GOOGLE }
-
-final scopeValues = EnumValues({"GOOGLE": Scope.GOOGLE});
-
-enum Type {
-  UNIVERSITY,
-  POINT_OF_INTEREST,
-  ESTABLISHMENT,
-  REAL_ESTATE_AGENCY,
-  AIRPORT
-}
-
-final typeValues = EnumValues({
-  "airport": Type.AIRPORT,
-  "establishment": Type.ESTABLISHMENT,
-  "point_of_interest": Type.POINT_OF_INTEREST,
-  "real_estate_agency": Type.REAL_ESTATE_AGENCY,
-  "university": Type.UNIVERSITY
-});
-
-class EnumValues<T> {
-  Map<String, T> map;
-  Map<T, String> reverseMap;
-
-  EnumValues(this.map);
-
-  Map<T, String> get reverse {
-    if (reverseMap == null) {
-      reverseMap = map.map((k, v) => new MapEntry(v, k));
-    }
-    return reverseMap;
-  }
 }

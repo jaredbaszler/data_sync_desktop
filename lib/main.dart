@@ -278,7 +278,8 @@ Future<bool> searchByNameAndAddress(
   return true;
 }
 
-Future<GoogleNearbyResult> searchNearby(Sheet readSheet, int rowIndex) async {
+Future<GoogleNearbyResult> searchNearby(
+    Sheet readSheet, int rowIndex, String nextPageToken) async {
   final airpotCodeCell =
       cellByIndex(readSheet, rowIndex, AirportListCols.airportCode);
   final airportLatCell =
@@ -298,7 +299,8 @@ Future<GoogleNearbyResult> searchNearby(Sheet readSheet, int rowIndex) async {
   final nearbyURL = googleByNearbyURL(
       airportLat: airportLatCell.value,
       airportLong: airportLongCell.value,
-      radius: radius);
+      radius: radius,
+      nextPageToken: nextPageToken);
 
   print(nearbyURL);
 
@@ -420,98 +422,133 @@ Future<bool> googleSearchNearby() async {
       wb.sheets[wb.sheets.keys.firstWhere((a) => a == 'NearbyResults')];
 
   var writeIndex = 1;
+  String nextPageToken;
 
+  // Loop through the designated airports in the Partner Launch tab
   for (var readIndex = 1; readIndex <= readSheet.rows.length; readIndex++) {
+    var resultPageNum = 1;
     if (readIndex >= 2) {
       break;
     }
 
-    final nearbyResults = await searchNearby(readSheet, readIndex);
+    // Max 60 results which is 3 x 20 results so 3 runs -
+    // make another request with the nextPageToken to get the next 20
+    while (resultPageNum >= 1 && resultPageNum <= 3) {
+      final nearbyResults =
+          await searchNearby(readSheet, readIndex, nextPageToken);
 
-    for (final nearbyResult in nearbyResults.results) {
-      // Company Name
-      writeSheet
-          .cell(CellIndex.indexByColumnRow(
-              rowIndex: writeIndex, columnIndex: WriteCols.accountName))
-          .value = nearbyResult.name;
+      print(
+          'nearbyResults count: ${nearbyResults.results.length}, resultPageNum=$resultPageNum');
 
-      // "Vincinity - using the street address to display for now"
-      writeSheet
-          .cell(CellIndex.indexByColumnRow(
-              rowIndex: writeIndex, columnIndex: WriteCols.shipStreet1))
-          .value = nearbyResult.vicinity;
+      for (final nearbyResult in nearbyResults.results) {
+        print('writing: ${nearbyResult.name}');
+        // Company Name
+        writeSheet
+            .cell(CellIndex.indexByColumnRow(
+                rowIndex: writeIndex, columnIndex: WriteCols.accountName))
+            .value = nearbyResult.name;
 
-      // Airport Code - copied from "July 1 Launch" which is the read sheet
-      writeSheet
-              .cell(CellIndex.indexByColumnRow(
-                  rowIndex: writeIndex, columnIndex: WriteCols.airportCode))
-              .value =
-          cellByIndex(readSheet, readIndex, AirportListCols.airportCode).value;
+        // "Vincinity - using the street address to display for now"
+        writeSheet
+            .cell(CellIndex.indexByColumnRow(
+                rowIndex: writeIndex, columnIndex: WriteCols.shipStreet1))
+            .value = nearbyResult.vicinity;
 
-      // Business Status
-      writeSheet
-          .cell(CellIndex.indexByColumnRow(
-              rowIndex: writeIndex,
-              columnIndex: WriteCols.googleBusinessStatus))
-          .value = nearbyResult.businessStatus;
+        // Airport Code - copied from "July 1 Launch" which is the read sheet
+        writeSheet
+                .cell(CellIndex.indexByColumnRow(
+                    rowIndex: writeIndex, columnIndex: WriteCols.airportCode))
+                .value =
+            cellByIndex(readSheet, readIndex, AirportListCols.airportCode)
+                .value;
 
-      // Latitude
-      writeSheet
-          .cell(CellIndex.indexByColumnRow(
-              rowIndex: writeIndex, columnIndex: WriteCols.googleLatitude))
-          .value = nearbyResult.geometry.location.lat;
+        // Business Status
+        writeSheet
+            .cell(CellIndex.indexByColumnRow(
+                rowIndex: writeIndex,
+                columnIndex: WriteCols.googleBusinessStatus))
+            .value = nearbyResult.businessStatus;
 
-      // Longitude
-      writeSheet
-          .cell(CellIndex.indexByColumnRow(
-              rowIndex: writeIndex, columnIndex: WriteCols.googleLongitude))
-          .value = nearbyResult.geometry.location.lng;
+        // Latitude
+        writeSheet
+            .cell(CellIndex.indexByColumnRow(
+                rowIndex: writeIndex, columnIndex: WriteCols.googleLatitude))
+            .value = nearbyResult.geometry.location.lat;
 
-      // Longitude
-      writeSheet
-          .cell(CellIndex.indexByColumnRow(
-              rowIndex: writeIndex, columnIndex: WriteCols.googleLongitude))
-          .value = nearbyResult.geometry.location.lng;
+        // Longitude
+        writeSheet
+            .cell(CellIndex.indexByColumnRow(
+                rowIndex: writeIndex, columnIndex: WriteCols.googleLongitude))
+            .value = nearbyResult.geometry.location.lng;
 
-      // PlaceID
-      writeSheet
-          .cell(CellIndex.indexByColumnRow(
-              rowIndex: writeIndex, columnIndex: WriteCols.googlePlaceID))
-          .value = nearbyResult.placeId;
+        // Longitude
+        writeSheet
+            .cell(CellIndex.indexByColumnRow(
+                rowIndex: writeIndex, columnIndex: WriteCols.googleLongitude))
+            .value = nearbyResult.geometry.location.lng;
 
-      // PlusCode (Global Code)
-      writeSheet
-          .cell(CellIndex.indexByColumnRow(
-              rowIndex: writeIndex, columnIndex: WriteCols.googleGlobalCode))
-          .value = nearbyResult.plusCode.globalCode;
+        // PlaceID
+        writeSheet
+            .cell(CellIndex.indexByColumnRow(
+                rowIndex: writeIndex, columnIndex: WriteCols.googlePlaceID))
+            .value = nearbyResult.placeId;
 
-      // PlusCode (Compound Code)
-      writeSheet
-          .cell(CellIndex.indexByColumnRow(
-              rowIndex: writeIndex, columnIndex: WriteCols.googleCompoundCode))
-          .value = nearbyResult.plusCode.compoundCode;
+        // PlusCode (Global Code)
+        writeSheet
+            .cell(CellIndex.indexByColumnRow(
+                rowIndex: writeIndex, columnIndex: WriteCols.googleGlobalCode))
+            .value = nearbyResult.plusCode?.globalCode;
 
-      // Google Overall Rating
-      writeSheet
-          .cell(CellIndex.indexByColumnRow(
-              rowIndex: writeIndex, columnIndex: WriteCols.googleRating))
-          .value = nearbyResult.rating;
+        // PlusCode (Compound Code)
+        writeSheet
+            .cell(CellIndex.indexByColumnRow(
+                rowIndex: writeIndex,
+                columnIndex: WriteCols.googleCompoundCode))
+            .value = nearbyResult.plusCode?.compoundCode;
 
-      // Business Types
-      writeSheet
-          .cell(CellIndex.indexByColumnRow(
-              rowIndex: writeIndex, columnIndex: WriteCols.googleListingTypes))
-          .value = nearbyResult.types.join(',');
+        // Google Overall Rating
+        writeSheet
+            .cell(CellIndex.indexByColumnRow(
+                rowIndex: writeIndex, columnIndex: WriteCols.googleRating))
+            .value = nearbyResult.rating;
 
-      // Num Reviews
-      writeSheet
-          .cell(CellIndex.indexByColumnRow(
-              rowIndex: writeIndex, columnIndex: WriteCols.googleNumReviews))
-          .value = nearbyResult.userRatingsTotal;
+        // Business Types
+        writeSheet
+            .cell(CellIndex.indexByColumnRow(
+                rowIndex: writeIndex,
+                columnIndex: WriteCols.googleListingTypes))
+            .value = nearbyResult.types.join(',');
 
-      writeIndex++;
+        // Num Reviews
+        writeSheet
+            .cell(CellIndex.indexByColumnRow(
+                rowIndex: writeIndex, columnIndex: WriteCols.googleNumReviews))
+            .value = nearbyResult.userRatingsTotal;
+
+        writeIndex++;
+      }
+
+      nextPageToken = nearbyResults.nextPageToken == ''
+          ? null
+          : nearbyResults.nextPageToken;
+
+      if (nextPageToken == null) {
+        // break out of next-page while loop as this means no more pages exist
+        break;
+      } else {
+        // Need a short delay to let the page token process
+        await Future.delayed(const Duration(milliseconds: 2000));
+      }
+      resultPageNum++;
     }
   }
+
+  await wb.encode().then((value) {
+    File(join(
+        r'C:\Users\jared\source\repos\avtopia\data_sync_desktop\assets\Partner Launch - Airport List.xlsx'))
+      ..createSync(recursive: true)
+      ..writeAsBytesSync(value);
+  });
 
   return true;
 }
@@ -618,6 +655,7 @@ Future<bool> getGooglePlacesData() async {
 }
 
 Future<bool> main() async {
+  print('main running');
   return googleSearchNearby();
 }
 
@@ -783,7 +821,8 @@ String removeCompanyNameWords(String stringToRemove) {
 //   //runApp(MyApp());
 
 //   final data = await rootBundle.load('assets/temp.xlsx');
-//   final bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+//   final bytes = data.buffer.asUint8List(data.offsetInBytes,
+// data.lengthInBytes);
 //   final wb = Excel.decodeBytes(bytes);
 
 //   final readSheet = wb.sheets[wb.sheets.keys.first];
@@ -831,10 +870,15 @@ String removeCompanyNameWords(String stringToRemove) {
 String googleByNearbyURL(
     {@required double airportLat,
     @required double airportLong,
-    @required int radius}) {
-  final url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?'
+    @required int radius,
+    String nextPageToken}) {
+  var url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?'
       'location=$airportLat,$airportLong&radius=$radius&keyword=aviation&'
       'key=$apiKey';
+
+  if (nextPageToken != null) {
+    url += '&pagetoken=$nextPageToken';
+  }
 
   return url;
 }
