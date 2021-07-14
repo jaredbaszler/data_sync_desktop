@@ -66,7 +66,7 @@ void copyRow(Sheet writeSheet, Sheet readSheet, int rowIndex) {
 Future<bool> getPlaceDetails(
     Sheet writeSheet, Sheet readSheet, int rowIndex, String placeID) async {
   final placeDetailsURL = getPlaceDetailsURL(placeID: placeID);
-  print('Getting Place Details from: $placeDetailsURL');
+  //print('Getting Place Details from: $placeDetailsURL');
 
   final response = await http.get(Uri.parse(placeDetailsURL));
 
@@ -81,10 +81,102 @@ Future<bool> getPlaceDetails(
       return false;
     }
 
+    // Added after nearby search was inacted to input main contact info
+    writeSheet
+        .cell(CellIndex.indexByColumnRow(
+            rowIndex: rowIndex, columnIndex: WriteCols.googleFormattedAddress))
+        .value = placeDetails.formattedAddress;
+
+    writeSheet
+        .cell(CellIndex.indexByColumnRow(
+            rowIndex: rowIndex, columnIndex: WriteCols.phone))
+        .value = placeDetails.formattedPhoneNumber;
+
+    writeSheet
+        .cell(CellIndex.indexByColumnRow(
+            rowIndex: rowIndex, columnIndex: WriteCols.website))
+        .value = placeDetails.website;
+
+    // Build street address
+    // ignore: prefer_interpolation_to_compose_strings
+    var streetAddress = placeDetails.addressComponents
+            .firstWhere((a) => a.types.contains('street_number'),
+                orElse: () => null)
+            ?.shortName ??
+        '';
+    streetAddress += ' ';
+    streetAddress += placeDetails.addressComponents
+            .firstWhere((a) => a.types.contains('route'), orElse: () => null)
+            ?.shortName ??
+        '';
+
+    writeSheet
+        .cell(CellIndex.indexByColumnRow(
+            rowIndex: rowIndex, columnIndex: WriteCols.shipStreet1))
+        .value = streetAddress;
+
+    writeSheet
+            .cell(CellIndex.indexByColumnRow(
+                rowIndex: rowIndex, columnIndex: WriteCols.shipStreet2))
+            .value =
+        placeDetails.addressComponents
+            .firstWhere((a) => a.types.contains('subpremise'),
+                orElse: () => null)
+            ?.shortName;
+
+    writeSheet
+            .cell(CellIndex.indexByColumnRow(
+                rowIndex: rowIndex, columnIndex: WriteCols.shipCity))
+            .value =
+        placeDetails.addressComponents
+            .singleWhere((a) => a.types.contains('locality'),
+                orElse: () => null)
+            ?.shortName;
+
+    writeSheet
+            .cell(CellIndex.indexByColumnRow(
+                rowIndex: rowIndex, columnIndex: WriteCols.shipState))
+            .value =
+        placeDetails.addressComponents
+            .singleWhere((a) => a.types.contains('administrative_area_level_1'),
+                orElse: () => null)
+            ?.shortName;
+
+    // Build 9 digit postal code
+    // ignore: prefer_interpolation_to_compose_strings
+    var postalCode = placeDetails.addressComponents
+        .singleWhere((a) => a.types.contains('postal_code'), orElse: () => null)
+        ?.shortName;
+
+    if (postalCode != null) {
+      final postalCodeSuffix = placeDetails.addressComponents.firstWhere(
+          (a) => a.types.contains('postal_code_suffix'),
+          orElse: () => null);
+      postalCode +=
+          postalCodeSuffix == null ? '' : '-${postalCodeSuffix.shortName}';
+    }
+
+    writeSheet
+        .cell(CellIndex.indexByColumnRow(
+            rowIndex: rowIndex, columnIndex: WriteCols.shipZip))
+        .value = postalCode;
+
+    writeSheet
+            .cell(CellIndex.indexByColumnRow(
+                rowIndex: rowIndex, columnIndex: WriteCols.shipCountry))
+            .value =
+        placeDetails.addressComponents
+            .singleWhere((a) => a.types.contains('country'))
+            ?.shortName;
+
     writeSheet
         .cell(CellIndex.indexByColumnRow(
             rowIndex: rowIndex, columnIndex: WriteCols.googlePlacesDetailsJSON))
         .value = jsonEncode(placeDetailResponse).toString();
+    writeSheet
+        .cell(CellIndex.indexByColumnRow(
+            rowIndex: rowIndex, columnIndex: WriteCols.googleMapsURL))
+        .value = placeDetails.url;
     writeSheet
         .cell(CellIndex.indexByColumnRow(
             rowIndex: rowIndex, columnIndex: WriteCols.googleAdrAddress))
@@ -282,12 +374,13 @@ Future<GoogleNearbyResult> searchNearby(
     Sheet readSheet, int rowIndex, String nextPageToken) async {
   final airpotCodeCell =
       cellByIndex(readSheet, rowIndex, AirportListCols.airportCode);
-  final airportLatCell =
-      cellByIndex(readSheet, rowIndex, AirportListCols.latitudeDecimalDegrees);
-  final airportLongCell =
-      cellByIndex(readSheet, rowIndex, AirportListCols.longitudeDecimalDegrees);
-  // parameter must be in meters.  8000 = 5 miles, 16000, 10 miles
-  const radius = 16000;
+  final airportLatCell = cellByIndex(
+      readSheet, rowIndex, AirportListCols.latitudeDecimalDegreesValue);
+  final airportLongCell = cellByIndex(
+      readSheet, rowIndex, AirportListCols.longitudeDecimalDegreesValue);
+  // parameter must be in meters.
+  // 8000 = 5 miles, 12,000 = 7.5 miles, 16,000 = 10 miles
+  const radius = 12000;
   var nearbyResults = GoogleNearbyResult();
 
   if (airpotCodeCell.value == null ||
@@ -380,7 +473,7 @@ void writeGoogleCanidateInfo(
       .value = candidate.types.join(',');
   writeSheet
       .cell(CellIndex.indexByColumnRow(
-          rowIndex: rowIndex, columnIndex: WriteCols.googleJSON))
+          rowIndex: rowIndex, columnIndex: WriteCols.googleJSONCandidate))
       .value = jsonEncode(candidate).toString();
   writeSheet
       .cell(CellIndex.indexByColumnRow(
@@ -427,9 +520,36 @@ Future<bool> googleSearchNearby() async {
   // Loop through the designated airports in the Partner Launch tab
   for (var readIndex = 1; readIndex <= readSheet.rows.length; readIndex++) {
     var resultPageNum = 1;
-    if (readIndex >= 2) {
-      break;
+    final airportCode = readSheet
+        .cell(CellIndex.indexByColumnRow(
+            rowIndex: readIndex, columnIndex: AirportListCols.airportCode))
+        .value;
+
+    if (airportCode == null) {
+      break; // null in this column denotes end of list
     }
+
+    final sixtyPlus = readSheet
+        .cell(CellIndex.indexByColumnRow(
+            rowIndex: readIndex, columnIndex: AirportListCols.sixtyPlusAirport))
+        .value;
+
+    // if (airportCode != 'LAX') {
+    //   print('skpping: $airportCode');
+    //   continue;
+    // }
+
+    // Skip any airport denoted as 60+ for now (2021-07-13) per Doug
+    if (sixtyPlus == 'X') {
+      print('***** SKIPPING Airport: $airportCode *****');
+      continue;
+    } else {
+      print('***** WRITING Airport: $airportCode *****');
+    }
+
+    // if (readIndex > 4) {
+    //   break;
+    // }
 
     // Max 60 results which is 3 x 20 results so 3 runs -
     // make another request with the nextPageToken to get the next 20
@@ -437,11 +557,10 @@ Future<bool> googleSearchNearby() async {
       final nearbyResults =
           await searchNearby(readSheet, readIndex, nextPageToken);
 
-      print(
-          'nearbyResults count: ${nearbyResults.results.length}, resultPageNum=$resultPageNum');
+      print('Page: $resultPageNum');
 
       for (final nearbyResult in nearbyResults.results) {
-        print('writing: ${nearbyResult.name}');
+        print('Company: ${nearbyResult.name}');
         // Company Name
         writeSheet
             .cell(CellIndex.indexByColumnRow(
@@ -461,6 +580,24 @@ Future<bool> googleSearchNearby() async {
                 .value =
             cellByIndex(readSheet, readIndex, AirportListCols.airportCode)
                 .value;
+
+        // Mark this is a nearby search sync
+        writeSheet
+            .cell(CellIndex.indexByColumnRow(
+                rowIndex: writeIndex,
+                columnIndex: WriteCols.goolgeSyncByNearby))
+            .value = 'X';
+
+        writeSheet
+            .cell(CellIndex.indexByColumnRow(
+                rowIndex: writeIndex, columnIndex: WriteCols.googleJSONNearby))
+            .value = jsonEncode(nearbyResult).toString();
+
+        // Google Company Name
+        writeSheet
+            .cell(CellIndex.indexByColumnRow(
+                rowIndex: writeIndex, columnIndex: WriteCols.googleCompanyName))
+            .value = nearbyResult.name;
 
         // Business Status
         writeSheet
@@ -524,6 +661,9 @@ Future<bool> googleSearchNearby() async {
             .cell(CellIndex.indexByColumnRow(
                 rowIndex: writeIndex, columnIndex: WriteCols.googleNumReviews))
             .value = nearbyResult.userRatingsTotal;
+
+        await getPlaceDetails(
+            writeSheet, readSheet, writeIndex, nearbyResult.placeId);
 
         writeIndex++;
       }
@@ -935,42 +1075,47 @@ class WriteCols {
   static const int googleSyncByNameAndAddress = 21;
   static const int googleSyncByWebsite = 22;
   static const int googleSyncByNameOnly = 23;
-  static const int googleMapsURL = 24;
-  static const int googleJSON = 25;
-  static const int googleCompanyName = 26;
-  static const int googleBusinessStatus = 27;
-  static const int googlePlaceID = 28;
-  static const int googleFormattedAddress = 29;
-  static const int matchStreet = 30;
-  static const int matchCity = 31;
-  static const int matchState = 32;
-  static const int matchZip = 33;
-  static const int googleLatitude = 34;
-  static const int googleLongitude = 35;
-  static const int googlePlacesDetailsJSON = 36;
-  static const int googleAdrAddress = 37;
-  static const int googleFormattedPhoneNumber = 38;
-  static const int googleIcon = 39;
-  static const int googleID = 40;
-  static const int googleInternationalPhoneNumber = 41;
-  static const int googleListingTypes = 42;
-  static const int googleUTCOffset = 43;
-  static const int googleVicinity = 44;
-  static const int googleBusinessURL = 45;
-  static const int googleRating = 46;
-  static const int googleNumReviews = 47;
-  static const int googlePriceLevel = 48;
-  static const int googleGlobalCode = 49;
-  static const int googleCompoundCode = 50;
-  static const int googleOpeningHours = 51;
+  static const int goolgeSyncByNearby = 24;
+  static const int googleMapsURL = 25;
+  static const int googleJSONCandidate = 26;
+  static const int googleJSONNearby = 27;
+  static const int googleCompanyName = 28;
+  static const int googleBusinessStatus = 29;
+  static const int googlePlaceID = 30;
+  static const int googleFormattedAddress = 31;
+  static const int matchStreet = 32;
+  static const int matchCity = 33;
+  static const int matchState = 34;
+  static const int matchZip = 35;
+  static const int googleLatitude = 36;
+  static const int googleLongitude = 37;
+  static const int googlePlacesDetailsJSON = 38;
+  static const int googleAdrAddress = 39;
+  static const int googleFormattedPhoneNumber = 40;
+  static const int googleIcon = 41;
+  static const int googleID = 42;
+  static const int googleInternationalPhoneNumber = 43;
+  static const int googleListingTypes = 44;
+  static const int googleUTCOffset = 45;
+  static const int googleVicinity = 46;
+  static const int googleBusinessURL = 47;
+  static const int googleRating = 48;
+  static const int googleNumReviews = 49;
+  static const int googlePriceLevel = 50;
+  static const int googleGlobalCode = 51;
+  static const int googleCompoundCode = 52;
+  static const int googleOpeningHours = 53;
 }
 
 class AirportListCols {
   static const int airportName = 0;
   static const int airportCode = 1;
   static const int airportState = 2;
-  static const int latitudeDecimalDegrees = 3;
-  static const int longitudeDecimalDegrees = 4;
+  static const int latitudeDecimalDegreesFormula = 3;
+  static const int longitudeDecimalDegreesFormula = 4;
+  static const int latitudeDecimalDegreesValue = 5;
+  static const int longitudeDecimalDegreesValue = 6;
+  static const int sixtyPlusAirport = 7;
 }
 
 class AvtopiaCols {
