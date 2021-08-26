@@ -380,7 +380,7 @@ Future<GoogleNearbyResult> searchNearby(
       readSheet, rowIndex, AirportListCols.longitudeDecimalDegreesValue);
   // parameter must be in meters.
   // 8000 = 5 miles, 12,000 = 7.5 miles, 16,000 = 10 miles
-  const radius = 12000;
+  const radius = 8000;
   var nearbyResults = GoogleNearbyResult();
 
   if (airpotCodeCell.value == null ||
@@ -389,6 +389,8 @@ Future<GoogleNearbyResult> searchNearby(
     return nearbyResults;
   }
 
+  // Here is how to cover a square or rectangle with adjacent circles with
+  // minimal overlap. https://stackoverflow.com/questions/7716460/fully-cover-a-rectangle-with-minimum-amount-of-fixed-radius-circles
   final nearbyURL = googleByNearbyURL(
       airportLat: airportLatCell.value,
       airportLong: airportLongCell.value,
