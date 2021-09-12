@@ -577,7 +577,7 @@ Future<bool> googleSearchNearby() async {
           case 2:
           // (+4.33, +7.5)
           case 3:
-          // (-4.33, +7.5)
+          // (-4.33, +7.50)
           case 4:
           // (-8.66, 0)
           case 5:
