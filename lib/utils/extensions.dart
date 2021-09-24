@@ -3,6 +3,43 @@
 
 import 'package:us_states/us_states.dart';
 
+extension DoubleHelpers on double {
+  int milesToMeters() => (this * 1609.34).round();
+}
+
+extension IntHelpers on int {
+  String displayWithSuffix() {
+    var stringToCheck = this.toString();
+    if (stringToCheck.length > 2) {
+      stringToCheck = stringToCheck.substring(this.toString().length - 2);
+    }
+
+    var suffix = '';
+
+    switch (stringToCheck) {
+      case '11':
+      case '12':
+      case '13':
+        suffix = 'th';
+        break;
+      case '1':
+        suffix = 'st';
+        break;
+      case '2':
+        suffix = 'nd';
+        break;
+      case '3':
+        suffix = 'rd';
+        break;
+      default:
+        suffix = 'th';
+        break;
+    }
+
+    return this.toString() + suffix;
+  }
+}
+
 extension StringHelpers on String {
   // ignore: prefer_interpolation_to_compose_strings
   // Looking for a pattern to match (with a mandatory space before all of them): rd rd. st st. st, ave ave. ave,
@@ -31,65 +68,40 @@ extension StringHelpers on String {
     var returnValue = this.toLowerCase();
 
     returnValue = returnValue.replaceAll('rd'.toAddressPartPattern(), ' road ');
-    returnValue =
-        returnValue.replaceAll('dr'.toAddressPartPattern(), ' drive ');
-    returnValue =
-        returnValue.replaceAll('st'.toAddressPartPattern(), ' street ');
-    returnValue =
-        returnValue.replaceAll('str'.toAddressPartPattern(), ' street ');
+    returnValue = returnValue.replaceAll('dr'.toAddressPartPattern(), ' drive ');
+    returnValue = returnValue.replaceAll('st'.toAddressPartPattern(), ' street ');
+    returnValue = returnValue.replaceAll('str'.toAddressPartPattern(), ' street ');
     returnValue = returnValue.replaceAll('ft'.toAddressPartPattern(), ' fort ');
-    returnValue =
-        returnValue.replaceAll('ave'.toAddressPartPattern(), ' avenue ');
+    returnValue = returnValue.replaceAll('ave'.toAddressPartPattern(), ' avenue ');
     returnValue = returnValue.replaceAll('ln'.toAddressPartPattern(), ' lane ');
-    returnValue =
-        returnValue.replaceAll('hwy'.toAddressPartPattern(), ' highway ');
-    returnValue =
-        returnValue.replaceAll('blvd'.toAddressPartPattern(), ' boulevard ');
-    returnValue =
-        returnValue.replaceAll('bldg'.toAddressPartPattern(), ' building ');
-    returnValue =
-        returnValue.replaceAll('pl'.toAddressPartPattern(), ' place ');
-    returnValue =
-        returnValue.replaceAll('pky'.toAddressPartPattern(), ' parkway ');
-    returnValue =
-        returnValue.replaceAll('pkwy'.toAddressPartPattern(), ' parkway ');
-    returnValue =
-        returnValue.replaceAll('expy'.toAddressPartPattern(), ' expressway ');
-    returnValue =
-        returnValue.replaceAll('ter'.toAddressPartPattern(), ' terrace ');
-    returnValue =
-        returnValue.replaceAll('tpke'.toAddressPartPattern(), ' turnpike ');
-    returnValue =
-        returnValue.replaceAll('ste'.toAddressPartPattern(), ' suite ');
+    returnValue = returnValue.replaceAll('hwy'.toAddressPartPattern(), ' highway ');
+    returnValue = returnValue.replaceAll('blvd'.toAddressPartPattern(), ' boulevard ');
+    returnValue = returnValue.replaceAll('bldg'.toAddressPartPattern(), ' building ');
+    returnValue = returnValue.replaceAll('pl'.toAddressPartPattern(), ' place ');
+    returnValue = returnValue.replaceAll('pky'.toAddressPartPattern(), ' parkway ');
+    returnValue = returnValue.replaceAll('pkwy'.toAddressPartPattern(), ' parkway ');
+    returnValue = returnValue.replaceAll('expy'.toAddressPartPattern(), ' expressway ');
+    returnValue = returnValue.replaceAll('ter'.toAddressPartPattern(), ' terrace ');
+    returnValue = returnValue.replaceAll('tpke'.toAddressPartPattern(), ' turnpike ');
+    returnValue = returnValue.replaceAll('ste'.toAddressPartPattern(), ' suite ');
     returnValue = returnValue.replaceAll('# ', 'suite ');
     returnValue = returnValue.replaceAll('#', 'suite ');
-    returnValue =
-        returnValue.replaceAll('cir'.toAddressPartPattern(), ' circle ');
-    returnValue =
-        returnValue.replaceAll('ct'.toAddressPartPattern(), ' court ');
-    returnValue =
-        returnValue.replaceAll('ctr'.toAddressPartPattern(), ' center ');
-    returnValue =
-        returnValue.replaceAll('apt'.toAddressPartPattern(), ' apartment ');
-    returnValue =
-        returnValue.replaceAll('is'.toAddressPartPattern(), ' island ');
-    returnValue =
-        returnValue.replaceAll('jct'.toAddressPartPattern(), ' junction ');
+    returnValue = returnValue.replaceAll('cir'.toAddressPartPattern(), ' circle ');
+    returnValue = returnValue.replaceAll('ct'.toAddressPartPattern(), ' court ');
+    returnValue = returnValue.replaceAll('ctr'.toAddressPartPattern(), ' center ');
+    returnValue = returnValue.replaceAll('apt'.toAddressPartPattern(), ' apartment ');
+    returnValue = returnValue.replaceAll('is'.toAddressPartPattern(), ' island ');
+    returnValue = returnValue.replaceAll('jct'.toAddressPartPattern(), ' junction ');
     returnValue = returnValue.replaceAll('e'.toAddressPartPattern(), ' east ');
     returnValue = returnValue.replaceAll('n'.toAddressPartPattern(), ' north ');
     returnValue = returnValue.replaceAll('s'.toAddressPartPattern(), ' south ');
     returnValue = returnValue.replaceAll('w'.toAddressPartPattern(), ' west ');
-    returnValue =
-        returnValue.replaceAll('nw'.toAddressPartPattern(), ' northwest ');
-    returnValue =
-        returnValue.replaceAll('ne'.toAddressPartPattern(), ' northeast ');
-    returnValue =
-        returnValue.replaceAll('se'.toAddressPartPattern(), ' southeast ');
-    returnValue =
-        returnValue.replaceAll('sw'.toAddressPartPattern(), ' southwest ');
+    returnValue = returnValue.replaceAll('nw'.toAddressPartPattern(), ' northwest ');
+    returnValue = returnValue.replaceAll('ne'.toAddressPartPattern(), ' northeast ');
+    returnValue = returnValue.replaceAll('se'.toAddressPartPattern(), ' southeast ');
+    returnValue = returnValue.replaceAll('sw'.toAddressPartPattern(), ' southwest ');
 
-    returnValue = returnValue.replaceAll(
-        '  ', ' '); // Replace any double spaces with single spaces
+    returnValue = returnValue.replaceAll('  ', ' '); // Replace any double spaces with single spaces
 
     print('REPLACED $this WITH $returnValue');
 

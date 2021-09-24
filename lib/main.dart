@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math' as math;
 
 import 'package:data_sync_desktop/models/candidates.dart';
 import 'package:data_sync_desktop/models/google_candidates.dart';
@@ -12,22 +13,19 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
 
-// belongs to avtopiadev@gmail.com
-const apiKey = 'AIzaSyAUoR1hu32epmid_r-h7_AiXQWhNu3zr3U';
+const apiKey = 'AIzaSyAUoR1hu32epmid_r-h7_AiXQWhNu3zr3U'; // belongs to avtopiadev@gmail.com
 const placesSearchBasicList = 'business_status,formatted_address,geometry,'
     'icon,name,permanently_closed,place_id,plus_code,types';
-const detailsSearchBasicList =
-    'address_component,adr_address,business_status,formatted_address,'
+const detailsSearchBasicList = 'address_component,adr_address,business_status,formatted_address,'
     'geometry,icon,name,permanently_closed,photo,place_id,plus_code,'
     'type,url,utc_offset,vicinity';
 const detailsSearchContactList = 'formatted_phone_number,'
     'international_phone_number,opening_hours,website';
-const detailsSearchAtmosphereList =
-    'price_level,rating,review,user_ratings_total';
+const detailsSearchAtmosphereList = 'price_level,rating,review,user_ratings_total';
 const hexRed = '#ff9191';
 const hexGreen = '#8bd98c';
 
-List<String> placeIDs = <String>[];
+Map<String, int> placeIDs = <String, int>{};
 
 Data cellByIndex(Sheet sheet, int rowIndex, int colIndex) {
   Data returnCell;
@@ -42,20 +40,13 @@ Data cellByIndex(Sheet sheet, int rowIndex, int colIndex) {
   return returnCell;
 }
 
-void updateByIndex(
-    Sheet writeSheet, int rowIndex, int colIndex, String updateValue) {
+void updateByIndex(Sheet writeSheet, int rowIndex, int colIndex, String updateValue) {
   cellByIndex(writeSheet, rowIndex, colIndex)?.value = updateValue;
 }
 
 void copyCell(Sheet writeSheet, Sheet readSheet, int rowIndex, int colIndex) {
-  writeSheet
-          .cell(CellIndex.indexByColumnRow(
-              rowIndex: rowIndex, columnIndex: colIndex))
-          .value =
-      readSheet
-          .cell(CellIndex.indexByColumnRow(
-              rowIndex: rowIndex, columnIndex: colIndex))
-          .value;
+  writeSheet.cell(CellIndex.indexByColumnRow(rowIndex: rowIndex, columnIndex: colIndex)).value =
+      readSheet.cell(CellIndex.indexByColumnRow(rowIndex: rowIndex, columnIndex: colIndex)).value;
 }
 
 void copyRow(Sheet writeSheet, Sheet readSheet, int rowIndex) {
@@ -75,8 +66,7 @@ Future<bool> getPlaceDetails(
   PlaceDetailResponse placeDetailResponse;
 
   if (response.statusCode == 200) {
-    placeDetailResponse =
-        PlaceDetailResponse.fromJson(jsonDecode(response.body));
+    placeDetailResponse = PlaceDetailResponse.fromJson(jsonDecode(response.body));
     final placeDetails = placeDetailResponse.result;
 
     if (placeDetails == null) {
@@ -90,20 +80,17 @@ Future<bool> getPlaceDetails(
         .value = placeDetails.formattedAddress;
 
     writeSheet
-        .cell(CellIndex.indexByColumnRow(
-            rowIndex: rowIndex, columnIndex: WriteCols.phone))
+        .cell(CellIndex.indexByColumnRow(rowIndex: rowIndex, columnIndex: WriteCols.phone))
         .value = placeDetails.formattedPhoneNumber;
 
     writeSheet
-        .cell(CellIndex.indexByColumnRow(
-            rowIndex: rowIndex, columnIndex: WriteCols.website))
+        .cell(CellIndex.indexByColumnRow(rowIndex: rowIndex, columnIndex: WriteCols.website))
         .value = placeDetails.website;
 
     // Build street address
     // ignore: prefer_interpolation_to_compose_strings
     var streetAddress = placeDetails.addressComponents
-            .firstWhere((a) => a.types.contains('street_number'),
-                orElse: () => null)
+            .firstWhere((a) => a.types.contains('street_number'), orElse: () => null)
             ?.shortName ??
         '';
     streetAddress += ' ';
@@ -113,35 +100,30 @@ Future<bool> getPlaceDetails(
         '';
 
     writeSheet
-        .cell(CellIndex.indexByColumnRow(
-            rowIndex: rowIndex, columnIndex: WriteCols.shipStreet1))
+        .cell(CellIndex.indexByColumnRow(rowIndex: rowIndex, columnIndex: WriteCols.shipStreet1))
         .value = streetAddress;
 
     writeSheet
-            .cell(CellIndex.indexByColumnRow(
-                rowIndex: rowIndex, columnIndex: WriteCols.shipStreet2))
+            .cell(CellIndex.indexByColumnRow(rowIndex: rowIndex, columnIndex: WriteCols.shipStreet2))
             .value =
         placeDetails.addressComponents
-            .firstWhere((a) => a.types.contains('subpremise'),
-                orElse: () => null)
+            .firstWhere((a) => a.types.contains('subpremise'), orElse: () => null)
             ?.shortName;
 
+    // Vicinity is of format street address, building #, city -
+    // 7021 Radford Avenue, Bldg 1234, North Hollywood
+    // so here we just take the city name from that as it is always the last
+    // piece of info after last comma. The address component is
+    // not straight forward when it comes to locality and neighborhood.
     writeSheet
-            .cell(CellIndex.indexByColumnRow(
-                rowIndex: rowIndex, columnIndex: WriteCols.shipCity))
-            .value =
-        placeDetails.addressComponents
-            .singleWhere((a) => a.types.contains('locality'),
-                orElse: () => null)
-            ?.shortName;
+        .cell(CellIndex.indexByColumnRow(rowIndex: rowIndex, columnIndex: WriteCols.shipCity))
+        .value = placeDetails.vicinity.substring(placeDetails.vicinity.lastIndexOf(',') + 1);
 
     writeSheet
-            .cell(CellIndex.indexByColumnRow(
-                rowIndex: rowIndex, columnIndex: WriteCols.shipState))
+            .cell(CellIndex.indexByColumnRow(rowIndex: rowIndex, columnIndex: WriteCols.shipState))
             .value =
         placeDetails.addressComponents
-            .singleWhere((a) => a.types.contains('administrative_area_level_1'),
-                orElse: () => null)
+            .singleWhere((a) => a.types.contains('administrative_area_level_1'), orElse: () => null)
             ?.shortName;
 
     // Build 9 digit postal code
@@ -151,75 +133,62 @@ Future<bool> getPlaceDetails(
         ?.shortName;
 
     if (postalCode != null) {
-      final postalCodeSuffix = placeDetails.addressComponents.firstWhere(
-          (a) => a.types.contains('postal_code_suffix'),
-          orElse: () => null);
-      postalCode +=
-          postalCodeSuffix == null ? '' : '-${postalCodeSuffix.shortName}';
+      final postalCodeSuffix = placeDetails.addressComponents
+          .firstWhere((a) => a.types.contains('postal_code_suffix'), orElse: () => null);
+      postalCode += postalCodeSuffix == null ? '' : '-${postalCodeSuffix.shortName}';
     }
 
     writeSheet
-        .cell(CellIndex.indexByColumnRow(
-            rowIndex: rowIndex, columnIndex: WriteCols.shipZip))
+        .cell(CellIndex.indexByColumnRow(rowIndex: rowIndex, columnIndex: WriteCols.shipZip))
         .value = postalCode;
 
     writeSheet
-            .cell(CellIndex.indexByColumnRow(
-                rowIndex: rowIndex, columnIndex: WriteCols.shipCountry))
+            .cell(CellIndex.indexByColumnRow(rowIndex: rowIndex, columnIndex: WriteCols.shipCountry))
             .value =
-        placeDetails.addressComponents
-            .singleWhere((a) => a.types.contains('country'))
-            ?.shortName;
+        placeDetails.addressComponents.singleWhere((a) => a.types.contains('country'))?.shortName;
 
     writeSheet
         .cell(CellIndex.indexByColumnRow(
             rowIndex: rowIndex, columnIndex: WriteCols.googlePlacesDetailsJSON))
         .value = jsonEncode(placeDetailResponse).toString();
     writeSheet
-        .cell(CellIndex.indexByColumnRow(
-            rowIndex: rowIndex, columnIndex: WriteCols.googleMapsURL))
+        .cell(CellIndex.indexByColumnRow(rowIndex: rowIndex, columnIndex: WriteCols.googleMapsURL))
         .value = placeDetails.url;
     writeSheet
-        .cell(CellIndex.indexByColumnRow(
-            rowIndex: rowIndex, columnIndex: WriteCols.googleAdrAddress))
+        .cell(
+            CellIndex.indexByColumnRow(rowIndex: rowIndex, columnIndex: WriteCols.googleAdrAddress))
         .value = placeDetails.adrAddress;
     writeSheet
         .cell(CellIndex.indexByColumnRow(
-            rowIndex: rowIndex,
-            columnIndex: WriteCols.googleFormattedPhoneNumber))
+            rowIndex: rowIndex, columnIndex: WriteCols.googleFormattedPhoneNumber))
         .value = placeDetails.formattedPhoneNumber;
     writeSheet
-        .cell(CellIndex.indexByColumnRow(
-            rowIndex: rowIndex, columnIndex: WriteCols.googleIcon))
+        .cell(CellIndex.indexByColumnRow(rowIndex: rowIndex, columnIndex: WriteCols.googleIcon))
         .value = placeDetails.icon;
     writeSheet
         .cell(CellIndex.indexByColumnRow(
-            rowIndex: rowIndex,
-            columnIndex: WriteCols.googleInternationalPhoneNumber))
+            rowIndex: rowIndex, columnIndex: WriteCols.googleInternationalPhoneNumber))
         .value = placeDetails.internationalPhoneNumber;
     writeSheet
-        .cell(CellIndex.indexByColumnRow(
-            rowIndex: rowIndex, columnIndex: WriteCols.googleRating))
+        .cell(CellIndex.indexByColumnRow(rowIndex: rowIndex, columnIndex: WriteCols.googleRating))
         .value = placeDetails.rating;
     writeSheet
-        .cell(CellIndex.indexByColumnRow(
-            rowIndex: rowIndex, columnIndex: WriteCols.googleUTCOffset))
+        .cell(
+            CellIndex.indexByColumnRow(rowIndex: rowIndex, columnIndex: WriteCols.googleUTCOffset))
         .value = placeDetails.utcOffset;
     writeSheet
-        .cell(CellIndex.indexByColumnRow(
-            rowIndex: rowIndex, columnIndex: WriteCols.googleVicinity))
+        .cell(CellIndex.indexByColumnRow(rowIndex: rowIndex, columnIndex: WriteCols.googleVicinity))
         .value = placeDetails.vicinity;
     writeSheet
         .cell(CellIndex.indexByColumnRow(
             rowIndex: rowIndex, columnIndex: WriteCols.googleBusinessURL))
         .value = placeDetails.website;
     writeSheet
-        .cell(CellIndex.indexByColumnRow(
-            rowIndex: rowIndex, columnIndex: WriteCols.googleRating))
+        .cell(CellIndex.indexByColumnRow(rowIndex: rowIndex, columnIndex: WriteCols.googleRating))
         .value = placeDetails.rating;
     writeSheet
-        .cell(CellIndex.indexByColumnRow(
-            rowIndex: rowIndex, columnIndex: WriteCols.googleNumReviews))
+        .cell(
+            CellIndex.indexByColumnRow(rowIndex: rowIndex, columnIndex: WriteCols.googleNumReviews))
         .value = placeDetails.reviews?.length ?? '';
     // There is also a USER_RATINGS_TOTAL which didn't seem to calculate
     // correctly on the 1 listing I did look on.
@@ -232,16 +201,14 @@ Future<bool> getPlaceDetails(
   return true;
 }
 
-Future<bool> searchByWebsiteUrl(
-    Sheet writeSheet, Sheet readSheet, int rowIndex) async {
+Future<bool> searchByWebsiteUrl(Sheet writeSheet, Sheet readSheet, int rowIndex) async {
   final websiteUrl = cellByIndex(writeSheet, rowIndex, AvtopiaCols.website);
 
   if (websiteUrl.value == null) {
     return false;
   }
 
-  final searchUrl = googleByTextQueryURL(
-      searchString: websiteUrl.value.toString().stripUrl());
+  final searchUrl = googleByTextQueryURL(searchString: websiteUrl.value.toString().stripUrl());
 
   print('rowIndex: $rowIndex / searchUrl: $searchUrl');
 
@@ -250,8 +217,7 @@ Future<bool> searchByWebsiteUrl(
 
   if (response.statusCode == 200) {
     writeSheet
-        .cell(CellIndex.indexByColumnRow(
-            rowIndex: rowIndex, columnIndex: WriteCols.googleMapsURL))
+        .cell(CellIndex.indexByColumnRow(rowIndex: rowIndex, columnIndex: WriteCols.googleMapsURL))
         .value = searchUrl;
 
     listOfCandidates = GoogleCandidates.fromJson(jsonDecode(response.body));
@@ -274,8 +240,7 @@ Future<bool> searchByWebsiteUrl(
       validMatch = false;
     }
     writeSheet
-        .cell(CellIndex.indexByColumnRow(
-            rowIndex: rowIndex, columnIndex: WriteCols.syncStatus))
+        .cell(CellIndex.indexByColumnRow(rowIndex: rowIndex, columnIndex: WriteCols.syncStatus))
         .value = validMatch ? 'YES' : 'NO';
     writeSheet
         .cell(CellIndex.indexByColumnRow(
@@ -290,20 +255,15 @@ Future<bool> searchByWebsiteUrl(
   return true;
 }
 
-Future<bool> searchByNameAndAddress(
-    Sheet writeSheet, Sheet readSheet, int rowIndex) async {
-  final companyNameCell =
-      cellByIndex(writeSheet, rowIndex, AvtopiaCols.accountName);
+Future<bool> searchByNameAndAddress(Sheet writeSheet, Sheet readSheet, int rowIndex) async {
+  final companyNameCell = cellByIndex(writeSheet, rowIndex, AvtopiaCols.accountName);
   final dba1Cell = cellByIndex(writeSheet, rowIndex, AvtopiaCols.dba1);
   final dba2Cell = cellByIndex(writeSheet, rowIndex, AvtopiaCols.dba2);
   final dba3Cell = cellByIndex(writeSheet, rowIndex, AvtopiaCols.dba3);
-  final shipStreet1Cell =
-      cellByIndex(writeSheet, rowIndex, AvtopiaCols.shipStreet1);
-  final shipStreet2Cell =
-      cellByIndex(writeSheet, rowIndex, AvtopiaCols.shipStreet2);
+  final shipStreet1Cell = cellByIndex(writeSheet, rowIndex, AvtopiaCols.shipStreet1);
+  final shipStreet2Cell = cellByIndex(writeSheet, rowIndex, AvtopiaCols.shipStreet2);
   final shipCityCell = cellByIndex(writeSheet, rowIndex, AvtopiaCols.shipCity);
-  final shipStateCell =
-      cellByIndex(writeSheet, rowIndex, AvtopiaCols.shipState);
+  final shipStateCell = cellByIndex(writeSheet, rowIndex, AvtopiaCols.shipState);
   final shipZipCell = cellByIndex(writeSheet, rowIndex, AvtopiaCols.shipZip);
 
   if (shipStateCell.value.toString().trim().isEmpty) {
@@ -326,8 +286,7 @@ Future<bool> searchByNameAndAddress(
 
   if (response.statusCode == 200) {
     writeSheet
-        .cell(CellIndex.indexByColumnRow(
-            rowIndex: rowIndex, columnIndex: WriteCols.googleMapsURL))
+        .cell(CellIndex.indexByColumnRow(rowIndex: rowIndex, columnIndex: WriteCols.googleMapsURL))
         .value = searchUrl;
 
     listOfCandidates = GoogleCandidates.fromJson(jsonDecode(response.body));
@@ -355,13 +314,11 @@ Future<bool> searchByNameAndAddress(
           .value = candidate.types.join(',');
     }
     writeSheet
-        .cell(CellIndex.indexByColumnRow(
-            rowIndex: rowIndex, columnIndex: WriteCols.syncStatus))
+        .cell(CellIndex.indexByColumnRow(rowIndex: rowIndex, columnIndex: WriteCols.syncStatus))
         .value = validMatch ? 'YES' : 'NO';
     writeSheet
         .cell(CellIndex.indexByColumnRow(
-            rowIndex: rowIndex,
-            columnIndex: WriteCols.googleSyncByNameAndAddress))
+            rowIndex: rowIndex, columnIndex: WriteCols.googleSyncByNameAndAddress))
         .value = validMatch ? 'X' : '';
 
     if (validMatch) {
@@ -372,17 +329,40 @@ Future<bool> searchByNameAndAddress(
   return true;
 }
 
-Future<GoogleNearbyResult> searchNearby(Sheet readSheet, int rowIndex,
-    String nextPageToken, String latitude, String longitude) async {
-  final airpotCodeCell =
-      cellByIndex(readSheet, rowIndex, AirportListCols.airportCode);
-  // final airportLatCell = cellByIndex(
-  //     readSheet, rowIndex, AirportListCols.latitudeDecimalDegreesValue);
-  // final airportLongCell = cellByIndex(
-  //     readSheet, rowIndex, AirportListCols.longitudeDecimalDegreesValue);
-  // parameter must be in meters.
-  // 8000 = 5 miles, 12,000 = 7.5 miles, 16,000 = 10 miles
-  const radius = 8000;
+enum Direction { north, south, east, west }
+
+double moveCoordinate(
+    double latitude, double longitude, double distanceInMiles, Direction directionToMove) {
+  const earthEquatorRadius = 6378137;
+  final latitudeOffset = (180 / math.pi) * (distanceInMiles.milesToMeters() / earthEquatorRadius);
+  final longitudeOffset = (180 / math.pi) *
+      (distanceInMiles.milesToMeters() / earthEquatorRadius) /
+      math.cos(math.pi / 180 * latitude);
+
+  switch (directionToMove) {
+    case Direction.north:
+      return latitude + latitudeOffset;
+    case Direction.south:
+      return latitude - latitudeOffset;
+    case Direction.east:
+      return longitude + longitudeOffset;
+    case Direction.west:
+      return longitude - longitudeOffset;
+  }
+
+  return 0;
+}
+
+Future<GoogleNearbyResult> searchNearby(
+    Sheet readSheet, int rowIndex, String nextPageToken, double latitude, double longitude) async {
+  final airpotCodeCell = cellByIndex(readSheet, rowIndex, AirportListCols.airportCode);
+
+  // radius distance conversions
+  // 8000m = 8km = 5 miles
+  // 12000m = 12km = 7.5 miles
+  // 16000m = 16km = 10 miles
+
+  final radius = 1.25.milesToMeters();
   var nearbyResults = GoogleNearbyResult();
 
   if (airpotCodeCell.value == null || latitude == null || longitude == null) {
@@ -392,10 +372,7 @@ Future<GoogleNearbyResult> searchNearby(Sheet readSheet, int rowIndex,
   // Here is how to cover a square or rectangle with adjacent circles with
   // minimal overlap. https://stackoverflow.com/questions/7716460/fully-cover-a-rectangle-with-minimum-amount-of-fixed-radius-circles
   final nearbyURL = googleByNearbyURL(
-      airportLat: airportLatCell.value,
-      airportLong: airportLongCell.value,
-      radius: radius,
-      nextPageToken: nextPageToken);
+      airportLat: latitude, airportLong: longitude, radius: radius, nextPageToken: nextPageToken);
 
   print(nearbyURL);
 
@@ -413,20 +390,17 @@ Future<GoogleNearbyResult> searchNearby(Sheet readSheet, int rowIndex,
   return nearbyResults;
 }
 
-Future<bool> searchByPhone(
-    Sheet writeSheet, Sheet readSheet, int rowIndex) async {
+Future<bool> searchByPhone(Sheet writeSheet, Sheet readSheet, int rowIndex) async {
   // Transform the phone number
   final phoneCell = cellByIndex(writeSheet, rowIndex, AvtopiaCols.phone);
-  final countryCell =
-      cellByIndex(writeSheet, rowIndex, AvtopiaCols.shipCountry);
+  final countryCell = cellByIndex(writeSheet, rowIndex, AvtopiaCols.shipCountry);
 
   if (phoneCell.value == null || countryCell.value == null) {
     return false;
   }
 
   final byPhoneUrl = googleByPhoneURL(
-      phoneNumber:
-          phoneCell.value.toString().toIntlPhoneFormat(countryCell.value));
+      phoneNumber: phoneCell.value.toString().toIntlPhoneFormat(countryCell.value));
 
   print('Searching phone number ${phoneCell.value} at URL:$byPhoneUrl');
 
@@ -435,8 +409,7 @@ Future<bool> searchByPhone(
 
   if (response.statusCode == 200) {
     writeSheet
-        .cell(CellIndex.indexByColumnRow(
-            rowIndex: rowIndex, columnIndex: WriteCols.googleMapsURL))
+        .cell(CellIndex.indexByColumnRow(rowIndex: rowIndex, columnIndex: WriteCols.googleMapsURL))
         .value = byPhoneUrl;
 
     listOfCandidates = GoogleCandidates.fromJson(jsonDecode(response.body));
@@ -453,8 +426,7 @@ Future<bool> searchByPhone(
 
   for (final candidate in listOfCandidates.candidates) {
     writeSheet
-        .cell(CellIndex.indexByColumnRow(
-            rowIndex: rowIndex, columnIndex: WriteCols.syncStatus))
+        .cell(CellIndex.indexByColumnRow(rowIndex: rowIndex, columnIndex: WriteCols.syncStatus))
         .value = 'YES';
     writeSheet
         .cell(CellIndex.indexByColumnRow(
@@ -470,58 +442,53 @@ Future<bool> searchByPhone(
 void writeGoogleCanidateInfo(
     Candidates candidate, Sheet writeSheet, Sheet readSheet, int rowIndex) {
   writeSheet
-      .cell(CellIndex.indexByColumnRow(
-          rowIndex: rowIndex, columnIndex: WriteCols.googleListingTypes))
+      .cell(
+          CellIndex.indexByColumnRow(rowIndex: rowIndex, columnIndex: WriteCols.googleListingTypes))
       .value = candidate.types.join(',');
   writeSheet
       .cell(CellIndex.indexByColumnRow(
           rowIndex: rowIndex, columnIndex: WriteCols.googleJSONCandidate))
       .value = jsonEncode(candidate).toString();
   writeSheet
-      .cell(CellIndex.indexByColumnRow(
-          rowIndex: rowIndex, columnIndex: WriteCols.googleCompanyName))
+      .cell(
+          CellIndex.indexByColumnRow(rowIndex: rowIndex, columnIndex: WriteCols.googleCompanyName))
       .value = candidate.name;
   writeSheet
       .cell(CellIndex.indexByColumnRow(
           rowIndex: rowIndex, columnIndex: WriteCols.googleBusinessStatus))
       .value = candidate.businessStatus;
   writeSheet
-      .cell(CellIndex.indexByColumnRow(
-          rowIndex: rowIndex, columnIndex: WriteCols.googlePlaceID))
+      .cell(CellIndex.indexByColumnRow(rowIndex: rowIndex, columnIndex: WriteCols.googlePlaceID))
       .value = candidate.placeId;
   writeSheet
       .cell(CellIndex.indexByColumnRow(
           rowIndex: rowIndex, columnIndex: WriteCols.googleFormattedAddress))
       .value = candidate.formattedAddress;
   writeSheet
-      .cell(CellIndex.indexByColumnRow(
-          rowIndex: rowIndex, columnIndex: WriteCols.googleLatitude))
+      .cell(CellIndex.indexByColumnRow(rowIndex: rowIndex, columnIndex: WriteCols.googleLatitude))
       .value = candidate.geometry.location.lat;
   writeSheet
-      .cell(CellIndex.indexByColumnRow(
-          rowIndex: rowIndex, columnIndex: WriteCols.googleLongitude))
+      .cell(CellIndex.indexByColumnRow(rowIndex: rowIndex, columnIndex: WriteCols.googleLongitude))
       .value = candidate.geometry.location.lng;
 }
 
 Future<bool> googleSearchNearby() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  final data =
-      await rootBundle.load('assets/Partner Launch - Airport List.xlsx');
+  final data = await rootBundle.load('assets/Partner Launch - Airport List.xlsx');
   final bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
   final wb = Excel.decodeBytes(bytes);
 
-  final readSheet =
-      wb.sheets[wb.sheets.keys.firstWhere((a) => a == 'Partner Launch')];
-  final writeSheet =
-      wb.sheets[wb.sheets.keys.firstWhere((a) => a == 'NearbyResults')];
+  final readSheet = wb.sheets[wb.sheets.keys.firstWhere((a) => a == 'Partner Launch')];
+  final writeSheet = wb.sheets[wb.sheets.keys.firstWhere((a) => a == '60Plus')];
 
   var writeIndex = 1;
   String nextPageToken;
 
+  storePlaceIDs(writeSheet);
+
   // Loop through the designated airports in the Partner Launch tab
   for (var readIndex = 1; readIndex <= readSheet.rows.length; readIndex++) {
-    var resultPageNum = 1;
     final airportCode = readSheet
         .cell(CellIndex.indexByColumnRow(
             rowIndex: readIndex, columnIndex: AirportListCols.airportCode))
@@ -529,6 +496,11 @@ Future<bool> googleSearchNearby() async {
 
     if (airportCode == null) {
       break; // null in this column denotes end of list
+    }
+
+    // for now - only work on these two airports - Burbank and Van Nuys
+    if (!(airportCode == 'BUR' || airportCode == 'VNY')) {
+      continue;
     }
 
     final sixtyPlus = readSheet
@@ -542,9 +514,10 @@ Future<bool> googleSearchNearby() async {
     // }
 
     // Skip any airport denoted as ***NOT*** 60+ for now (2021-07-13) per Doug
+    // Now doing 60+ airports 2021-09-15
     if (sixtyPlus == 'X') {
       print('***** WRITING Airport: $airportCode *****');
-      continue;
+      //continue;
     } else {
       print('***** SKIPPING Airport: $airportCode *****');
       continue;
@@ -554,12 +527,10 @@ Future<bool> googleSearchNearby() async {
     //   break;
     // }
 
-    final airportLat = cellByIndex(
-            readSheet, readIndex, AirportListCols.latitudeDecimalDegreesValue)
-        ?.value;
-    final airportLong = cellByIndex(
-            readSheet, readIndex, AirportListCols.longitudeDecimalDegreesValue)
-        ?.value;
+    final airportLat =
+        cellByIndex(readSheet, readIndex, AirportListCols.latitudeDecimalDegreesValue)?.value;
+    final airportLong =
+        cellByIndex(readSheet, readIndex, AirportListCols.longitudeDecimalDegreesValue)?.value;
 
     if (airportLong == null || airportLat == null) {
       continue;
@@ -567,24 +538,67 @@ Future<bool> googleSearchNearby() async {
 
     // Max 60 results which is 3 x 20 results so 3 runs -
     // make another request with the nextPageToken to get the next 20
-    for (int i = 0; i <= 6; i++) {
+    for (var i = 0; i <= 8; i++) {
+      var currentLat = airportLat;
+      var currentLong = airportLong;
+      var resultPageNum = 1;
+
       if (sixtyPlus == 'X') {
+        // Miles to meters conversions:
+        // 4.33 miles = 6968 meters
+        // 7.50 miles = 12070 meters
+        // 8.66 miles = 13937 meters
         switch (i) {
-          case 0:
+          case 0: // A
             break; // nothing, use original airport GPS
-          case 1: // TODO: Set the GPS coords
-          // (+8.66, 0)
-          case 2:
-          // (+4.33, +7.5)
-          case 3:
-          // (-4.33, +7.50)
-          case 4:
-          // (-8.66, 0)
-          case 5:
-          // (-4.33, -7.5)
-          case 6:
-          // (+4.33, -7.5)
+          case 1: // B
+            {
+              currentLong = moveCoordinate(airportLat, airportLong, 2.5, Direction.east);
+              break;
+            }
+          case 2: // C
+            {
+              currentLat = moveCoordinate(airportLat, airportLong, 2.5, Direction.north);
+              currentLong = moveCoordinate(airportLat, airportLong, 2.5, Direction.east);
+              break;
+            }
+          case 3: // D
+            {
+              currentLat = moveCoordinate(airportLat, airportLong, 2.5, Direction.north);
+              break;
+            }
+          case 4: // E
+            {
+              currentLat = moveCoordinate(airportLat, airportLong, 2.5, Direction.north);
+              currentLong = moveCoordinate(airportLat, airportLong, 2.5, Direction.west);
+              break;
+            }
+          case 5: // F
+            {
+              currentLong = moveCoordinate(airportLat, airportLong, 2.5, Direction.west);
+              break;
+            }
+          case 6: // G
+            {
+              currentLat = moveCoordinate(airportLat, airportLong, 2.5, Direction.south);
+              currentLong = moveCoordinate(airportLat, airportLong, 2.5, Direction.west);
+              break;
+            }
+          case 7: // H
+            {
+              currentLat = moveCoordinate(airportLat, airportLong, 2.5, Direction.south);
+              break;
+            }
+          case 8: // I
+            {
+              currentLat = moveCoordinate(airportLat, airportLong, 2.5, Direction.south);
+              currentLong = moveCoordinate(airportLat, airportLong, 2.5, Direction.east);
+              break;
+            }
         }
+
+        print(
+            'Coordinates after ${(i + 1).displayWithSuffix()} iteration: $currentLat, $currentLong');
       } else {
         if (i > 0) {
           break; // only make 1 iteration if not sixtyPlus
@@ -592,12 +606,25 @@ Future<bool> googleSearchNearby() async {
       }
 
       while (resultPageNum >= 1 && resultPageNum <= 3) {
-        final nearbyResults = await searchNearby(readSheet, readIndex,
-            nextPageToken, airportLatCell.value, airportLongCell.value);
+        final nearbyResults =
+            await searchNearby(readSheet, readIndex, nextPageToken, currentLat, currentLong);
 
         print('Page: $resultPageNum');
 
         for (final nearbyResult in nearbyResults.results) {
+          // Check to see if it already exists
+          if (placeIDs.containsKey(nearbyResult.placeId)) {
+            final duplicateRowIndex = placeIDs[nearbyResult.placeId];
+            final airportCodeCell = writeSheet.cell(CellIndex.indexByColumnRow(
+                rowIndex: duplicateRowIndex, columnIndex: WriteCols.airportCode));
+            if (airportCodeCell.value?.toString()?.contains(airportCode) == false) {
+              airportCodeCell?.value = airportCodeCell.value + ',$airportCode';
+            }
+            continue;
+          } else {
+            placeIDs.putIfAbsent(nearbyResult.placeId, () => writeIndex);
+          }
+
           print('Company: ${nearbyResult.name}');
           // Company Name
           writeSheet
@@ -605,7 +632,7 @@ Future<bool> googleSearchNearby() async {
                   rowIndex: writeIndex, columnIndex: WriteCols.accountName))
               .value = nearbyResult.name;
 
-          // "Vincinity - using the street address to display for now"
+          // "Vicinity - using the street address to display for now"
           writeSheet
               .cell(CellIndex.indexByColumnRow(
                   rowIndex: writeIndex, columnIndex: WriteCols.shipStreet1))
@@ -613,37 +640,31 @@ Future<bool> googleSearchNearby() async {
 
           // Airport Code - copied from "July 1 Launch" which is the read sheet
           writeSheet
-                  .cell(CellIndex.indexByColumnRow(
-                      rowIndex: writeIndex, columnIndex: WriteCols.airportCode))
-                  .value =
-              cellByIndex(readSheet, readIndex, AirportListCols.airportCode)
-                  .value;
+              .cell(CellIndex.indexByColumnRow(
+                  rowIndex: writeIndex, columnIndex: WriteCols.airportCode))
+              .value = cellByIndex(readSheet, readIndex, AirportListCols.airportCode).value;
 
           // Mark this is a nearby search sync
           writeSheet
               .cell(CellIndex.indexByColumnRow(
-                  rowIndex: writeIndex,
-                  columnIndex: WriteCols.goolgeSyncByNearby))
+                  rowIndex: writeIndex, columnIndex: WriteCols.goolgeSyncByNearby))
               .value = 'X';
 
           writeSheet
               .cell(CellIndex.indexByColumnRow(
-                  rowIndex: writeIndex,
-                  columnIndex: WriteCols.googleJSONNearby))
+                  rowIndex: writeIndex, columnIndex: WriteCols.googleJSONNearby))
               .value = jsonEncode(nearbyResult).toString();
 
           // Google Company Name
           writeSheet
               .cell(CellIndex.indexByColumnRow(
-                  rowIndex: writeIndex,
-                  columnIndex: WriteCols.googleCompanyName))
+                  rowIndex: writeIndex, columnIndex: WriteCols.googleCompanyName))
               .value = nearbyResult.name;
 
           // Business Status
           writeSheet
               .cell(CellIndex.indexByColumnRow(
-                  rowIndex: writeIndex,
-                  columnIndex: WriteCols.googleBusinessStatus))
+                  rowIndex: writeIndex, columnIndex: WriteCols.googleBusinessStatus))
               .value = nearbyResult.businessStatus;
 
           // Latitude
@@ -673,15 +694,13 @@ Future<bool> googleSearchNearby() async {
           // PlusCode (Global Code)
           writeSheet
               .cell(CellIndex.indexByColumnRow(
-                  rowIndex: writeIndex,
-                  columnIndex: WriteCols.googleGlobalCode))
+                  rowIndex: writeIndex, columnIndex: WriteCols.googleGlobalCode))
               .value = nearbyResult.plusCode?.globalCode;
 
           // PlusCode (Compound Code)
           writeSheet
               .cell(CellIndex.indexByColumnRow(
-                  rowIndex: writeIndex,
-                  columnIndex: WriteCols.googleCompoundCode))
+                  rowIndex: writeIndex, columnIndex: WriteCols.googleCompoundCode))
               .value = nearbyResult.plusCode?.compoundCode;
 
           // Google Overall Rating
@@ -693,26 +712,21 @@ Future<bool> googleSearchNearby() async {
           // Business Types
           writeSheet
               .cell(CellIndex.indexByColumnRow(
-                  rowIndex: writeIndex,
-                  columnIndex: WriteCols.googleListingTypes))
+                  rowIndex: writeIndex, columnIndex: WriteCols.googleListingTypes))
               .value = nearbyResult.types.join(',');
 
           // Num Reviews
           writeSheet
               .cell(CellIndex.indexByColumnRow(
-                  rowIndex: writeIndex,
-                  columnIndex: WriteCols.googleNumReviews))
+                  rowIndex: writeIndex, columnIndex: WriteCols.googleNumReviews))
               .value = nearbyResult.userRatingsTotal;
 
-          await getPlaceDetails(
-              writeSheet, readSheet, writeIndex, nearbyResult.placeId);
+          await getPlaceDetails(writeSheet, readSheet, writeIndex, nearbyResult.placeId);
 
           writeIndex++;
         }
 
-        nextPageToken = nearbyResults.nextPageToken == ''
-            ? null
-            : nearbyResults.nextPageToken;
+        nextPageToken = nearbyResults.nextPageToken == '' ? null : nearbyResults.nextPageToken;
 
         if (nextPageToken == null) {
           // break out of next-page while loop as this means no more pages exist
@@ -743,10 +757,8 @@ Future<bool> getGooglePlacesData() async {
   final bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
   final wb = Excel.decodeBytes(bytes);
 
-  final readSheet =
-      wb.sheets[wb.sheets.keys.firstWhere((a) => a == 'BetaData')];
-  final writeSheet =
-      wb.sheets[wb.sheets.keys.firstWhere((a) => a == 'BetaDataResults')];
+  final readSheet = wb.sheets[wb.sheets.keys.firstWhere((a) => a == 'BetaData')];
+  final writeSheet = wb.sheets[wb.sheets.keys.firstWhere((a) => a == 'BetaDataResults')];
 
   // *** Steps before doing any work on a data sheet
   // *** that's never ran against this code before:
@@ -770,18 +782,15 @@ Future<bool> getGooglePlacesData() async {
       var anySuccess = false;
 
       // *** STEP 1 - SEARCH BY PHONE NUMBER ONLY ***
-      final phoneSearchresult =
-          await searchByPhone(writeSheet, readSheet, rowIndex);
+      final phoneSearchresult = await searchByPhone(writeSheet, readSheet, rowIndex);
 
       if (phoneSearchresult == false) {
         // *** STEP 2 - SEARCH BY NAME, ADDRESS, CITY AND STATE ***
-        final nameAndAddressResult =
-            await searchByNameAndAddress(writeSheet, readSheet, rowIndex);
+        final nameAndAddressResult = await searchByNameAndAddress(writeSheet, readSheet, rowIndex);
 
         if (nameAndAddressResult == false) {
           // *** STEP 3 - SEARCH BY URL ONLY
-          final urlSearchResult =
-              await searchByWebsiteUrl(writeSheet, readSheet, rowIndex);
+          final urlSearchResult = await searchByWebsiteUrl(writeSheet, readSheet, rowIndex);
 
           if (urlSearchResult == false) {
             // **** STEP 4 - next search here *****
@@ -814,12 +823,11 @@ Future<bool> getGooglePlacesData() async {
       }
     }
 
-    final syncStatusCell =
-        cellByIndex(writeSheet, rowIndex, WriteCols.syncStatus);
+    final syncStatusCell = cellByIndex(writeSheet, rowIndex, WriteCols.syncStatus);
     final syncStatusCellValue = syncStatusCell.value.toString().toLowerCase();
 
-    syncStatusCell.cellStyle = CellStyle(
-        backgroundColorHex: syncStatusCellValue == 'yes' ? hexGreen : hexRed);
+    syncStatusCell.cellStyle =
+        CellStyle(backgroundColorHex: syncStatusCellValue == 'yes' ? hexGreen : hexRed);
 
     // *** COMPARATIVE ANALYSIS BETWEEN OUR DATA AND GOOGLE DATA
     if (syncStatusCellValue == 'yes' && queryAPI == false) {
@@ -828,8 +836,7 @@ Future<bool> getGooglePlacesData() async {
   }
 
   await wb.encode().then((value) {
-    File(join(
-        r'C:\Users\jared\source\repos\avtopia\data_sync_desktop\assets\temp.xlsx'))
+    File(join(r'C:\Users\jared\source\repos\avtopia\data_sync_desktop\assets\temp.xlsx'))
       ..createSync(recursive: true)
       ..writeAsBytesSync(value);
   });
@@ -840,73 +847,61 @@ Future<bool> getGooglePlacesData() async {
 Future<bool> main() async {
   print('main running');
 
-  //return googleSearchNearby();
+  return googleSearchNearby();
 
-  WidgetsFlutterBinding.ensureInitialized();
-  final data =
-      await rootBundle.load('assets/Partner Launch - Airport List.xlsx');
-  final bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
-  final wb = Excel.decodeBytes(bytes);
+  // WidgetsFlutterBinding.ensureInitialized();
+  // final data =
+  //     await rootBundle.load('assets/Partner Launch - Airport List.xlsx');
+  // final bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+  // final wb = Excel.decodeBytes(bytes);
 
-  final writeSheet =
-      wb.sheets[wb.sheets.keys.firstWhere((a) => a == 'NearbyResults')];
+  // final writeSheet =
+  //     wb.sheets[wb.sheets.keys.firstWhere((a) => a == 'NearbyResults')];
 
-  storePlaceIDs(writeSheet);
+  // storePlaceIDs(writeSheet);
 
-  final duplicateFound =
-      checkForDuplicate(writeSheet, 'ChIJ_QGdafRBkFQRPFSlAf8lpyI');
+  // final duplicateFound =
+  //     checkForDuplicate(writeSheet, 'ChIJ_QGdafRBkFQRPFSlAf8lpyI');
 
-  print('Duplicate Found: $duplicateFound');
+  // print('Duplicate Found: $duplicateFound');
 
-  return duplicateFound;
+  // return duplicateFound;
 }
 
 void storePlaceIDs(Sheet writeSheet) {
-  print('start of storing place IDs');
+  placeIDs.clear();
   for (var rowIndex = 1; rowIndex <= writeSheet.rows.length; rowIndex++) {
-    final googlePlaceID =
-        cellByIndex(writeSheet, rowIndex, WriteCols.googlePlaceID)?.value;
+    final googlePlaceID = cellByIndex(writeSheet, rowIndex, WriteCols.googlePlaceID)?.value;
 
-    if (googlePlaceID != null) {
-      placeIDs.add(googlePlaceID);
+    if (googlePlaceID != null && placeIDs.containsKey(googlePlaceID) == false) {
+      placeIDs.addAll({googlePlaceID: rowIndex});
     }
   }
-
-  print('end of storing place IDs');
 }
-
-bool checkForDuplicate(Sheet writeSheet, String googlePlaceID) =>
-    placeIDs.any((a) => a == googlePlaceID);
 
 void compareToGoogleData(Sheet writeSheet, int rowIndex) {
   // * compare comapny names
-  final avCompNameCell =
-      cellByIndex(writeSheet, rowIndex, WriteCols.accountName);
+  final avCompNameCell = cellByIndex(writeSheet, rowIndex, WriteCols.accountName);
   final avDba1Cell = cellByIndex(writeSheet, rowIndex, WriteCols.dba1);
   final avDba2Cell = cellByIndex(writeSheet, rowIndex, WriteCols.dba2);
   final avDba3Cell = cellByIndex(writeSheet, rowIndex, WriteCols.dba3);
-  final googleCompNameCell =
-      cellByIndex(writeSheet, rowIndex, WriteCols.googleCompanyName);
+  final googleCompNameCell = cellByIndex(writeSheet, rowIndex, WriteCols.googleCompanyName);
 
   var numberOfMatches = 0;
 
-  if (findStringMatches(
-      avCompNameCell.value.toString(), googleCompNameCell.value.toString())) {
+  if (findStringMatches(avCompNameCell.value.toString(), googleCompNameCell.value.toString())) {
     numberOfMatches++;
   }
 
-  if (findStringMatches(
-      avDba1Cell.value.toString(), googleCompNameCell.value.toString())) {
+  if (findStringMatches(avDba1Cell.value.toString(), googleCompNameCell.value.toString())) {
     numberOfMatches++;
   }
 
-  if (findStringMatches(
-      avDba2Cell.value.toString(), googleCompNameCell.value.toString())) {
+  if (findStringMatches(avDba2Cell.value.toString(), googleCompNameCell.value.toString())) {
     numberOfMatches++;
   }
 
-  if (findStringMatches(
-      avDba3Cell.value.toString(), googleCompNameCell.value.toString())) {
+  if (findStringMatches(avDba3Cell.value.toString(), googleCompNameCell.value.toString())) {
     numberOfMatches++;
   }
 
@@ -919,18 +914,15 @@ void compareToGoogleData(Sheet writeSheet, int rowIndex) {
   final avCity = cellByIndex(writeSheet, rowIndex, WriteCols.shipCity);
   final avState = cellByIndex(writeSheet, rowIndex, WriteCols.shipState);
   final avZip = cellByIndex(writeSheet, rowIndex, WriteCols.shipZip);
-  final googleAddress =
-      cellByIndex(writeSheet, rowIndex, WriteCols.googleFormattedAddress);
+  final googleAddress = cellByIndex(writeSheet, rowIndex, WriteCols.googleFormattedAddress);
   final matchStreet = cellByIndex(writeSheet, rowIndex, WriteCols.matchStreet);
   final matchCity = cellByIndex(writeSheet, rowIndex, WriteCols.matchCity);
   final matchState = cellByIndex(writeSheet, rowIndex, WriteCols.matchState);
   final matchZip = cellByIndex(writeSheet, rowIndex, WriteCols.matchZip);
 
   final googleAddressSplit = googleAddress.value.toString().split(',');
-  final avStreet1Expanded =
-      avStreet1.value.toString().trim().toLowerCase().toExpandAbbreviations();
-  final avStreet2Expanded =
-      avStreet2.value.toString().trim().toLowerCase().toExpandAbbreviations();
+  final avStreet1Expanded = avStreet1.value.toString().trim().toLowerCase().toExpandAbbreviations();
+  final avStreet2Expanded = avStreet2.value.toString().trim().toLowerCase().toExpandAbbreviations();
 
   for (final googleAddressPart in googleAddressSplit) {
     if (avStreet1.value.toString().trim().isEmpty) {
@@ -959,8 +951,8 @@ void compareToGoogleData(Sheet writeSheet, int rowIndex) {
     }
   }
 
-  matchStreet.cellStyle = CellStyle(
-      backgroundColorHex: matchStreet.value == 'X' ? hexGreen : hexRed);
+  matchStreet.cellStyle =
+      CellStyle(backgroundColorHex: matchStreet.value == 'X' ? hexGreen : hexRed);
 
   if (avCity.value.toString().isNotEmpty &&
       googleAddress.value
@@ -972,19 +964,18 @@ void compareToGoogleData(Sheet writeSheet, int rowIndex) {
     matchCity.value = ' ';
   }
 
-  matchCity.cellStyle =
-      CellStyle(backgroundColorHex: matchCity.value == 'X' ? hexGreen : hexRed);
+  matchCity.cellStyle = CellStyle(backgroundColorHex: matchCity.value == 'X' ? hexGreen : hexRed);
 
   if (avState.value.toString().isNotEmpty &&
-      googleAddress.value.toString().contains(
-          avState.value.toString().toStateAbbreviation().toUpperCase())) {
+      googleAddress.value
+          .toString()
+          .contains(avState.value.toString().toStateAbbreviation().toUpperCase())) {
     matchState.value = 'X';
   } else {
     matchState.value = ' ';
   }
 
-  matchState.cellStyle = CellStyle(
-      backgroundColorHex: matchState.value == 'X' ? hexGreen : hexRed);
+  matchState.cellStyle = CellStyle(backgroundColorHex: matchState.value == 'X' ? hexGreen : hexRed);
 
   if (avZip.value.toString().isNotEmpty) {
     var zipString = avZip.value.toString();
@@ -998,8 +989,7 @@ void compareToGoogleData(Sheet writeSheet, int rowIndex) {
     }
   }
 
-  matchZip.cellStyle =
-      CellStyle(backgroundColorHex: matchZip.value == 'X' ? hexGreen : hexRed);
+  matchZip.cellStyle = CellStyle(backgroundColorHex: matchZip.value == 'X' ? hexGreen : hexRed);
 }
 
 bool findStringMatches(String firstString, String secondString) {
@@ -1089,11 +1079,11 @@ String removeCompanyNameWords(String stringToRemove) {
 String googleByNearbyURL(
     {@required double airportLat,
     @required double airportLong,
-    @required int radius,
+    @required int radius, // Radius = 1/2 Diameter
     String nextPageToken}) {
   var url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?'
       'location=$airportLat,$airportLong&radius=$radius&keyword=aviation&'
-      'key=$apiKey';
+      'rankBy=distance&key=$apiKey';
 
   if (nextPageToken != null) {
     url += '&pagetoken=$nextPageToken';
@@ -1103,8 +1093,7 @@ String googleByNearbyURL(
 }
 
 String googleByPhoneURL({@required String phoneNumber}) {
-  final url =
-      'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?'
+  final url = 'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?'
       'input=$phoneNumber&inputtype=phonenumber&fields=$placesSearchBasicList'
       '&key=$apiKey';
 
@@ -1112,8 +1101,7 @@ String googleByPhoneURL({@required String phoneNumber}) {
 }
 
 String googleByTextQueryURL({@required String searchString}) {
-  final url =
-      'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?'
+  final url = 'https://maps.googleapis.com/maps/api/place/findplacefromtext/json?'
       'input=${searchString.toURLSafeString()}'
       '&key=$apiKey'
       '&inputtype=textquery&fields=$placesSearchBasicList';
