@@ -51,7 +51,7 @@ void copyCell(Sheet writeSheet, Sheet readSheet, int rowIndex, int colIndex) {
 
 void copyRow(Sheet writeSheet, Sheet readSheet, int rowIndex) {
   // *** upper bound here is hard-coded ***
-  for (var colIndex = 0; colIndex <= AvtopiaCols.website; colIndex++) {
+  for (var colIndex = 0; colIndex <= WriteCols.website; colIndex++) {
     copyCell(writeSheet, readSheet, rowIndex, colIndex);
   }
 }
@@ -59,7 +59,7 @@ void copyRow(Sheet writeSheet, Sheet readSheet, int rowIndex) {
 Future<bool> getPlaceDetails(
     Sheet writeSheet, Sheet readSheet, int rowIndex, String placeID) async {
   final placeDetailsURL = getPlaceDetailsURL(placeID: placeID);
-  //print('Getting Place Details from: $placeDetailsURL');
+  print('Getting Place Details from: $placeDetailsURL');
 
   final response = await http.get(Uri.parse(placeDetailsURL));
 
@@ -202,7 +202,7 @@ Future<bool> getPlaceDetails(
 }
 
 Future<bool> searchByWebsiteUrl(Sheet writeSheet, Sheet readSheet, int rowIndex) async {
-  final websiteUrl = cellByIndex(writeSheet, rowIndex, AvtopiaCols.website);
+  final websiteUrl = cellByIndex(writeSheet, rowIndex, WriteCols.website);
 
   if (websiteUrl.value == null) {
     return false;
@@ -223,7 +223,7 @@ Future<bool> searchByWebsiteUrl(Sheet writeSheet, Sheet readSheet, int rowIndex)
     listOfCandidates = GoogleCandidates.fromJson(jsonDecode(response.body));
     if (listOfCandidates.candidates.isNotEmpty) {
       // Copy this row into the new file
-      copyRow(writeSheet, readSheet, rowIndex);
+      //copyRow(writeSheet, readSheet, rowIndex);
     } else {
       return false; // return false if nothing is found
     }
@@ -256,15 +256,15 @@ Future<bool> searchByWebsiteUrl(Sheet writeSheet, Sheet readSheet, int rowIndex)
 }
 
 Future<bool> searchByNameAndAddress(Sheet writeSheet, Sheet readSheet, int rowIndex) async {
-  final companyNameCell = cellByIndex(writeSheet, rowIndex, AvtopiaCols.accountName);
-  final dba1Cell = cellByIndex(writeSheet, rowIndex, AvtopiaCols.dba1);
-  final dba2Cell = cellByIndex(writeSheet, rowIndex, AvtopiaCols.dba2);
-  final dba3Cell = cellByIndex(writeSheet, rowIndex, AvtopiaCols.dba3);
-  final shipStreet1Cell = cellByIndex(writeSheet, rowIndex, AvtopiaCols.shipStreet1);
-  final shipStreet2Cell = cellByIndex(writeSheet, rowIndex, AvtopiaCols.shipStreet2);
-  final shipCityCell = cellByIndex(writeSheet, rowIndex, AvtopiaCols.shipCity);
-  final shipStateCell = cellByIndex(writeSheet, rowIndex, AvtopiaCols.shipState);
-  final shipZipCell = cellByIndex(writeSheet, rowIndex, AvtopiaCols.shipZip);
+  final companyNameCell = cellByIndex(writeSheet, rowIndex, WriteCols.accountName);
+  final dba1Cell = cellByIndex(writeSheet, rowIndex, WriteCols.dba1);
+  final dba2Cell = cellByIndex(writeSheet, rowIndex, WriteCols.dba2);
+  final dba3Cell = cellByIndex(writeSheet, rowIndex, WriteCols.dba3);
+  final shipStreet1Cell = cellByIndex(writeSheet, rowIndex, WriteCols.shipStreet1);
+  final shipStreet2Cell = cellByIndex(writeSheet, rowIndex, WriteCols.shipStreet2);
+  final shipCityCell = cellByIndex(writeSheet, rowIndex, WriteCols.shipCity);
+  final shipStateCell = cellByIndex(writeSheet, rowIndex, WriteCols.shipState);
+  final shipZipCell = cellByIndex(writeSheet, rowIndex, WriteCols.shipZip);
 
   if (shipStateCell.value.toString().trim().isEmpty) {
     return false;
@@ -292,7 +292,7 @@ Future<bool> searchByNameAndAddress(Sheet writeSheet, Sheet readSheet, int rowIn
     listOfCandidates = GoogleCandidates.fromJson(jsonDecode(response.body));
     if (listOfCandidates.candidates.isNotEmpty) {
       // Copy this row into the new file
-      copyRow(writeSheet, readSheet, rowIndex);
+      //copyRow(writeSheet, readSheet, rowIndex);
     } else {
       return false; // return false if nothing is found
     }
@@ -392,8 +392,8 @@ Future<GoogleNearbyResult> searchNearby(
 
 Future<bool> searchByPhone(Sheet writeSheet, Sheet readSheet, int rowIndex) async {
   // Transform the phone number
-  final phoneCell = cellByIndex(writeSheet, rowIndex, AvtopiaCols.phone);
-  final countryCell = cellByIndex(writeSheet, rowIndex, AvtopiaCols.shipCountry);
+  final phoneCell = cellByIndex(writeSheet, rowIndex, WriteCols.phone);
+  final countryCell = cellByIndex(writeSheet, rowIndex, WriteCols.shipCountry);
 
   if (phoneCell.value == null || countryCell.value == null) {
     return false;
@@ -415,7 +415,7 @@ Future<bool> searchByPhone(Sheet writeSheet, Sheet readSheet, int rowIndex) asyn
     listOfCandidates = GoogleCandidates.fromJson(jsonDecode(response.body));
     if (listOfCandidates.candidates.isNotEmpty) {
       // Copy this row into the new file
-      copyRow(writeSheet, readSheet, rowIndex);
+      //copyRow(writeSheet, readSheet, rowIndex);
     } else {
       return false; // return false if nothing is found
     }
@@ -499,7 +499,7 @@ Future<bool> googleSearchNearby() async {
     }
 
     // Burbank and Van Nuys - skip till later
-    if ((airportCode == 'BUR' || airportCode == 'VNY' || airportCode == 'SDL')) {
+    if (airportCode == 'BUR' || airportCode == 'VNY' || airportCode == 'SDL') {
       continue;
     }
 
@@ -745,12 +745,14 @@ Future<bool> googleSearchNearby() async {
 Future<bool> getGooglePlacesData() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  final data = await rootBundle.load('assets/temp.xlsx');
+  const currentFileName = 'Partner Launch - Airport List (reorder Google Columns).xlsx';
+
+  final data = await rootBundle.load('assets/$currentFileName');
   final bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
   final wb = Excel.decodeBytes(bytes);
 
-  final readSheet = wb.sheets[wb.sheets.keys.firstWhere((a) => a == 'BetaData')];
-  final writeSheet = wb.sheets[wb.sheets.keys.firstWhere((a) => a == 'BetaDataResults')];
+  final readSheet = wb.sheets[wb.sheets.keys.firstWhere((a) => a == 'NearbyResults')];
+  final writeSheet = wb.sheets[wb.sheets.keys.firstWhere((a) => a == 'NearbyResults')];
 
   // *** Steps before doing any work on a data sheet
   // *** that's never ran against this code before:
@@ -761,14 +763,40 @@ Future<bool> getGooglePlacesData() async {
   // 4. Create new "google" columns
   // 5. Change any states that are spelled out to correct abbreviation
 
+  var countProcessed = 0;
+  var countSkipped = 0;
+
   // rowIndex starts at 2 vs. 0 to skip the header row
-  for (var rowIndex = 1; rowIndex <= readSheet.rows.length; rowIndex++) {
-    if (rowIndex >= 25) {
-      // 496) {
+  for (var rowIndex = 2; rowIndex <= readSheet.rows.length; rowIndex++) {
+    // This needs to be here as most of not all of our excel sheets seem to have infinite rows
+    // So you need to set this to a few rows above the last "real" row
+    if (rowIndex > 1937) {
       break;
     }
 
-    const queryAPI = false;
+    final manualEntry = writeSheet
+        .cell(CellIndex.indexByColumnRow(rowIndex: rowIndex, columnIndex: WriteCols.manualEntry))
+        .value
+        ?.toString();
+    final ignoreEntry = writeSheet
+        .cell(CellIndex.indexByColumnRow(rowIndex: rowIndex, columnIndex: WriteCols.ignoreEntry))
+        .value
+        ?.toString();
+    var placeID = writeSheet
+        .cell(CellIndex.indexByColumnRow(rowIndex: rowIndex, columnIndex: WriteCols.googlePlaceID))
+        .value
+        ?.toString();
+
+    if (manualEntry == null ||
+        (ignoreEntry != null && ignoreEntry?.trim()?.toLowerCase() == 'x') ||
+        (manualEntry?.trim()?.toLowerCase() == 'x' && placeID != null)) {
+      countSkipped++;
+      continue;
+    }
+
+    countProcessed++;
+
+    const queryAPI = true;
 
     if (queryAPI) {
       var anySuccess = false;
@@ -802,16 +830,16 @@ Future<bool> getGooglePlacesData() async {
 
       // TODO: turn this on if we want to pull in place details which cost more
       if (anySuccess) {
-        //   // Go get the details for this line
-        //   final placeID = writeSheet
-        //       .cell(CellIndex.indexByColumnRow(
-        //           rowIndex: rowIndex, columnIndex: WriteCols.googlePlaceID))
-        //       .value
-        //       ?.toString();
+        placeID = writeSheet
+            .cell(CellIndex.indexByColumnRow(
+                rowIndex: rowIndex, columnIndex: WriteCols.googlePlaceID))
+            .value
+            ?.toString();
 
-        //   if (placeID != null) {
-        //     await getPlaceDetails(writeSheet, readSheet, rowIndex, placeID);
-        //   }
+        // Go get the details for this line
+        if (placeID != null) {
+          await getPlaceDetails(writeSheet, readSheet, rowIndex, placeID);
+        }
       }
     }
 
@@ -821,17 +849,29 @@ Future<bool> getGooglePlacesData() async {
     syncStatusCell.cellStyle =
         CellStyle(backgroundColorHex: syncStatusCellValue == 'yes' ? hexGreen : hexRed);
 
+    print('# of records processed: $countProcessed; # of records skipped: $countSkipped');
+
     // *** COMPARATIVE ANALYSIS BETWEEN OUR DATA AND GOOGLE DATA
-    if (syncStatusCellValue == 'yes' && queryAPI == false) {
+    if (syncStatusCellValue == 'yes') {
+      // && queryAPI == false) {
       compareToGoogleData(writeSheet, rowIndex);
     }
   }
 
+  print('done looping through businesses');
+
+  final fullPathFileName =
+      join(r'C:\Users\jared\source\repos\avtopia\data_sync_desktop\assets\', currentFileName);
+
+  print('about to save file: $currentFileName');
+
   await wb.encode().then((value) {
-    File(join(r'C:\Users\jared\source\repos\avtopia\data_sync_desktop\assets\temp.xlsx'))
+    File(fullPathFileName)
       ..createSync(recursive: true)
       ..writeAsBytesSync(value);
   });
+
+  print('file saved');
 
   return true;
 }
@@ -839,7 +879,8 @@ Future<bool> getGooglePlacesData() async {
 Future<bool> main() async {
   print('main running');
 
-  return googleSearchNearby();
+  //return googleSearchNearby();
+  return getGooglePlacesData();
 
   // WidgetsFlutterBinding.ensureInitialized();
   // final data =
@@ -1112,59 +1153,61 @@ String getPlaceDetailsURL({@required String placeID}) {
 
 class WriteCols {
   static const int id = 0;
-  static const int accountName = 1;
-  static const int dba1 = 2;
-  static const int dba2 = 3;
-  static const int dba3 = 4;
-  static const int shipStreet1 = 5;
-  static const int shipStreet2 = 6;
-  static const int shipCity = 7;
-  static const int shipState = 8;
-  static const int shipZip = 9;
-  static const int shipCountry = 10;
-  static const int phone = 11;
-  static const int website = 12;
-  static const int airportCode = 13;
-  static const int busCat1 = 14;
-  static const int busCat2 = 15;
-  static const int busCat3 = 16;
-  static const int busCat4 = 17;
-  static const int busCat5 = 18;
-  static const int syncStatus = 19;
-  static const int googleSyncByPhone = 20;
-  static const int googleSyncByNameAndAddress = 21;
-  static const int googleSyncByWebsite = 22;
-  static const int googleSyncByNameOnly = 23;
-  static const int goolgeSyncByNearby = 24;
-  static const int googleMapsURL = 25;
-  static const int googleJSONCandidate = 26;
-  static const int googleJSONNearby = 27;
-  static const int googleCompanyName = 28;
-  static const int googleBusinessStatus = 29;
-  static const int googlePlaceID = 30;
-  static const int googleFormattedAddress = 31;
-  static const int matchStreet = 32;
-  static const int matchCity = 33;
-  static const int matchState = 34;
-  static const int matchZip = 35;
-  static const int googleLatitude = 36;
-  static const int googleLongitude = 37;
-  static const int googlePlacesDetailsJSON = 38;
-  static const int googleAdrAddress = 39;
-  static const int googleFormattedPhoneNumber = 40;
-  static const int googleIcon = 41;
-  static const int googleID = 42;
-  static const int googleInternationalPhoneNumber = 43;
-  static const int googleListingTypes = 44;
-  static const int googleUTCOffset = 45;
-  static const int googleVicinity = 46;
-  static const int googleBusinessURL = 47;
-  static const int googleRating = 48;
-  static const int googleNumReviews = 49;
-  static const int googlePriceLevel = 50;
-  static const int googleGlobalCode = 51;
-  static const int googleCompoundCode = 52;
-  static const int googleOpeningHours = 53;
+  static const int ignoreEntry = 1;
+  static const int manualEntry = 2;
+  static const int accountName = 3;
+  static const int dba1 = 4;
+  static const int dba2 = 5;
+  static const int dba3 = 6;
+  static const int shipStreet1 = 7;
+  static const int shipStreet2 = 8;
+  static const int shipCity = 9;
+  static const int shipState = 10;
+  static const int shipZip = 11;
+  static const int shipCountry = 12;
+  static const int phone = 13;
+  static const int website = 14;
+  static const int airportCode = 15;
+  static const int busCat1 = 16;
+  static const int busCat2 = 17;
+  static const int busCat3 = 18;
+  static const int busCat4 = 19;
+  static const int busCat5 = 20;
+  static const int syncStatus = 21;
+  static const int googleSyncByPhone = 22;
+  static const int googleSyncByNameAndAddress = 23;
+  static const int googleSyncByWebsite = 24;
+  static const int googleSyncByNameOnly = 25;
+  static const int goolgeSyncByNearby = 26;
+  static const int googleMapsURL = 27;
+  static const int googleJSONCandidate = 28;
+  static const int googleJSONNearby = 29;
+  static const int googleCompanyName = 30;
+  static const int googleBusinessStatus = 31;
+  static const int googlePlaceID = 32;
+  static const int googleFormattedAddress = 33;
+  static const int matchStreet = 34;
+  static const int matchCity = 35;
+  static const int matchState = 36;
+  static const int matchZip = 37;
+  static const int googleLatitude = 38;
+  static const int googleLongitude = 39;
+  static const int googlePlacesDetailsJSON = 40;
+  static const int googleAdrAddress = 41;
+  static const int googleFormattedPhoneNumber = 42;
+  static const int googleIcon = 43;
+  static const int googleID = 44;
+  static const int googleInternationalPhoneNumber = 45;
+  static const int googleListingTypes = 46;
+  static const int googleUTCOffset = 47;
+  static const int googleVicinity = 48;
+  static const int googleBusinessURL = 49;
+  static const int googleRating = 50;
+  static const int googleNumReviews = 51;
+  static const int googlePriceLevel = 52;
+  static const int googleGlobalCode = 53;
+  static const int googleCompoundCode = 54;
+  static const int googleOpeningHours = 55;
 }
 
 class AirportListCols {
@@ -1176,67 +1219,4 @@ class AirportListCols {
   static const int latitudeDecimalDegreesValue = 5;
   static const int longitudeDecimalDegreesValue = 6;
   static const int sixtyPlusAirport = 7;
-}
-
-class AvtopiaCols {
-  static const int id = 0;
-  static const int accountName = 1;
-  static const int dba1 = 2;
-  static const int dba2 = 3;
-  static const int dba3 = 4;
-  static const int shipStreet1 = 5;
-  static const int shipStreet2 = 6;
-  static const int shipCity = 7;
-  static const int shipState = 8;
-  static const int shipZip = 9;
-  static const int shipCountry = 10;
-  static const int phone = 11;
-  static const int website = 12;
-  static const int busCat1 = 13;
-  static const int busCat2 = 14;
-  static const int busCat3 = 15;
-  static const int busCat4 = 16;
-  static const int busCat5 = 17;
-  static const int busCat6 = 18;
-  static const int busCat7 = 19;
-  static const int busCat8 = 20;
-  static const int busCat9 = 21;
-  static const int busCat10 = 22;
-  static const int tag1 = 23;
-  static const int tag2 = 24;
-  static const int tag3 = 25;
-  static const int tag4 = 26;
-  static const int tag5 = 27;
-  static const int tag6 = 28;
-  static const int tag7 = 29;
-  static const int tag8 = 30;
-  static const int tag9 = 31;
-  static const int tag10 = 32;
-  static const int tag11 = 33;
-  static const int tag12 = 34;
-  static const int tag13 = 35;
-  static const int tag14 = 36;
-  static const int tag15 = 37;
-  static const int tag16 = 38;
-  static const int tag17 = 39;
-  static const int tag18 = 40;
-  static const int tag19 = 41;
-  static const int tag20 = 42;
-  static const int googleSyncByPhone = 43;
-  static const int googleSyncByNameAndAddress = 44;
-  static const int googleSyncByWebsite = 45;
-  static const int googleSyncByNameOnly = 46;
-  static const int googleRating = 47;
-  static const int googleNumberOfReviews = 48;
-  static const int googleWebiste = 49;
-  static const int googleCompanyName = 50;
-  static const int googleStreet = 51;
-  static const int googleStreet2 = 52;
-  static const int googleCity = 53;
-  static const int googleState = 54;
-  static const int googleZip = 55;
-  static const int googleCountry = 56;
-  static const int googleGPSCoordinates = 57;
-  static const int googleImageURL = 58;
-  static const int googlePlaceID = 59;
 }
