@@ -745,7 +745,7 @@ Future<bool> googleSearchNearby() async {
 Future<bool> getGooglePlacesData() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  const currentFileName = 'Partner Launch - Airport List (reorder Google Columns).xlsx';
+  const currentFileName = 'Partner Launch - Airport List.xlsx';
 
   final data = await rootBundle.load('assets/$currentFileName');
   final bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
