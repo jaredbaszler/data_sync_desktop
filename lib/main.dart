@@ -480,15 +480,19 @@ Future<bool> googleSearchNearby() async {
   final wb = Excel.decodeBytes(bytes);
 
   final readSheet = wb.sheets[wb.sheets.keys.firstWhere((a) => a == 'Partner Launch')];
-  final writeSheet = wb.sheets[wb.sheets.keys.firstWhere((a) => a == '60Plus')];
+  final writeSheet = wb.sheets[wb.sheets.keys.firstWhere((a) => a == 'NearbyResults-New')];
 
-  var writeIndex = 1;
+  var writeIndex = 447;
   String nextPageToken;
 
   storePlaceIDs(writeSheet);
 
   // Loop through the designated airports in the Partner Launch tab
-  for (var readIndex = 1; readIndex <= readSheet.rows.length; readIndex++) {
+  for (var readIndex = 11; readIndex <= readSheet.rows.length; readIndex++) {
+    // if (readIndex == 11) {
+    //   break;
+    // }
+
     final airportCode = readSheet
         .cell(CellIndex.indexByColumnRow(
             rowIndex: readIndex, columnIndex: AirportListCols.airportCode))
@@ -499,9 +503,9 @@ Future<bool> googleSearchNearby() async {
     }
 
     // Burbank and Van Nuys - skip till later
-    if (airportCode == 'BUR' || airportCode == 'VNY' || airportCode == 'SDL') {
-      continue;
-    }
+    // if (airportCode == 'BUR' || airportCode == 'VNY' || airportCode == 'SDL') {
+    //   continue;
+    // }
 
     final sixtyPlus = readSheet
         .cell(CellIndex.indexByColumnRow(
@@ -510,13 +514,14 @@ Future<bool> googleSearchNearby() async {
 
     // Skip any airport denoted as ***NOT*** 60+ for now (2021-07-13) per Doug
     // Now doing 60+ airports 2021-09-15
-    if (sixtyPlus == 'X') {
-      print('***** WRITING Airport: $airportCode *****');
-      //continue;
-    } else {
-      print('***** SKIPPING Airport: $airportCode *****');
-      continue;
-    }
+    // 2022-01-09:
+    // if (sixtyPlus == 'X') {
+    //   print('***** WRITING Airport: $airportCode *****');
+    //   //continue;
+    // } else {
+    //   print('***** SKIPPING Airport: $airportCode *****');
+    //   //continue;
+    // }
 
     final airportLat =
         cellByIndex(readSheet, readIndex, AirportListCols.latitudeDecimalDegreesValue)?.value;
@@ -751,8 +756,8 @@ Future<bool> getGooglePlacesData() async {
   final bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
   final wb = Excel.decodeBytes(bytes);
 
-  final readSheet = wb.sheets[wb.sheets.keys.firstWhere((a) => a == 'NearbyResults')];
-  final writeSheet = wb.sheets[wb.sheets.keys.firstWhere((a) => a == 'NearbyResults')];
+  final readSheet = wb.sheets[wb.sheets.keys.firstWhere((a) => a == 'ManualEntries')];
+  final writeSheet = wb.sheets[wb.sheets.keys.firstWhere((a) => a == 'ManualEntries')];
 
   // *** Steps before doing any work on a data sheet
   // *** that's never ran against this code before:
@@ -770,7 +775,7 @@ Future<bool> getGooglePlacesData() async {
   for (var rowIndex = 2; rowIndex <= readSheet.rows.length; rowIndex++) {
     // This needs to be here as most of not all of our excel sheets seem to have infinite rows
     // So you need to set this to a few rows above the last "real" row
-    if (rowIndex > 1937) {
+    if (rowIndex > 373) {
       break;
     }
 
