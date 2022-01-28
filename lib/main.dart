@@ -480,16 +480,17 @@ Future<bool> googleSearchNearby() async {
   final wb = Excel.decodeBytes(bytes);
 
   final readSheet = wb.sheets[wb.sheets.keys.firstWhere((a) => a == 'Partner Launch')];
-  final writeSheet = wb.sheets[wb.sheets.keys.firstWhere((a) => a == 'NearbyResults-New')];
+  final writeSheet = wb.sheets[wb.sheets.keys.firstWhere((a) => a == 'NearbyResults-NewAirports')];
 
-  var writeIndex = 447;
+  var writeIndex = 170;
   String nextPageToken;
 
-  storePlaceIDs(writeSheet);
+  //storePlaceIDs(writeSheet);
 
   // Loop through the designated airports in the Partner Launch tab
-  for (var readIndex = 11; readIndex <= readSheet.rows.length; readIndex++) {
-    // if (readIndex == 11) {
+  // Started on line 80 in 2022-01-27
+  for (var readIndex = 83; readIndex <= readSheet.rows.length; readIndex++) {
+    // if (readIndex == 83) {
     //   break;
     // }
 
@@ -507,10 +508,10 @@ Future<bool> googleSearchNearby() async {
     //   continue;
     // }
 
-    final sixtyPlus = readSheet
-        .cell(CellIndex.indexByColumnRow(
-            rowIndex: readIndex, columnIndex: AirportListCols.sixtyPlusAirport))
-        .value;
+    // final sixtyPlus = readSheet
+    //     .cell(CellIndex.indexByColumnRow(
+    //         rowIndex: readIndex, columnIndex: AirportListCols.sixtyPlusAirport))
+    //     .value;
 
     // Skip any airport denoted as ***NOT*** 60+ for now (2021-07-13) per Doug
     // Now doing 60+ airports 2021-09-15
@@ -744,6 +745,8 @@ Future<bool> googleSearchNearby() async {
       ..writeAsBytesSync(value);
   });
 
+  print('workbook saving done');
+
   return true;
 }
 
@@ -884,8 +887,8 @@ Future<bool> getGooglePlacesData() async {
 Future<bool> main() async {
   print('main running');
 
-  //return googleSearchNearby();
-  return getGooglePlacesData();
+  return googleSearchNearby();
+  //return getGooglePlacesData();
 
   // WidgetsFlutterBinding.ensureInitialized();
   // final data =
