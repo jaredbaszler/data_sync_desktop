@@ -480,17 +480,17 @@ Future<bool> googleSearchNearby() async {
   final wb = Excel.decodeBytes(bytes);
 
   final readSheet = wb.sheets[wb.sheets.keys.firstWhere((a) => a == 'Partner Launch')];
-  final writeSheet = wb.sheets[wb.sheets.keys.firstWhere((a) => a == 'NearbyResults-NewAirports')];
+  final writeSheet = wb.sheets[wb.sheets.keys.firstWhere((a) => a == 'NearbyResults-April2022')];
 
-  var writeIndex = 170;
+  var writeIndex = 2;
   String nextPageToken;
 
   //storePlaceIDs(writeSheet);
 
   // Loop through the designated airports in the Partner Launch tab
   // Started on line 80 in 2022-01-27
-  for (var readIndex = 83; readIndex <= readSheet.rows.length; readIndex++) {
-    // if (readIndex == 83) {
+  for (var readIndex = 161; readIndex <= readSheet.rows.length; readIndex++) {
+    // if (readIndex == 163) {
     //   break;
     // }
 
