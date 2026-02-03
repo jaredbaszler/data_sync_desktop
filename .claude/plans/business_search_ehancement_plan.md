@@ -394,54 +394,130 @@ const searchKeywords = [
 
 ---
 
-## Business Categorization
+## Business Categorization + FAR Regulatory Code Lookup
 
-### Auto-categorization Based on Google Types & Name
+### Master Code Dictionary: `Business Category and Search.xlsx`
 
-Map Google Places `types` array and business name to aviation categories:
+This file is the **single source of truth** for all valid database codes. Located in `assets/db_code lookups/`, it defines 139 business category codes organized into 13 operation groups, each with pipe-delimited search terms.
 
-| Category Code | Description | Detection Rules |
-|---------------|-------------|-----------------|
-| `FBO` | Fixed Base Operator | Name contains "FBO", "Fixed Base", "Jet Center" |
-| `FLIGHT_SCHOOL` | Flight Training | types contains "school", name contains "flight school", "flying club" |
-| `MAINTENANCE` | Aircraft Maintenance | Name contains "maintenance", "repair", "MRO", "avionics" |
-| `CHARTER` | Charter Services | Name contains "charter", "jet", "air taxi" |
-| `RENTAL` | Aircraft Rental | Name contains "rental", "aircraft hire" |
-| `FUEL` | Fuel Services | Name contains "fuel", "avgas", "jet-a" |
-| `HANGAR` | Hangar/Storage | Name contains "hangar", "storage", "tie-down" |
-| `OTHER` | Other Aviation | Default for aviation-related businesses |
+All codes used in `dbCode` fields **must** come from this file. Replaces previously proposed ad-hoc codes:
+- `FBO` (official code, same name)
+- `FLT141` (replaces "FLIGHT_SCHOOL")
+- `P145` (replaces "MAINTENANCE")
+- `P135` (replaces "CHARTER")
+- `HANG` (replaces "HANGAR")
+- `FUELSV` (replaces "FUEL")
+- `RENT` (replaces "RENTAL")
+- etc. (139 total codes)
+
+### FAR Regulatory File Lookup
+
+Located in `assets/db_code lookups/`:
+
+| File | Matched DB Code | Records |
+|------|-----------------|---------|
+| FAR 135 Charter Operators_USA ALL_Category Coded.xlsx | `P135` | ~1,267 |
+| FAR 141 Pilot Flight Training_ALL USA-With category Code.xlsx | `FLT141` | ~700 |
+| FAR 142 Flight Training with Category Codes.xlsx | `FLT142` | ~185 |
+| FAR 145 Repair Stations_ALL USA with Category Codes.xlsx | `P145` | ~212 |
+| FAR 145 _Florida_ALL_Repair Station_With category codes.xlsx | `P145` | ~640 |
+| FAR 147 Aircraft mechanic Schools USA_ALL_Category Coded.xlsx | `P147` | ~222 |
+
+Each FAR file has columns: name, dba1-3, street1, city, state, zipCode, airportCode, dbCode1-5.
+
+### Two-Layer Categorization (runs per business during sync)
+
+```
+Google Places result
+    ↓
+1. Auto-categorize using search terms from Category dictionary
+   (match business name/types against pipe-delimited search terms → database code)
+    ↓
+2. FAR file lookup using fuzzy name + city/state matching
+   (match against ~3,200 FAR entries → database code)
+    ↓
+3. Combine all matched codes + search terms → store in dbCode & searchValue fields
+```
+
+**FAR Matching Strategy (Fuzzy Name + Location):**
+1. Normalize business names (lowercase, strip "LLC", "Inc", punctuation)
+2. Match criteria: Name similarity > 80% (Levenshtein) AND same state (exact) + similar city (fuzzy)
+3. Check name, dba1, dba2, dba3 fields from FAR entries
+4. A business can match multiple FAR files (e.g., P135 + P145)
+
+**Search Term Categorization:**
+- Match business name/types against pipe-delimited search terms from each category
+- e.g., name contains "hangar" → code `HANG`
+- e.g., name contains "avionics" → code `AVIONICS`
 
 ### Storage
-- **MongoDB fields:** `dbCode`, `dbCode3`, `dbCode4`, `dbCode5`
-- **Primary category:** `dbCode`
-- **Additional categories:** `dbCode3`, `dbCode4`, `dbCode5`
-- **Example:** `dbCode: "FBO"`, `dbCode3: "FUEL"`, `dbCode4: "HANGAR"`
+
+**Database codes** → `dbCode`, `dbCode3`, `dbCode4`, `dbCode5`
+**Search terms** → `searchValue1` through `searchValue5`
+
+When a business matches a category:
+1. The database code (e.g., `P135`) goes in the next available `dbCode` field
+2. ALL search terms from that category go in the corresponding `searchValue` field
+
+The `searchValue` fields pair with `dbCode` fields:
+- `dbCode` → `searchValue1`
+- `dbCode3` → `searchValue2`
+- `dbCode4` → `searchValue3`
+- `dbCode5` → `searchValue4`
+- overflow → `searchValue5`
+
+**Example:** A charter company that's also a repair station and FBO:
+```json
+{
+  "dbCode": "P135",
+  "dbCode3": "P145",
+  "dbCode4": "FBO",
+  "dbCode5": null,
+  "searchValue1": "charter | Air Taxi | 135 | on demand charter | aircraft charter | private jet charter",
+  "searchValue2": "145 | repair station | maintenance shop | aircraft maintenance",
+  "searchValue3": "FBO | fixed base operator",
+  "searchValue4": null,
+  "searchValue5": null
+}
+```
 
 ### Implementation
 
 ```dart
-List<String> categorize(String name, List<String> types) {
-  final categories = <String>[];
+// At startup - load reference data
+final categoryService = CategoryService();
+await categoryService.loadCategoryDictionary('assets/db_code lookups/Business Category and Search Copy.xlsx');
 
-  final nameLower = name.toLowerCase();
+final farLookup = FarLookupService(categoryService);
+await farLookup.loadFarFiles('assets/db_code lookups/');
 
-  if (nameLower.contains('fbo') || nameLower.contains('fixed base')) {
-    categories.add('FBO');
-  }
-  if (nameLower.contains('flight school') || nameLower.contains('flying club')) {
-    categories.add('FLIGHT_SCHOOL');
-  }
-  if (nameLower.contains('maintenance') || nameLower.contains('avionics')) {
-    categories.add('MAINTENANCE');
-  }
-  // ... more rules
+// Per business, after fetching Google Places details:
+final placeDetails = await placesApi.getDetails(placeId);
 
-  if (categories.isEmpty) {
-    categories.add('OTHER');
-  }
+// 1. Auto-categorize using search terms from category dictionary
+final searchTermMatches = categoryService.categorizeBySearchTerms(
+  placeDetails.name, placeDetails.types,
+);
 
-  return categories.take(4).toList();  // Max 4 categories
-}
+// 2. FAR file lookup (fuzzy name + city/state)
+final farMatches = farLookup.findMatches(
+  placeDetails.name, placeDetails.city, placeDetails.state,
+);
+
+// 3. Combine (FAR codes first as they're authoritative)
+final allMatches = <CategoryMatch>{...farMatches, ...searchTermMatches}.toList();
+
+// 4. Store codes + search terms
+business.dbCode  = allMatches.isNotEmpty ? allMatches[0].code : null;
+business.dbCode3 = allMatches.length > 1 ? allMatches[1].code : null;
+business.dbCode4 = allMatches.length > 2 ? allMatches[2].code : null;
+business.dbCode5 = allMatches.length > 3 ? allMatches[3].code : null;
+
+business.searchValue1 = allMatches.isNotEmpty ? allMatches[0].searchTerms : null;
+business.searchValue2 = allMatches.length > 1 ? allMatches[1].searchTerms : null;
+business.searchValue3 = allMatches.length > 2 ? allMatches[2].searchTerms : null;
+business.searchValue4 = allMatches.length > 3 ? allMatches[3].searchTerms : null;
+business.searchValue5 = allMatches.length > 4 ? allMatches[4].searchTerms : null;
 ```
 
 ---
