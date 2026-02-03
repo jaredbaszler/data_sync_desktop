@@ -50,17 +50,16 @@ GitHub Actions (manual trigger via workflow_dispatch)
 ### Phase 1: Project Setup (4-6 hours)
 - [ ] Create new Dart CLI project (or convert existing)
 - [ ] Remove Flutter dependencies from pubspec.yaml
-- [ ] Add new dependencies: `mongo_dart`, `dotenv`, `args`
+- [ ] Add new dependencies: `mongo_dart`, `dotenv`, `args`, `string_similarity`
 - [ ] Set up environment variable configuration
 - [ ] Create `.env.example` template
 
 ### Phase 2: MongoDB Data Layer (10-12 hours)
 - [ ] Create new `airports` collection in MongoDB Atlas
-- [ ] Migrate `airportCode` → `airportCodes` (array) in existing `avtopia_business` collection
-- [ ] Import airport data from Excel to new `airports` collection
+- [ ] Import airport data from `airport-codes_csv.xlsx` (use `Ident` column as ICAO code)
 - [ ] Create MongoDB connection class in Dart
 - [ ] Implement repository classes for airports and businesses
-- [ ] Add indexes: `{ placeId: 1 }` (unique), `{ airportCodes: 1 }`
+- [ ] Add indexes: `{ placeId: 1 }` (unique), `{ airportCode: 1 }`
 
 ### Phase 3: Refactor Core Logic (16-20 hours)
 - [ ] Extract Google Places API functions to separate file
@@ -69,6 +68,10 @@ GitHub Actions (manual trigger via workflow_dispatch)
 - [ ] Replace Excel write operations with MongoDB upserts
 - [ ] **Implement multi-keyword search** (aviation, FBO, flight school, etc.)
 - [ ] **Implement auto-categorization** (dbCode, dbCode3-5 fields)
+- [ ] **Load category code dictionary** from `Business Category and Search.xlsx`
+- [ ] **Implement FAR lookup service** (load 6 FAR Excel files, fuzzy name + city/state matching)
+- [ ] **Implement search-term-based categorization** (match business name/types against category search terms)
+- [ ] **Integrate FAR lookup + categorization into sync workflow** (combine codes, store in dbCode + searchValue fields)
 - [ ] Implement data refresh logic (30/90 day thresholds)
 - [ ] Add retry logic with exponential backoff for API calls
 - [ ] Implement checkpoint/resume system for interrupted runs
@@ -171,13 +174,18 @@ MongoDB uses GeoJSON format: `[longitude, latitude]` (opposite of Google's `[lat
 
 ## New Collection: `airports`
 
-Create a new collection to store airport data (currently in Excel):
+Create a new collection to store airport data from `airport-codes_csv.xlsx`:
 
 ```json
 {
-  "_id": "BUR",
+  "_id": "KBUR",
+  "icaoCode": "KBUR",
+  "iataCode": "BUR",
+  "faaCode": "BUR",
+  "gpsCode": "KBUR",
   "name": "Hollywood Burbank Airport",
   "state": "CA",
+  "country": "US",
   "latitude": 34.2006,
   "longitude": -118.3585,
   "sixtyPlusAirport": true,
@@ -188,36 +196,23 @@ Create a new collection to store airport data (currently in Excel):
 }
 ```
 
----
+### Airport Code Fields (from `airport-codes_csv.xlsx`)
 
-## Schema Change Required: `airportCode` → `airportCodes` (Array)
+| Field | Source Column | Description | Notes |
+|-------|-------------|-------------|-------|
+| `icaoCode` | `ident` | ICAO code (international) | 4-char, US airports start with 'K' (e.g., KLAX) |
+| `iataCode` | `iata_code` | IATA code (commercial) | 3-letter (LAX, JFK), nullable - only commercial airports |
+| `faaCode` | `local_code` | FAA LID (US only) | 3-letter without 'K' prefix (ATL, LAX), nullable for international |
+| `gpsCode` | `gps_code` | GPS/navigation code | Often same as ICAO, used for flight planning |
 
-**Current:** `"airportCode": "BUR"` (string)
-**New:** `"airportCodes": ["BUR", "VNY"]` (array of strings)
+- `_id` uses the ICAO code (`ident`) as the primary key
+- `iataCode` will be null for many small airports without commercial service
+- `faaCode` will be null for international airports
+- NaN values from the Excel file should be stored as null
 
-### Migration Script Needed
-```javascript
-// MongoDB migration to convert existing data
-db.avtopia_business.updateMany(
-  { airportCode: { $exists: true, $type: "string" } },
-  [
-    { $set: {
-        airportCodes: { $split: ["$airportCode", ","] },
-        airportCode: "$$REMOVE"  // or keep for backward compatibility
-      }
-    }
-  ]
-)
-```
+### Airport Code on Business Records
 
-### Update Schema Validation
-```javascript
-// Update the $jsonSchema to allow array
-"airportCodes": {
-  "bsonType": "array",
-  "items": { "bsonType": "string" }
-}
-```
+`airportCode` on `avtopia_business` remains a single string field (no migration needed). Uses the ICAO code.
 
 ---
 
@@ -250,9 +245,15 @@ SEARCH_RADIUS_MILES=10
       places_api.dart
       nearby_search.dart
       place_details.dart
+    /categorization                # NEW
+      category_service.dart        # Master code dictionary + search term matching
+      far_lookup.dart              # FAR file loading + fuzzy business matching
+      name_matcher.dart            # Shared fuzzy matching utilities
     /models
       airport.dart
       business.dart
+      category_code.dart           # NEW - CategoryCode model
+      far_entry.dart               # NEW - FarEntry model
       (existing models...)
     /utils
       extensions.dart (keep existing)
@@ -317,6 +318,9 @@ jobs:
 | `lib/main.dart` | Major rewrite | CLI entry, remove Flutter |
 | `lib/src/database/*.dart` | Create | MongoDB data layer |
 | `lib/src/google/*.dart` | Create | Extract API logic |
+| `lib/src/categorization/*.dart` | Create | FAR lookup, category service, fuzzy matching |
+| `lib/src/models/category_code.dart` | Create | CategoryCode model |
+| `lib/src/models/far_entry.dart` | Create | FarEntry model |
 | `lib/utils/extensions.dart` | Keep | Already framework-agnostic |
 | `lib/models/*.dart` | Keep | JSON models still useful |
 | `.github/workflows/sync_places.yml` | Create | GitHub Actions workflow |
@@ -327,21 +331,15 @@ jobs:
 
 ## Data Migration Plan
 
-### Step 1: Schema Update (avtopia_business)
-1. Backup existing `avtopia_business` collection
-2. Run migration script to convert `airportCode` (string) → `airportCodes` (array)
-3. Update schema validation to accept array
-
-### Step 2: Create Airports Collection
-1. Export airport data from Excel "Partner Launch" sheet
+### Step 1: Create Airports Collection
+1. Import airport data from `airport-codes_csv.xlsx` (use `Ident` column as ICAO code for `_id`)
 2. Transform to JSON format matching new `airports` schema
 3. Import to new `airports` collection in MongoDB Atlas
-4. Add indexes on `_id` (airport code) and `state`
+4. Add indexes on `_id` (ICAO code) and `state`
 
-### Step 3: Verify Migration
+### Step 2: Verify Migration
 1. Count documents in both collections
 2. Spot-check a few records for data integrity
-3. Verify `airportCodes` arrays are properly formatted
 
 ---
 
@@ -619,3 +617,12 @@ Future<T> withRetry<T>(Future<T> Function() apiCall, {int maxRetries = 3}) async
 - [ ] Secrets are properly configured
 - [ ] Results appear in MongoDB collections
 - [ ] Run logs are recorded
+- [ ] Category dictionary loads all 139 codes from `Business Category and Search.xlsx`
+- [ ] FAR files load (~3,200 total entries across 6 files)
+- [ ] Known FAR 135 business matches → tagged with `P135`
+- [ ] Known FAR 145 business matches → tagged with `P145`
+- [ ] Business in multiple FAR files → multiple codes stored
+- [ ] Search term matching works (e.g., "hangar" in name → `HANG`)
+- [ ] Codes stored are valid codes from the category dictionary
+- [ ] searchValue fields populated with full search terms from matched category
+- [ ] searchValue fields pair correctly with their dbCode fields
