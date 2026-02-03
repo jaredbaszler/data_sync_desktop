@@ -1,0 +1,239 @@
+{
+  "$jsonSchema": {
+    "bsonType": "object",
+    "required": [
+      "_id",
+      "address",
+      "addressTwo",
+      "airportCode",
+      "businessStatus",
+      "businessUrl",
+      "city",
+      "compoundCode",
+      "country",
+      "created",
+      "createdAt",
+      "dba1",
+      "dba2",
+      "dba3",
+      "dbCode",
+      "dbCode3",
+      "dbCode4",
+      "dbCode5",
+      "fullAddress",
+      "fullState",
+      "globalCode",
+      "ignore",
+      "image",
+      "internationalNo",
+      "isGoogleData",
+      "location",
+      "manual",
+      "mapUrl",
+      "mobileNo",
+      "name",
+      "newData",
+      "placeId",
+      "rating",
+      "searchTerms",
+      "searchValue1",
+      "searchValue2",
+      "searchValue3",
+      "searchValue4",
+      "searchValue5",
+      "sequenceId",
+      "state",
+      "status",
+      "syncName",
+      "updatedAt",
+      "vicinity",
+      "websiteURL",
+      "zipCode"
+    ],
+    "properties": {
+      "_id": {
+        "bsonType": "objectId"
+      },
+      "address": {
+        "bsonType": "string"
+      },
+      "addressTwo": {
+        "bsonType": "string"
+      },
+      "airportCode": {
+        "bsonType": "string"
+      },
+      "businessAverageRating": {
+        "bsonType": "int"
+      },
+      "businessReviewCount": {
+        "bsonType": "int"
+      },
+      "businessStatus": {
+        "bsonType": "string"
+      },
+      "businessUrl": {
+        "bsonType": "string"
+      },
+      "city": {
+        "bsonType": "string"
+      },
+      "compoundCode": {
+        "bsonType": "string"
+      },
+      "country": {
+        "bsonType": "string"
+      },
+      "created": {
+        "bsonType": "double"
+      },
+      "createdAt": {
+        "bsonType": "date"
+      },
+      "dba1": {
+        "bsonType": "string"
+      },
+      "dba2": {
+        "bsonType": "string"
+      },
+      "dba3": {
+        "bsonType": "string"
+      },
+      "dbCode": {
+        "bsonType": "string"
+      },
+      "dbCode3": {
+        "bsonType": "string"
+      },
+      "dbCode4": {
+        "bsonType": "string"
+      },
+      "dbCode5": {
+        "bsonType": "string"
+      },
+      "followers": {
+        "bsonType": "array",
+        "items": {
+          "bsonType": "objectId"
+        }
+      },
+      "fullAddress": {
+        "bsonType": "string"
+      },
+      "fullState": {
+        "bsonType": "string"
+      },
+      "globalCode": {
+        "bsonType": "string"
+      },
+      "ignore": {
+        "bsonType": "bool"
+      },
+      "image": {
+        "bsonType": "string"
+      },
+      "internationalNo": {
+        "bsonType": "string"
+      },
+      "isGoogleData": {
+        "bsonType": "int"
+      },
+      "location": {
+        "bsonType": "object",
+        "properties": {
+          "address": {
+            "bsonType": "string"
+          },
+          "coordinates": {
+            "bsonType": "array",
+            "items": {
+              "bsonType": "double"
+            }
+          }
+        },
+        "required": [
+          "address",
+          "coordinates"
+        ]
+      },
+      "manual": {
+        "bsonType": "bool"
+      },
+      "mapUrl": {
+        "bsonType": "string"
+      },
+      "mobileNo": {
+        "bsonType": [
+          "string",
+          "double"
+        ]
+      },
+      "name": {
+        "bsonType": "string"
+      },
+      "newData": {
+        "bsonType": "bool"
+      },
+      "placeId": {
+        "bsonType": "string"
+      },
+      "rating": {
+        "bsonType": [
+          "int",
+          "double"
+        ]
+      },
+      "searchTerms": {
+        "bsonType": "string"
+      },
+      "searchValue1": {
+        "bsonType": "string"
+      },
+      "searchValue2": {
+        "bsonType": "string"
+      },
+      "searchValue3": {
+        "bsonType": "string"
+      },
+      "searchValue4": {
+        "bsonType": "string"
+      },
+      "searchValue5": {
+        "bsonType": "string"
+      },
+      "sequenceId": {
+        "bsonType": "int"
+      },
+      "state": {
+        "bsonType": "string"
+      },
+      "status": {
+        "bsonType": "string"
+      },
+      "syncName": {
+        "bsonType": "string"
+      },
+      "totalFeedBack": {
+        "bsonType": "int"
+      },
+      "totalFollowers": {
+        "bsonType": "int"
+      },
+      "updatedAt": {
+        "bsonType": "date"
+      },
+      "vicinity": {
+        "bsonType": "string"
+      },
+      "websiteURL": {
+        "bsonType": "string"
+      },
+      "zipCode": {
+        "bsonType": [
+          "string",
+          "int"
+        ]
+      }
+    }
+  }
+}

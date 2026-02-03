@@ -1,0 +1,545 @@
+# Major Refactor: Flutter Desktop → Headless CLI + MongoDB
+
+**Date:** 2026-01-29
+**Status:** Planning
+
+---
+
+## Goals
+1. **Better Data Management**: Replace Excel with MongoDB Atlas
+2. **Workflow Automation**: On-demand runs via GitHub Actions
+3. **Scope**: Major refactor
+
+## Decisions Made
+- **MongoDB**: Atlas (cloud-hosted)
+- **Airport Data**: Start with current Excel (~100 airports), expand later
+- **Schedule**: On-demand manual trigger (not scheduled cron)
+
+---
+
+## Architecture
+
+### Current
+```
+Flutter Desktop App (Windows only)
+  ↓
+Excel File I/O (read airports, write results)
+  ↓
+Google Places API
+  ↓
+Excel File Output (local file)
+```
+
+### Target
+```
+Headless Dart CLI (Linux-compatible for GitHub Actions)
+  ↓
+MongoDB Atlas (read airports, write results)
+  ↓
+Google Places API
+  ↓
+MongoDB Atlas (persistent storage)
+  ↓
+GitHub Actions (manual trigger via workflow_dispatch)
+```
+
+---
+
+## Implementation Phases
+
+### Phase 1: Project Setup (4-6 hours)
+- [ ] Create new Dart CLI project (or convert existing)
+- [ ] Remove Flutter dependencies from pubspec.yaml
+- [ ] Add new dependencies: `mongo_dart`, `dotenv`, `args`
+- [ ] Set up environment variable configuration
+- [ ] Create `.env.example` template
+
+### Phase 2: MongoDB Data Layer (10-12 hours)
+- [ ] Create new `airports` collection in MongoDB Atlas
+- [ ] Migrate `airportCode` → `airportCodes` (array) in existing `avtopia_business` collection
+- [ ] Import airport data from Excel to new `airports` collection
+- [ ] Create MongoDB connection class in Dart
+- [ ] Implement repository classes for airports and businesses
+- [ ] Add indexes: `{ placeId: 1 }` (unique), `{ airportCodes: 1 }`
+
+### Phase 3: Refactor Core Logic (16-20 hours)
+- [ ] Extract Google Places API functions to separate file
+- [ ] Remove Flutter-specific code (rootBundle, WidgetsFlutterBinding)
+- [ ] Replace Excel read operations with MongoDB queries
+- [ ] Replace Excel write operations with MongoDB upserts
+- [ ] **Implement multi-keyword search** (aviation, FBO, flight school, etc.)
+- [ ] **Implement auto-categorization** (dbCode, dbCode3-5 fields)
+- [ ] Implement data refresh logic (30/90 day thresholds)
+- [ ] Add retry logic with exponential backoff for API calls
+- [ ] Implement checkpoint/resume system for interrupted runs
+- [ ] Add CLI argument parsing (--refresh-stale, --resume, --limit, --keywords)
+
+### Phase 4: GitHub Actions Setup (4-6 hours)
+- [ ] Create workflow file for manual trigger
+- [ ] Configure secrets (GOOGLE_PLACES_API_KEY, MONGODB_URI)
+- [ ] Test workflow execution
+- [ ] Add workflow badge to README
+
+### Phase 5: Testing & Verification (6-8 hours)
+- [ ] Test locally with MongoDB Atlas connection
+- [ ] Verify data integrity after migration
+- [ ] Run full workflow in GitHub Actions
+- [ ] Compare results with previous Excel output
+
+---
+
+## MongoDB Schema (EXISTING - `avtopia_business` collection)
+
+You already have an existing MongoDB collection. We'll map to it instead of creating a new schema.
+
+### Field Mapping: Excel Columns → MongoDB Fields
+
+| Excel Column (WriteCols) | MongoDB Field | Type |
+|--------------------------|---------------|------|
+| `accountName` (3) | `name` | string |
+| `dba1` (4) | `dba1` | string |
+| `dba2` (5) | `dba2` | string |
+| `dba3` (6) | `dba3` | string |
+| `shipStreet1` (7) | `address` | string |
+| `shipStreet2` (8) | `addressTwo` | string |
+| `shipCity` (9) | `city` | string |
+| `shipState` (10) | `state` | string |
+| `shipZip` (11) | `zipCode` | string |
+| `shipCountry` (12) | `country` | string |
+| `phone` (13) | `mobileNo` | string |
+| `website` (14) | `websiteURL` | string |
+| `airportCode` (15) | `airportCode` | string |
+| `ignoreEntry` (1) | `ignore` | bool |
+| `manualEntry` (2) | `manual` | bool |
+| `googlePlaceID` (32) | `placeId` | string |
+| `googleCompanyName` (30) | `syncName` | string |
+| `googleBusinessStatus` (31) | `businessStatus` | string |
+| `googleFormattedAddress` (33) | `fullAddress` | string |
+| `googleLatitude` (38) | `location.coordinates[1]` | double |
+| `googleLongitude` (39) | `location.coordinates[0]` | double |
+| `googleVicinity` (48) | `vicinity` | string |
+| `googleBusinessURL` (49) | `businessUrl` | string |
+| `googleMapsURL` (27) | `mapUrl` | string |
+| `googleIcon` (43) | `image` | string |
+| `googleRating` (50) | `rating` | double |
+| `googleNumReviews` (51) | `businessReviewCount` | int |
+| `googleGlobalCode` (53) | `globalCode` | string |
+| `googleCompoundCode` (54) | `compoundCode` | string |
+| `googleInternationalPhoneNumber` (45) | `internationalNo` | string |
+| `busCat1-5` (16-20) | `searchValue1-5` | string |
+| N/A | `isGoogleData` | int (set to 1) |
+| N/A | `newData` | bool (set to true) |
+| N/A | `createdAt` | date (auto) |
+| N/A | `updatedAt` | date (auto) |
+| N/A | `sequenceId` | int (auto-increment) |
+
+### Key MongoDB Fields (from existing schema)
+
+```json
+{
+  "_id": ObjectId,
+  "name": "Aviation Company LLC",
+  "placeId": "ChIJ_abc123",
+  "airportCode": "BUR",
+  "address": "123 Airport Way",
+  "city": "Burbank",
+  "state": "CA",
+  "zipCode": "91505",
+  "country": "US",
+  "mobileNo": "818-555-1234",
+  "websiteURL": "https://example.com",
+  "businessStatus": "OPERATIONAL",
+  "rating": 4.5,
+  "businessReviewCount": 123,
+  "location": {
+    "address": "123 Airport Way, Burbank, CA",
+    "coordinates": [-118.3585, 34.2006]  // [lng, lat] - GeoJSON format
+  },
+  "globalCode": "8553XMQX+XX",
+  "compoundCode": "XMQX+XX Burbank",
+  "isGoogleData": 1,
+  "newData": true,
+  "createdAt": ISODate("2026-01-29T14:00:00Z"),
+  "updatedAt": ISODate("2026-01-29T14:00:00Z")
+}
+```
+
+### Note on Location Field
+MongoDB uses GeoJSON format: `[longitude, latitude]` (opposite of Google's `[lat, lng]`)
+
+---
+
+## New Collection: `airports`
+
+Create a new collection to store airport data (currently in Excel):
+
+```json
+{
+  "_id": "BUR",
+  "name": "Hollywood Burbank Airport",
+  "state": "CA",
+  "latitude": 34.2006,
+  "longitude": -118.3585,
+  "sixtyPlusAirport": true,
+  "enabled": true,
+  "lastProcessed": null,
+  "createdAt": ISODate("2026-01-29"),
+  "updatedAt": ISODate("2026-01-29")
+}
+```
+
+---
+
+## Schema Change Required: `airportCode` → `airportCodes` (Array)
+
+**Current:** `"airportCode": "BUR"` (string)
+**New:** `"airportCodes": ["BUR", "VNY"]` (array of strings)
+
+### Migration Script Needed
+```javascript
+// MongoDB migration to convert existing data
+db.avtopia_business.updateMany(
+  { airportCode: { $exists: true, $type: "string" } },
+  [
+    { $set: {
+        airportCodes: { $split: ["$airportCode", ","] },
+        airportCode: "$$REMOVE"  // or keep for backward compatibility
+      }
+    }
+  ]
+)
+```
+
+### Update Schema Validation
+```javascript
+// Update the $jsonSchema to allow array
+"airportCodes": {
+  "bsonType": "array",
+  "items": { "bsonType": "string" }
+}
+```
+
+---
+
+## Environment Variables
+
+```env
+# .env
+GOOGLE_PLACES_API_KEY=AIza...
+MONGODB_URI=mongodb+srv://user:pass@cluster.mongodb.net/
+MONGODB_DATABASE=avtopia_devdb
+MONGODB_COLLECTION=avtopia_business
+SEARCH_RADIUS_MILES=10
+```
+
+**Note:** Using your existing database `avtopia_devdb` and collection `avtopia_business`
+
+---
+
+## New Project Structure
+
+```
+/lib
+  /src
+    /database
+      mongodb_client.dart
+      airports_repository.dart
+      businesses_repository.dart
+      cache_repository.dart
+    /google
+      places_api.dart
+      nearby_search.dart
+      place_details.dart
+    /models
+      airport.dart
+      business.dart
+      (existing models...)
+    /utils
+      extensions.dart (keep existing)
+      config.dart
+  main.dart (CLI entry point)
+/bin
+  run.dart (CLI executable)
+/.github
+  /workflows
+    sync_places.yml
+pubspec.yaml
+.env.example
+README.md
+```
+
+---
+
+## GitHub Actions Workflow
+
+```yaml
+# .github/workflows/sync_places.yml
+name: Sync Aviation Places
+
+on:
+  workflow_dispatch:
+    inputs:
+      airport_filter:
+        description: 'Airport code to process (leave empty for all)'
+        required: false
+      limit:
+        description: 'Max airports to process'
+        required: false
+        default: '100'
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
+      - run: dart pub get
+
+      - name: Run sync
+        env:
+          GOOGLE_PLACES_API_KEY: ${{ secrets.GOOGLE_PLACES_API_KEY }}
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+          MONGODB_DATABASE: ${{ secrets.MONGODB_DATABASE }}
+        run: dart run bin/run.dart --limit=${{ inputs.limit }}
+```
+
+---
+
+## Files to Modify/Create
+
+| File | Action | Notes |
+|------|--------|-------|
+| `pubspec.yaml` | Modify | Remove Flutter, add mongo_dart, dotenv, args |
+| `lib/main.dart` | Major rewrite | CLI entry, remove Flutter |
+| `lib/src/database/*.dart` | Create | MongoDB data layer |
+| `lib/src/google/*.dart` | Create | Extract API logic |
+| `lib/utils/extensions.dart` | Keep | Already framework-agnostic |
+| `lib/models/*.dart` | Keep | JSON models still useful |
+| `.github/workflows/sync_places.yml` | Create | GitHub Actions workflow |
+| `.env.example` | Create | Environment template |
+| `GooglePlacesAPIKey.txt` | Delete | Use env var |
+
+---
+
+## Data Migration Plan
+
+### Step 1: Schema Update (avtopia_business)
+1. Backup existing `avtopia_business` collection
+2. Run migration script to convert `airportCode` (string) → `airportCodes` (array)
+3. Update schema validation to accept array
+
+### Step 2: Create Airports Collection
+1. Export airport data from Excel "Partner Launch" sheet
+2. Transform to JSON format matching new `airports` schema
+3. Import to new `airports` collection in MongoDB Atlas
+4. Add indexes on `_id` (airport code) and `state`
+
+### Step 3: Verify Migration
+1. Count documents in both collections
+2. Spot-check a few records for data integrity
+3. Verify `airportCodes` arrays are properly formatted
+
+---
+
+## Estimated Total: 50-68 hours
+
+| Phase | Hours |
+|-------|-------|
+| Project Setup | 4-6 |
+| MongoDB Data Layer + Migration | 10-12 |
+| Refactor Core Logic (search, categorization, refresh, retry) | 16-20 |
+| GitHub Actions Setup | 4-6 |
+| Testing & Verification | 16-24 |
+
+---
+
+---
+
+## Multiple Search Keywords
+
+### Current Behavior
+Single hardcoded keyword: `"aviation"`
+
+### New Behavior
+Configurable list of search keywords to cast a wider net:
+
+```dart
+const searchKeywords = [
+  'aviation',
+  'flight school',
+  'FBO',
+  'aircraft maintenance',
+  'hangar',
+  'airplane',
+  'helicopter',
+  'avionics',
+  'pilot training',
+  'aircraft rental',
+];
+```
+
+### Storage
+- **MongoDB field:** `searchTerms`
+- **Format:** Comma-separated keywords that matched this business
+- **Example:** `"aviation,FBO,hangar"`
+
+### Implementation
+- Run Nearby Search for each keyword
+- Deduplicate by `placeId` (same business may match multiple keywords)
+- Store which keywords matched in `searchTerms` field
+
+---
+
+## Business Categorization
+
+### Auto-categorization Based on Google Types & Name
+
+Map Google Places `types` array and business name to aviation categories:
+
+| Category Code | Description | Detection Rules |
+|---------------|-------------|-----------------|
+| `FBO` | Fixed Base Operator | Name contains "FBO", "Fixed Base", "Jet Center" |
+| `FLIGHT_SCHOOL` | Flight Training | types contains "school", name contains "flight school", "flying club" |
+| `MAINTENANCE` | Aircraft Maintenance | Name contains "maintenance", "repair", "MRO", "avionics" |
+| `CHARTER` | Charter Services | Name contains "charter", "jet", "air taxi" |
+| `RENTAL` | Aircraft Rental | Name contains "rental", "aircraft hire" |
+| `FUEL` | Fuel Services | Name contains "fuel", "avgas", "jet-a" |
+| `HANGAR` | Hangar/Storage | Name contains "hangar", "storage", "tie-down" |
+| `OTHER` | Other Aviation | Default for aviation-related businesses |
+
+### Storage
+- **MongoDB fields:** `dbCode`, `dbCode3`, `dbCode4`, `dbCode5`
+- **Primary category:** `dbCode`
+- **Additional categories:** `dbCode3`, `dbCode4`, `dbCode5`
+- **Example:** `dbCode: "FBO"`, `dbCode3: "FUEL"`, `dbCode4: "HANGAR"`
+
+### Implementation
+
+```dart
+List<String> categorize(String name, List<String> types) {
+  final categories = <String>[];
+
+  final nameLower = name.toLowerCase();
+
+  if (nameLower.contains('fbo') || nameLower.contains('fixed base')) {
+    categories.add('FBO');
+  }
+  if (nameLower.contains('flight school') || nameLower.contains('flying club')) {
+    categories.add('FLIGHT_SCHOOL');
+  }
+  if (nameLower.contains('maintenance') || nameLower.contains('avionics')) {
+    categories.add('MAINTENANCE');
+  }
+  // ... more rules
+
+  if (categories.isEmpty) {
+    categories.add('OTHER');
+  }
+
+  return categories.take(4).toList();  // Max 4 categories
+}
+```
+
+---
+
+## Data Refresh Strategy
+
+### When to Refresh Business Data
+
+| Scenario | Action |
+|----------|--------|
+| New Place ID (not in DB) | Fetch full details from Google |
+| Existing, < 30 days old | Skip (use cached data) |
+| Existing, 30-90 days old | Refresh if `--refresh-stale` flag |
+| Existing, > 90 days old | Always refresh |
+| Business marked `ignore: true` | Skip always |
+
+### Implementation
+
+```dart
+// Check if business needs refresh
+bool needsRefresh(Business existing, {bool forceStale = false}) {
+  if (existing == null) return true;  // New business
+
+  final daysSinceUpdate = DateTime.now().difference(existing.updatedAt).inDays;
+
+  if (daysSinceUpdate > 90) return true;  // Stale data
+  if (forceStale && daysSinceUpdate > 30) return true;  // Optional refresh
+
+  return false;  // Use cached data
+}
+```
+
+### CLI Flags
+- `--refresh-stale` - Refresh businesses older than 30 days
+- `--refresh-all` - Refresh all businesses (ignore cache)
+- `--skip-existing` - Only process new businesses (default behavior)
+
+---
+
+## Error Handling & Retries
+
+### API Error Handling
+
+| Error Type | Strategy |
+|------------|----------|
+| 429 (Rate Limit) | Exponential backoff: 2s → 4s → 8s → 16s, max 3 retries |
+| 500/502/503 (Server) | Retry 3 times with 5s delay |
+| 400 (Bad Request) | Log error, skip business, continue |
+| 401/403 (Auth) | Abort run, alert on failure |
+| Network timeout | Retry 2 times, then skip |
+
+### Implementation
+
+```dart
+Future<T> withRetry<T>(Future<T> Function() apiCall, {int maxRetries = 3}) async {
+  int attempts = 0;
+  while (attempts < maxRetries) {
+    try {
+      return await apiCall();
+    } on RateLimitException {
+      attempts++;
+      final delay = Duration(seconds: pow(2, attempts).toInt());
+      print('Rate limited. Waiting ${delay.inSeconds}s...');
+      await Future.delayed(delay);
+    } on ServerException {
+      attempts++;
+      await Future.delayed(Duration(seconds: 5));
+    }
+  }
+  throw MaxRetriesExceeded();
+}
+```
+
+### Run Recovery
+
+- **Checkpoint system**: Save progress every 10 airports
+- **Resume capability**: `--resume` flag to continue from last checkpoint
+- **Error log**: Record failed businesses for manual review
+
+### MongoDB Write Errors
+
+| Error | Strategy |
+|-------|----------|
+| Duplicate key | Update existing document (upsert) |
+| Connection lost | Retry connection 3 times, then abort |
+| Validation error | Log error, skip document |
+
+---
+
+## Verification Checklist
+
+- [ ] CLI runs locally with MongoDB Atlas
+- [ ] Processes 5 test airports successfully
+- [ ] Place ID caching works (second run skips cached)
+- [ ] Data refresh respects age thresholds
+- [ ] Retry logic handles rate limits gracefully
+- [ ] Checkpoint/resume works after interruption
+- [ ] GitHub Actions workflow triggers manually
+- [ ] Secrets are properly configured
+- [ ] Results appear in MongoDB collections
+- [ ] Run logs are recorded

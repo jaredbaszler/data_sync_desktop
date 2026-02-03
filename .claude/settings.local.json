@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:developers.google.com)",
+      "Bash(ls:*)",
+      "Bash(dir:*)",
+      "Bash(powershell -Command \"Get-Item *.xlsx | Format-Table Name, @{Name=''Size \\(KB\\)''; Expression={$_Length/1KB -as [int]}} -AutoSize\")",
+      "Bash(python3 -m pip install:*)",
+      "Bash(unzip:*)",
+      "Bash(/c/Users/jared/AppData/Local/Microsoft/WindowsApps/python3 -c \"import openpyxl; print\\(''openpyxl available''\\)\")",
+      "Bash( while read idx)",
+      "Bash(done)",
+      "Bash(awk 'NR>=3273 && NR<=3304')",
+      "Bash(__NEW_LINE_6205fe3b7ace0a0d__ echo \"\")",
+      "Bash(__NEW_LINE_0760c2b21f71a587__ echo \"\")",
+      "Bash(__NEW_LINE_2459918696057319__ echo \"\")",
+      "Bash(__NEW_LINE_e3782311765d7738__ echo \"\")",
+      "Bash(for:*)",
+      "Bash(do)",
+      "Bash(python3 -m pip:*)",
+      "Bash(python3:*)"
+    ]
+  }
+}

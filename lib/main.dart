@@ -21,11 +21,12 @@ const detailsSearchBasicList = 'address_component,adr_address,business_status,fo
     'type,url,utc_offset,vicinity';
 const detailsSearchContactList = 'formatted_phone_number,'
     'international_phone_number,opening_hours,website';
-const detailsSearchAtmosphereList = 'price_level,rating,review,user_ratings_total';
+const detailsSearchAtmosphereList = 'price_level,rating,user_ratings_total';
 const hexRed = '#ff9191';
 const hexGreen = '#8bd98c';
 
 Map<String, int> placeIDs = <String, int>{};
+Map<String, String> placeIDDates = <String, String>{}; // Tracks when each Place ID was cached (ISO 8601 date)
 
 Data cellByIndex(Sheet sheet, int rowIndex, int colIndex) {
   Data returnCell;
@@ -362,7 +363,7 @@ Future<GoogleNearbyResult> searchNearby(
   // 12000m = 12km = 7.5 miles
   // 16000m = 16km = 10 miles
 
-  final radius = 5.0.milesToMeters();
+  final radius = 10.0.milesToMeters();
   var nearbyResults = GoogleNearbyResult();
 
   if (airpotCodeCell.value == null || latitude == null || longitude == null) {
@@ -487,9 +488,44 @@ Future<bool> googleSearchNearby() async {
 
   //storePlaceIDs(writeSheet);
 
+  // Load Place ID cache from file for cross-run deduplication
+  final cacheFile = File('assets/place_id_cache.json');
+  if (await cacheFile.exists()) {
+    try {
+      final cacheJson = jsonDecode(await cacheFile.readAsString());
+      // Handle new format with dates or old format (backward compatible)
+      if (cacheJson is Map && cacheJson.containsKey('placeIDs')) {
+        // New format: { placeIDs: {...}, placeIDDates: {...} }
+        placeIDs = Map<String, int>.from(cacheJson['placeIDs']);
+        placeIDDates = Map<String, String>.from(cacheJson['placeIDDates'] ?? {});
+        print('Loaded ${placeIDs.length} cached Place IDs (with dates)');
+
+        // Report oldest and newest cache dates
+        if (placeIDDates.isNotEmpty) {
+          final dates = placeIDDates.values.toList()..sort();
+          print('Cache date range: ${dates.first} to ${dates.last}');
+        }
+      } else {
+        // Old format: just the placeIDs map directly
+        placeIDs = Map<String, int>.from(cacheJson);
+        print('Loaded ${placeIDs.length} cached Place IDs (legacy format, no dates)');
+      }
+    } catch (e) {
+      print('Error loading cache: $e - starting fresh');
+      placeIDs.clear();
+      placeIDDates.clear();
+    }
+  } else {
+    print('No cache file found - starting fresh');
+  }
+
+  // Track cache statistics
+  var newBusinessCount = 0;
+  var cachedBusinessCount = 0;
+
   // Loop through the designated airports in the Partner Launch tab
   // Started on line 80 in 2022-01-27
-  for (var readIndex = 161; readIndex <= readSheet.rows.length; readIndex++) {
+  for (var readIndex = 0; readIndex <= readSheet.rows.length; readIndex++) {
     // if (readIndex == 163) {
     //   break;
     // }
@@ -609,8 +645,9 @@ Future<bool> googleSearchNearby() async {
       print('Page: $resultPageNum');
 
       for (final nearbyResult in nearbyResults.results) {
-        // Check to see if it already exists
+        // Check to see if it already exists (in cache from previous run or earlier in this run)
         if (placeIDs.containsKey(nearbyResult.placeId)) {
+          cachedBusinessCount++;
           final duplicateRowIndex = placeIDs[nearbyResult.placeId];
           final airportCodeCell = writeSheet.cell(CellIndex.indexByColumnRow(
               rowIndex: duplicateRowIndex, columnIndex: WriteCols.airportCode));
@@ -619,7 +656,10 @@ Future<bool> googleSearchNearby() async {
           }
           continue;
         } else {
+          newBusinessCount++;
           placeIDs.putIfAbsent(nearbyResult.placeId, () => writeIndex);
+          // Record the date this Place ID was cached
+          placeIDDates.putIfAbsent(nearbyResult.placeId, () => DateTime.now().toIso8601String().split('T')[0]);
         }
 
         print('Company: ${nearbyResult.name}');
@@ -746,6 +786,22 @@ Future<bool> googleSearchNearby() async {
   });
 
   print('workbook saving done');
+
+  // Save Place ID cache for future runs (with dates)
+  try {
+    final cacheData = {
+      'placeIDs': placeIDs,
+      'placeIDDates': placeIDDates,
+      'lastUpdated': DateTime.now().toIso8601String(),
+    };
+    await cacheFile.writeAsString(jsonEncode(cacheData));
+    print('Saved ${placeIDs.length} Place IDs to cache');
+  } catch (e) {
+    print('Error saving cache: $e');
+  }
+
+  // Print cache statistics
+  print('Cache Statistics: New businesses: $newBusinessCount, Cached (skipped Place Details): $cachedBusinessCount');
 
   return true;
 }
