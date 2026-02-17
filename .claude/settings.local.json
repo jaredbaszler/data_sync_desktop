@@ -18,7 +18,14 @@
       "Bash(for:*)",
       "Bash(do)",
       "Bash(python3 -m pip:*)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(tree:*)",
+      "Bash(dart --version:*)",
+      "Bash(where:*)",
+      "Bash(\"C:\\\\Program Files\\\\Dart\\\\dart-sdk\\\\bin\\\\dart.exe\" --version)",
+      "Bash(dart pub get:*)",
+      "Bash(dart analyze:*)",
+      "Bash(dart run:*)"
     ]
   }
 }
