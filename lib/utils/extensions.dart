@@ -1,5 +1,4 @@
 // ignore_for_file: lines_longer_than_80_chars
-// ignore_for_file: unnecessary_this
 
 import 'package:us_states/us_states.dart';
 
@@ -9,9 +8,9 @@ extension DoubleHelpers on double {
 
 extension IntHelpers on int {
   String displayWithSuffix() {
-    var stringToCheck = this.toString();
+    var stringToCheck = toString();
     if (stringToCheck.length > 2) {
-      stringToCheck = stringToCheck.substring(this.toString().length - 2);
+      stringToCheck = stringToCheck.substring(toString().length - 2);
     }
 
     var suffix = '';
@@ -36,17 +35,16 @@ extension IntHelpers on int {
         break;
     }
 
-    return this.toString() + suffix;
+    return toString() + suffix;
   }
 }
 
 extension StringHelpers on String {
-  // ignore: prefer_interpolation_to_compose_strings
   // Looking for a pattern to match (with a mandatory space before all of them): rd rd. st st. st, ave ave. ave,
   RegExp toAddressPartPattern() => RegExp('\\s$this(,|\\.\\s|\\.|\\s|\$)');
 
   String toStateAbbreviation() {
-    if (this.length == 2) {
+    if (length == 2) {
       // denotes it is already abbreviated
       return this;
     }
@@ -61,11 +59,7 @@ extension StringHelpers on String {
   }
 
   String toExpandAbbreviations() {
-    if (this == null) {
-      return this;
-    }
-
-    var returnValue = this.toLowerCase();
+    var returnValue = toLowerCase();
 
     returnValue = returnValue.replaceAll('rd'.toAddressPartPattern(), ' road ');
     returnValue = returnValue.replaceAll('dr'.toAddressPartPattern(), ' drive ');
@@ -103,24 +97,18 @@ extension StringHelpers on String {
 
     returnValue = returnValue.replaceAll('  ', ' '); // Replace any double spaces with single spaces
 
-    print('REPLACED $this WITH $returnValue');
-
     return returnValue;
   }
 
   String toIntlPhoneFormat(String countryLongName) {
-    if (this == null ||
-        this == 'null' || // Excel blank values come through as "null" but
-        this.isEmpty ||
-        countryLongName == null ||
-        countryLongName.isEmpty) {
+    if (isEmpty || countryLongName.isEmpty) {
       return '';
     }
 
     // This the encoding needed in the Google Places API URL
     // for a '+' sign when denoting international phone #s
     var intlFormatString = '%2B';
-    switch (countryLongName?.toLowerCase()) {
+    switch (countryLongName.toLowerCase()) {
       case 'united states':
       case 'british virgin islands':
       case 'turks and caicos islands':
@@ -158,18 +146,12 @@ extension StringHelpers on String {
   /// character codes for a URL. Spaces get converted to %20
   /// and commas get converted to %2C
   String toURLSafeString() {
-    if (this == null ||
-        this == 'null' || // Excel blank values come through as "null" but
-        this.isEmpty) {
+    if (isEmpty) {
       return '';
     }
 
     var returnValue = this;
-    // Formatted based on these specs:
-    // https://developers.google.com/maps/documentation/urls/url-encoding
-    // Spaces with %20, a plus sign is also acceptable
     returnValue = returnValue.replaceAll(' ', '%20');
-    // Replace commas with %2C
     returnValue = returnValue.replaceAll(',', '%2C');
 
     return returnValue;

@@ -1,0 +1,58 @@
+name: Sync Aviation Places
+
+on:
+  workflow_dispatch:
+    inputs:
+      airport_filter:
+        description: 'Airport ICAO code to process (leave empty for all)'
+        required: false
+      limit:
+        description: 'Max airports to process'
+        required: false
+        default: '100'
+      refresh_stale:
+        description: 'Refresh businesses older than 30 days'
+        required: false
+        default: 'false'
+        type: boolean
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
+      - run: dart pub get
+
+      - name: Run sync
+        env:
+          GOOGLE_PLACES_API_KEY: ${{ secrets.GOOGLE_PLACES_API_KEY }}
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+          MONGODB_DATABASE: ${{ secrets.MONGODB_DATABASE }}
+          MONGODB_COLLECTION: ${{ secrets.MONGODB_COLLECTION }}
+        run: |
+          ARGS="--limit=${{ inputs.limit }}"
+
+          if [ -n "${{ inputs.airport_filter }}" ]; then
+            ARGS="$ARGS --airport=${{ inputs.airport_filter }}"
+          fi
+
+          if [ "${{ inputs.refresh_stale }}" = "true" ]; then
+            ARGS="$ARGS --refresh-stale"
+          fi
+
+          dart run bin/run.dart $ARGS
+
+      - name: Upload error log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: error-log
+          path: error_log.json
+          if-no-files-found: ignore
