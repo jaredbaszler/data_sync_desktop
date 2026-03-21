@@ -28,7 +28,11 @@
       "Bash(dart run:*)",
       "Bash(git rm:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(gh auth status:*)",
+      "Bash(git credential-manager:*)",
+      "Bash(cmdkey /list:git:https://github.com:*)",
+      "Bash(git config:*)"
     ]
   }
 }
