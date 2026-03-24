@@ -29,6 +29,11 @@
       "Bash(git rm:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
+      "Bash(gh auth status:*)",
+      "Bash(git credential-manager:*)",
+      "Bash(cmdkey /list:git:https://github.com:*)",
+      "Bash(git config:*)",
+      "Bash(git commit:*)",
       "Bash(Get-Content \"c:\\\\Users\\\\jared\\\\source\\\\repos\\\\data_sync_desktop\\\\lib\\\\src\\\\models\\\\far_entry.dart\")"
     ]
   }
