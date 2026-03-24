@@ -5,11 +5,14 @@ import 'package:excel/excel.dart' as xl;
 
 import 'src/categorization/category_service.dart';
 import 'src/categorization/far_lookup.dart';
+import 'src/categorization/website_crawler.dart';
 import 'src/database/businesses_repository.dart';
 import 'src/database/cache_repository.dart';
 import 'src/database/airports_repository.dart';
 import 'src/database/mongodb_client.dart';
+import 'src/google/geocoding_service.dart';
 import 'src/google/places_api.dart';
+import 'src/google/places_api_cache.dart';
 import 'src/models/airport.dart';
 import 'src/models/business.dart';
 import 'src/models/category_code.dart';
@@ -40,6 +43,7 @@ Future<void> main(List<String> args) async {
     ..addFlag('resume', help: 'Resume from last checkpoint', defaultsTo: false)
     ..addFlag('import-airports',
         help: 'Import airport data from Excel to MongoDB', defaultsTo: false)
+    ..addFlag('skip-crawl', help: 'Skip website crawling for categorization', defaultsTo: false)
     ..addFlag('help', abbr: 'h', help: 'Show help', negatable: false);
 
   final ArgResults options;
@@ -63,6 +67,10 @@ Future<void> main(List<String> args) async {
   // Load configuration
   final config = Config.fromEnvironment();
   print('Configuration loaded');
+
+  // Set up website crawler (unless --skip-crawl)
+  final skipCrawl = options['skip-crawl'] as bool;
+  final websiteCrawler = skipCrawl ? null : WebsiteCrawler();
 
   // Connect to MongoDB
   final mongoClient = MongoDbClient(config);
@@ -97,6 +105,10 @@ Future<void> main(List<String> args) async {
 
     if (Directory(farDir).existsSync()) {
       await farLookup.loadFarFiles(farDir);
+      // Geocode FAR entries so GPS proximity can be used in matching.
+      // Cached results are loaded from disk — only new addresses hit the API.
+      final geocoder = GeocodingService(config.googlePlacesApiKey);
+      await farLookup.geocodeEntries(geocoder);
     } else {
       print('WARNING: FAR lookup directory not found at $farDir');
     }
@@ -106,8 +118,9 @@ Future<void> main(List<String> args) async {
         ? options['keywords'] as List<String>
         : defaultSearchKeywords;
 
-    // Set up Places API
+    // Set up Places API and its persistent response cache
     final placesApi = PlacesApi.fromConfig(config);
+    final placesCache = PlacesApiCache();
     final radiusMeters = PlacesApi.milesToMeters(config.searchRadiusMiles);
 
     // Parse options
@@ -176,139 +189,226 @@ Future<void> main(List<String> args) async {
       // Track all Place IDs seen for this airport to deduplicate across keywords
       final seenPlaceIds = <String>{};
 
-      for (final keyword in keywords) {
-        String? nextPageToken;
-        var pageNum = 1;
+      var dbConnectionLost = false;
+      try {
+        for (final keyword in keywords) {
+          String? nextPageToken;
+          var pageNum = 1;
 
-        while (pageNum <= 3) {
-          try {
-            final response = await withRetry(() => placesApi.searchNearby(
-                  latitude: airport.latitude,
-                  longitude: airport.longitude,
-                  radiusMeters: radiusMeters,
-                  keyword: keyword,
-                  pageToken: nextPageToken,
-                ));
+          while (pageNum <= 3) {
+            try {
+              // Check nearby cache before hitting the API
+              final cachedPage = placesCache.getNearby(airport.icaoCode, keyword, pageNum);
+              NearbySearchResponse response;
+              bool fromCache;
 
-            for (final result in response.results) {
-              if (result.placeId == null) continue;
-
-              // Deduplicate within this airport run
-              if (seenPlaceIds.contains(result.placeId)) continue;
-              seenPlaceIds.add(result.placeId!);
-
-              // Check if business exists and needs refresh
-              final existing = await businessesRepo.findByPlaceId(result.placeId!);
-
-              if (existing != null) {
-                // Append airport code if not already there
-                await businessesRepo.appendAirportCode(result.placeId!, airport.icaoCode);
-
-                if (!refreshAll) {
-                  final needsUpdate = await businessesRepo.needsRefresh(
-                    result.placeId!,
-                    forceStale: refreshStale,
-                  );
-                  if (!needsUpdate) {
-                    airportSkipCount++;
-                    continue;
-                  }
-                }
-                totalUpdated++;
+              if (cachedPage != null) {
+                fromCache = true;
+                final rawResults =
+                    (cachedPage['results'] as List).cast<Map<String, dynamic>>();
+                response = NearbySearchResponse(
+                  results: rawResults.map(NearbyResult.fromJson).toList(),
+                  nextPageToken: null,
+                  status: 'OK',
+                );
+              } else {
+                fromCache = false;
+                response = await withRetry(() => placesApi.searchNearby(
+                      latitude: airport.latitude,
+                      longitude: airport.longitude,
+                      radiusMeters: radiusMeters,
+                      keyword: keyword,
+                      pageToken: nextPageToken,
+                    ));
+                placesCache.storeNearby(airport.icaoCode, keyword, pageNum,
+                    response.results, response.nextPageToken != null);
               }
 
-              // Fetch full place details
-              try {
-                final details = await withRetry(
-                  () => placesApi.getPlaceDetails(result.placeId!),
-                );
+              for (final result in response.results) {
+                if (result.placeId == null) continue;
 
-                if (details == null) {
+                // Deduplicate within this airport run
+                if (seenPlaceIds.contains(result.placeId)) continue;
+                seenPlaceIds.add(result.placeId!);
+
+                // --- Match existing record (placeId → GPS → address) ---
+                Business? existing = await businessesRepo.findByPlaceId(result.placeId!);
+
+                // GPS fallback: nearby search already includes lat/lng, no extra API call needed
+                if (existing == null && result.lat != null && result.lng != null) {
+                  final byCoords =
+                      await businessesRepo.findByCoordinates(result.lat!, result.lng!);
+                  if (byCoords != null) {
+                    await businessesRepo.updatePlaceId(byCoords.placeId!, result.placeId!);
+                    existing = byCoords;
+                    print('    [match] GPS: "${byCoords.name}" → "${result.name}"');
+                  }
+                }
+
+                // Refresh check for placeId / GPS matches
+                if (existing != null) {
+                  // Append airport code if not already there
+                  await businessesRepo.appendAirportCode(result.placeId!, airport.icaoCode);
+
+                  if (!refreshAll) {
+                    final needsUpdate = await businessesRepo.needsRefresh(
+                      result.placeId!,
+                      forceStale: refreshStale,
+                    );
+                    if (!needsUpdate) {
+                      airportSkipCount++;
+                      continue;
+                    }
+                  }
+                  totalUpdated++;
+                }
+
+                // Fetch full place details (check cache first)
+                try {
+                  Map<String, dynamic>? rawDetails =
+                      placesCache.getDetails(result.placeId!);
+                  if (rawDetails == null) {
+                    rawDetails = await withRetry(
+                      () => placesApi.getPlaceDetailsRaw(result.placeId!),
+                    );
+                    if (rawDetails != null) {
+                      placesCache.storeDetails(result.placeId!, rawDetails);
+                    }
+                  }
+                  final details =
+                      rawDetails != null ? PlaceDetailsResult.fromJson(rawDetails) : null;
+
+                  if (details == null) {
+                    cache.logError(
+                      airportCode: airport.icaoCode,
+                      placeId: result.placeId,
+                      businessName: result.name,
+                      error: 'Place details returned null',
+                    );
+                    continue;
+                  }
+
+                  // Convert to business model
+                  final business = details.toBusiness(
+                    airportCode: airport.icaoCode,
+                    searchKeyword: keyword,
+                  );
+
+                  // Address fallback: only available after fetching details
+                  if (existing == null && details.streetAddress.isNotEmpty) {
+                    final byAddr = await businessesRepo.findByAddress(
+                        details.streetAddress, details.city);
+                    if (byAddr != null) {
+                      await businessesRepo.updatePlaceId(byAddr.placeId!, result.placeId!);
+                      await businessesRepo.appendAirportCode(result.placeId!, airport.icaoCode);
+                      existing = byAddr;
+                      print('    [match] Address: "${byAddr.name}" → "${result.name}"');
+                    }
+                  }
+
+                  // If existing (by any method), merge airport codes and search terms
+                  if (existing != null) {
+                    final existingCodes = existing.airportCode ?? '';
+                    if (!existingCodes.contains(airport.icaoCode)) {
+                      business.airportCode =
+                          existingCodes.isEmpty ? airport.icaoCode : '$existingCodes,${airport.icaoCode}';
+                    } else {
+                      business.airportCode = existingCodes;
+                    }
+
+                    // Merge search terms
+                    final existingTerms = existing.searchTerms ?? '';
+                    if (!existingTerms.contains(keyword)) {
+                      business.searchTerms =
+                          existingTerms.isEmpty ? keyword : '$existingTerms,$keyword';
+                    } else {
+                      business.searchTerms = existingTerms;
+                    }
+                  }
+
+                  // Run categorization
+                  await _categorizeBusiness(business, categoryService, farLookup, websiteCrawler);
+
+                  // Upsert to MongoDB
+                  await businessesRepo.upsertByPlaceId(business);
+                  airportNewCount++;
+
+                  print('  + ${result.name} (${result.placeId})');
+                } on PlacesApiException catch (e) {
                   cache.logError(
                     airportCode: airport.icaoCode,
                     placeId: result.placeId,
                     businessName: result.name,
-                    error: 'Place details returned null',
+                    error: e.toString(),
                   );
-                  continue;
-                }
-
-                // Convert to business model
-                final business = details.toBusiness(
-                  airportCode: airport.icaoCode,
-                  searchKeyword: keyword,
-                );
-
-                // If existing, merge airport codes and search terms
-                if (existing != null) {
-                  final existingCodes = existing.airportCode ?? '';
-                  if (!existingCodes.contains(airport.icaoCode)) {
-                    business.airportCode =
-                        existingCodes.isEmpty ? airport.icaoCode : '$existingCodes,${airport.icaoCode}';
-                  } else {
-                    business.airportCode = existingCodes;
+                  if (e.statusCode == 401 || e.statusCode == 403) {
+                    print('FATAL: API authentication error. Aborting.');
+                    await cache.saveErrorLog();
+                    exit(1);
                   }
-
-                  // Merge search terms
-                  final existingTerms = existing.searchTerms ?? '';
-                  if (!existingTerms.contains(keyword)) {
-                    business.searchTerms =
-                        existingTerms.isEmpty ? keyword : '$existingTerms,$keyword';
-                  } else {
-                    business.searchTerms = existingTerms;
-                  }
-                }
-
-                // Run categorization
-                _categorizeBusiness(business, categoryService, farLookup);
-
-                // Upsert to MongoDB
-                await businessesRepo.upsertByPlaceId(business);
-                airportNewCount++;
-
-                print('  + ${result.name} (${result.placeId})');
-              } on PlacesApiException catch (e) {
-                cache.logError(
-                  airportCode: airport.icaoCode,
-                  placeId: result.placeId,
-                  businessName: result.name,
-                  error: e.toString(),
-                );
-                if (e.statusCode == 401 || e.statusCode == 403) {
-                  print('FATAL: API authentication error. Aborting.');
-                  await cache.saveErrorLog();
-                  exit(1);
                 }
               }
-            }
 
-            // Handle pagination
-            nextPageToken = response.nextPageToken;
-            if (nextPageToken == null) break;
-
-            // Need a short delay for Google to process the page token
-            await Future.delayed(const Duration(milliseconds: 2000));
-            pageNum++;
-          } on PlacesApiException catch (e) {
-            cache.logError(
-              airportCode: airport.icaoCode,
-              placeId: null,
-              error: 'Nearby search failed for keyword "$keyword": $e',
-            );
-            if (e.statusCode == 401 || e.statusCode == 403) {
-              print('FATAL: API authentication error. Aborting.');
-              await cache.saveErrorLog();
-              exit(1);
+              // Handle pagination
+              if (fromCache) {
+                // Continue only if the next page is also in cache
+                final hasNextPage = cachedPage!['has_next_page'] as bool? ?? false;
+                if (!hasNextPage ||
+                    placesCache.getNearby(airport.icaoCode, keyword, pageNum + 1) == null) {
+                  break;
+                }
+              } else {
+                nextPageToken = response.nextPageToken;
+                if (nextPageToken == null) break;
+                // Need a short delay for Google to process the page token
+                await Future.delayed(const Duration(milliseconds: 2000));
+              }
+              pageNum++;
+            } on PlacesApiException catch (e) {
+              cache.logError(
+                airportCode: airport.icaoCode,
+                placeId: null,
+                error: 'Nearby search failed for keyword "$keyword": $e',
+              );
+              if (e.statusCode == 401 || e.statusCode == 403) {
+                print('FATAL: API authentication error. Aborting.');
+                await cache.saveErrorLog();
+                exit(1);
+              }
+              break; // Skip to next keyword on error
             }
-            break; // Skip to next keyword on error
           }
         }
+      } catch (e) {
+        // Catch MongoDB connection drops that escape the inner PlacesApiException handlers
+        final errStr = e.toString().toLowerCase();
+        if (errStr.contains('connection') ||
+            errStr.contains('socket') ||
+            errStr.contains('closed') ||
+            errStr.contains('mongo')) {
+          print('  MongoDB connection lost during ${airport.icaoCode}, reconnecting...');
+          cache.logError(airportCode: airport.icaoCode, placeId: null, error: 'DB connection lost: $e');
+          try {
+            await mongoClient.reconnect();
+          } catch (reconnectErr) {
+            print('  Reconnect failed: $reconnectErr');
+          }
+          dbConnectionLost = true;
+        } else {
+          rethrow;
+        }
       }
+
+      // Skip summary and checkpoint if connection was lost mid-airport
+      if (dbConnectionLost) continue;
 
       totalNewBusinesses += airportNewCount;
       totalSkipped += airportSkipCount;
 
       print('  Airport summary: $airportNewCount new/updated, $airportSkipCount skipped');
+
+      // Flush API caches to disk after each airport
+      await placesCache.saveCaches();
 
       // Mark airport as processed
       await airportsRepo.markProcessed(airport.icaoCode);
@@ -339,41 +439,57 @@ Future<void> main(List<String> args) async {
     await cache.saveErrorLog();
     await cache.clearCheckpoint();
   } finally {
+    websiteCrawler?.close();
     await mongoClient.close();
   }
 }
 
-/// Apply categorization (search terms + FAR lookup) to a business
-void _categorizeBusiness(
+/// Apply categorization (search terms + FAR lookup + website crawl) to a business
+Future<void> _categorizeBusiness(
   Business business,
   CategoryService categoryService,
   FarLookupService farLookup,
-) {
+  WebsiteCrawler? websiteCrawler,
+) async {
   final name = business.name ?? '';
   final types = business.googleListingTypes?.split(',') ?? [];
   final city = business.city;
   final state = business.state;
+  final street = business.address;
+  final lat = business.latitude;
+  final lng = business.longitude;
 
   // 1. Auto-categorize using search terms from category dictionary
   final searchTermMatches = categoryService.categorizeBySearchTerms(name, types);
 
-  // 2. FAR file lookup (fuzzy name + city/state)
-  final farMatches = farLookup.findMatches(name, city, state);
+  // 2. FAR file lookup (name → address → GPS proximity)
+  final farMatches = farLookup.findMatches(name, city, state, street: street, lat: lat, lng: lng);
 
-  // 3. Combine (FAR codes first as they're authoritative, deduplicate)
-  final allMatches = <CategoryMatch>{...farMatches, ...searchTermMatches}.toList();
+  // 3. Website content crawl (only if URL available and crawler enabled)
+  var websiteMatches = <CategoryMatch>[];
+  final url = business.websiteURL;
+  if (websiteCrawler != null && url != null && url.isNotEmpty) {
+    final pageText = await websiteCrawler.fetchPageText(url);
+    if (pageText != null && pageText.isNotEmpty) {
+      websiteMatches = categoryService.categorizeByWebsiteContent(pageText);
+      if (websiteMatches.isNotEmpty) {
+        print('    [crawl] ${websiteMatches.length} category match(es) from $url');
+      }
+    }
+  }
 
-  // 4. Store codes + search terms in paired fields
+  // 4. Combine: FAR first (authoritative), then search terms, then website (supplemental)
+  final allMatches = <CategoryMatch>{
+    ...farMatches,
+    ...searchTermMatches,
+    ...websiteMatches,
+  }.toList();
+
+  // 5. Store db codes only — search terms live in the business_category table, not here
   business.dbCode = allMatches.isNotEmpty ? allMatches[0].code : null;
   business.dbCode3 = allMatches.length > 1 ? allMatches[1].code : null;
   business.dbCode4 = allMatches.length > 2 ? allMatches[2].code : null;
   business.dbCode5 = allMatches.length > 3 ? allMatches[3].code : null;
-
-  business.searchValue1 = allMatches.isNotEmpty ? allMatches[0].searchTerms : null;
-  business.searchValue2 = allMatches.length > 1 ? allMatches[1].searchTerms : null;
-  business.searchValue3 = allMatches.length > 2 ? allMatches[2].searchTerms : null;
-  business.searchValue4 = allMatches.length > 3 ? allMatches[3].searchTerms : null;
-  business.searchValue5 = allMatches.length > 4 ? allMatches[4].searchTerms : null;
 }
 
 /// Import airport data from CSV into MongoDB

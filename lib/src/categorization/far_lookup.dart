@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:excel/excel.dart';
 
+import '../google/geocoding_service.dart';
 import '../models/category_code.dart';
 import '../models/far_entry.dart';
 import 'category_service.dart';
@@ -157,9 +158,63 @@ class FarLookupService {
     return map;
   }
 
+  /// Populate GPS coordinates on all FAR entries.
+  /// Step 1: Pre-populate from disk cache (instant, no API calls).
+  /// Step 2: Geocode any remaining entries via the API and save results to cache.
+  Future<void> geocodeEntries(GeocodingService geocoder) async {
+    // Pre-populate from cache — no API calls, no delays
+    var cacheHits = 0;
+    for (final entry in _entries) {
+      if (entry.street1 == null) continue;
+      final cached = geocoder.getCached(entry.street1, entry.city, entry.state);
+      if (cached != null) {
+        entry.lat = cached[0];
+        entry.lng = cached[1];
+        cacheHits++;
+      }
+    }
+
+    // Only entries still missing coordinates need an API call
+    final needsGeocoding =
+        _entries.where((e) => e.lat == null && e.street1 != null).toList();
+
+    if (needsGeocoding.isEmpty) {
+      print('FAR geocoding: all ${_entries.length} entries loaded from cache');
+      return;
+    }
+
+    print('FAR geocoding: $cacheHits from cache, ${needsGeocoding.length} new via API...');
+    var apiCount = 0;
+    var failedCount = 0;
+
+    for (final entry in needsGeocoding) {
+      final result = await geocoder.geocode(entry.street1, entry.city, entry.state);
+      if (result != null) {
+        entry.lat = result[0];
+        entry.lng = result[1];
+        apiCount++;
+      } else {
+        failedCount++;
+      }
+      // Throttle only real API calls to ~10 requests/second
+      await Future.delayed(const Duration(milliseconds: 100));
+    }
+
+    await geocoder.saveCache();
+    print('FAR geocoding complete: $cacheHits cached + $apiCount new, $failedCount failed');
+  }
+
   /// Find FAR matches for a business using fuzzy name + location matching.
+  /// State and city must match. Name OR street address OR GPS proximity must match.
   /// Returns CategoryMatch entries with codes from matched FAR entries.
-  List<CategoryMatch> findMatches(String businessName, String? city, String? state) {
+  List<CategoryMatch> findMatches(
+    String businessName,
+    String? city,
+    String? state, {
+    String? street,
+    double? lat,
+    double? lng,
+  }) {
     final matches = <CategoryMatch>{};
 
     for (final entry in _entries) {
@@ -178,7 +233,29 @@ class FarLookupService {
         }
       }
 
-      if (!nameMatched) continue;
+      // Fallback: match by street address string if name didn't match
+      final addressMatched = !nameMatched &&
+          street != null &&
+          entry.street1 != null &&
+          NameMatcher.streetsMatch(street, entry.street1);
+
+      // Fallback: match by GPS proximity (~55 m) if name and address didn't match
+      final gpsMatched = !nameMatched &&
+          !addressMatched &&
+          lat != null &&
+          lng != null &&
+          entry.lat != null &&
+          entry.lng != null &&
+          (lat - entry.lat!).abs() <= 0.0005 &&
+          (lng - entry.lng!).abs() <= 0.0005;
+
+      if (!nameMatched && !addressMatched && !gpsMatched) continue;
+
+      final source = nameMatched
+          ? 'far'
+          : gpsMatched
+              ? 'far_gps'
+              : 'far_address';
 
       // Add all codes from this FAR entry
       for (final code in entry.dbCodes) {
@@ -186,7 +263,7 @@ class FarLookupService {
         matches.add(CategoryMatch(
           code: code,
           searchTerms: category?.searchTerms ?? code,
-          source: 'far',
+          source: source,
         ));
       }
     }

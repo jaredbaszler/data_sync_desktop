@@ -79,4 +79,45 @@ class NameMatcher {
     if (state1 == null || state2 == null) return false;
     return state1.trim().toLowerCase() == state2.trim().toLowerCase();
   }
+
+  /// Check if two street addresses match, normalizing common abbreviations
+  /// (e.g. "Street" → "st", "Boulevard" → "blvd").
+  static bool streetsMatch(String? street1, String? street2) {
+    if (street1 == null || street2 == null) return false;
+    final s1 = _normalizeStreet(street1);
+    final s2 = _normalizeStreet(street2);
+    if (s1.isEmpty || s2.isEmpty) return false;
+    if (s1 == s2) return true;
+    if (s1.contains(s2) || s2.contains(s1)) return true;
+    final similarity = StringSimilarity.compareTwoStrings(s1, s2);
+    return similarity >= 0.85;
+  }
+
+  static String _normalizeStreet(String street) {
+    var s = street.toLowerCase().trim();
+    // Expand or contract common directional / type abbreviations to a canonical form
+    final replacements = {
+      r'\bstreet\b': 'st',
+      r'\bavenue\b': 'ave',
+      r'\bboulevard\b': 'blvd',
+      r'\bdrive\b': 'dr',
+      r'\broad\b': 'rd',
+      r'\blane\b': 'ln',
+      r'\bcourt\b': 'ct',
+      r'\bplace\b': 'pl',
+      r'\bcircle\b': 'cir',
+      r'\bhighway\b': 'hwy',
+      r'\bparkway\b': 'pkwy',
+      r'\bnorth\b': 'n',
+      r'\bsouth\b': 's',
+      r'\beast\b': 'e',
+      r'\bwest\b': 'w',
+    };
+    for (final entry in replacements.entries) {
+      s = s.replaceAll(RegExp(entry.key), entry.value);
+    }
+    // Remove punctuation and collapse whitespace
+    s = s.replaceAll(RegExp(r'[^\w\s]'), '').replaceAll(RegExp(r'\s+'), ' ').trim();
+    return s;
+  }
 }

@@ -34,6 +34,47 @@ class BusinessesRepository {
     return doc != null ? Business.fromMongoDocument(doc) : null;
   }
 
+  /// Find a business by GPS proximity. Uses ~55 m tolerance (0.0005 degrees).
+  /// Queries location.coordinates[0] (lng) and [1] (lat) by index, since
+  /// coordinates are stored as [lng, lat] in the GeoJSON-like location field.
+  Future<Business?> findByCoordinates(double lat, double lng,
+      {double toleranceDegrees = 0.0005}) async {
+    final doc = await _collection.findOne({
+      'location.coordinates.0': {
+        '\$gte': lng - toleranceDegrees,
+        '\$lte': lng + toleranceDegrees,
+      },
+      'location.coordinates.1': {
+        '\$gte': lat - toleranceDegrees,
+        '\$lte': lat + toleranceDegrees,
+      },
+    });
+    return doc != null ? Business.fromMongoDocument(doc) : null;
+  }
+
+  /// Find a business by street address (+ optional city for precision).
+  /// Case-insensitive exact match on the address field.
+  Future<Business?> findByAddress(String streetAddress, String? city) async {
+    if (streetAddress.isEmpty) return null;
+    final query = <String, dynamic>{
+      'address': {'\$regex': '^${RegExp.escape(streetAddress)}\$', '\$options': 'i'},
+    };
+    if (city != null && city.isNotEmpty) {
+      query['city'] = {'\$regex': '^${RegExp.escape(city)}\$', '\$options': 'i'};
+    }
+    final doc = await _collection.findOne(query);
+    return doc != null ? Business.fromMongoDocument(doc) : null;
+  }
+
+  /// Update the placeId of an existing record (e.g. when a business gets a new Place ID
+  /// but is matched by GPS or address to an existing record).
+  Future<void> updatePlaceId(String oldPlaceId, String newPlaceId) async {
+    await _collection.updateOne(
+      where.eq('placeId', oldPlaceId),
+      modify.set('placeId', newPlaceId).set('updatedAt', DateTime.now()),
+    );
+  }
+
   Future<List<Business>> findByAirportCode(String airportCode) async {
     final docs = await _collection.find(where.eq('airportCode', airportCode)).toList();
     return docs.map((d) => Business.fromMongoDocument(d)).toList();

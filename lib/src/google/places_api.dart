@@ -57,8 +57,9 @@ class PlacesApi {
     );
   }
 
-  /// Get full place details by Place ID
-  Future<PlaceDetailsResult?> getPlaceDetails(String placeId) async {
+  /// Fetch raw place details JSON (the 'result' map) by Place ID.
+  /// Returns null if the API returns no result. Throws [PlacesApiException] on HTTP error.
+  Future<Map<String, dynamic>?> getPlaceDetailsRaw(String placeId) async {
     final url = 'https://maps.googleapis.com/maps/api/place/details/json?'
         'place_id=$placeId&fields=$_detailsSearchBasicList,'
         '$_detailsSearchContactList,$_detailsSearchAtmosphereList&key=$apiKey';
@@ -67,14 +68,19 @@ class PlacesApi {
 
     if (response.statusCode == 200) {
       final json = jsonDecode(response.body);
-      if (json['result'] == null) return null;
-      return PlaceDetailsResult.fromJson(json['result']);
+      return json['result'] as Map<String, dynamic>?;
     }
 
     throw PlacesApiException(
       'Place details failed with status ${response.statusCode}',
       statusCode: response.statusCode,
     );
+  }
+
+  /// Get full place details by Place ID, parsed into [PlaceDetailsResult].
+  Future<PlaceDetailsResult?> getPlaceDetails(String placeId) async {
+    final raw = await getPlaceDetailsRaw(placeId);
+    return raw != null ? PlaceDetailsResult.fromJson(raw) : null;
   }
 
   /// Convert miles to meters
@@ -198,6 +204,33 @@ class NearbyResult {
       globalCode: plusCode?['global_code'] as String?,
       compoundCode: plusCode?['compound_code'] as String?,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    final json = <String, dynamic>{};
+    if (placeId != null) json['place_id'] = placeId;
+    if (name != null) json['name'] = name;
+    if (businessStatus != null) json['business_status'] = businessStatus;
+    if (vicinity != null) json['vicinity'] = vicinity;
+    if (icon != null) json['icon'] = icon;
+    if (lat != null || lng != null) {
+      json['geometry'] = {
+        'location': {
+          if (lat != null) 'lat': lat,
+          if (lng != null) 'lng': lng,
+        }
+      };
+    }
+    if (rating != null) json['rating'] = rating;
+    if (userRatingsTotal != null) json['user_ratings_total'] = userRatingsTotal;
+    json['types'] = types;
+    if (globalCode != null || compoundCode != null) {
+      json['plus_code'] = {
+        if (globalCode != null) 'global_code': globalCode,
+        if (compoundCode != null) 'compound_code': compoundCode,
+      };
+    }
+    return json;
   }
 }
 

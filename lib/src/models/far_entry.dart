@@ -11,6 +11,10 @@ class FarEntry {
   final List<String> dbCodes; // dbCode1 through dbCode5
   final String farType; // P135, FLT141, FLT142, P145, P147
 
+  // Set after loading via geocoding; null until geocoded
+  double? lat;
+  double? lng;
+
   FarEntry({
     required this.name,
     this.dba1,

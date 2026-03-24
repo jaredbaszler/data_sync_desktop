@@ -28,7 +28,8 @@
       "Bash(dart run:*)",
       "Bash(git rm:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(Get-Content \"c:\\\\Users\\\\jared\\\\source\\\\repos\\\\data_sync_desktop\\\\lib\\\\src\\\\models\\\\far_entry.dart\")"
     ]
   }
 }

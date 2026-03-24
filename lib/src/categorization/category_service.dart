@@ -104,6 +104,28 @@ class CategoryService {
     return matches.toList();
   }
 
+  /// Categorize by scanning extracted website text against category search terms.
+  List<CategoryMatch> categorizeByWebsiteContent(String websiteText) {
+    final matches = <CategoryMatch>{};
+    final lowerText = websiteText.toLowerCase();
+
+    for (final category in _codes) {
+      for (final term in category.searchTermList) {
+        if (term.isEmpty) continue;
+        if (lowerText.contains(term)) {
+          matches.add(CategoryMatch(
+            code: category.code,
+            searchTerms: category.searchTerms,
+            source: 'website',
+          ));
+          break;
+        }
+      }
+    }
+
+    return matches.toList();
+  }
+
   /// Look up a category code by its code string
   CategoryCode? getByCode(String code) {
     try {
