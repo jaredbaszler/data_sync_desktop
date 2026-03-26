@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:string_similarity/string_similarity.dart';
 
 class NameMatcher {
@@ -120,4 +122,20 @@ class NameMatcher {
     s = s.replaceAll(RegExp(r'[^\w\s]'), '').replaceAll(RegExp(r'\s+'), ' ').trim();
     return s;
   }
+
+  /// Calculate distance in miles between two GPS points using haversine formula
+  static double distanceMiles(double lat1, double lng1, double lat2, double lng2) {
+    const earthRadiusMiles = 3958.8;
+    final dLatRad = _toRadians(lat2 - lat1);
+    final dLngRad = _toRadians(lng2 - lng1);
+    final a = sin(dLatRad / 2) * sin(dLatRad / 2) +
+        cos(_toRadians(lat1)) *
+            cos(_toRadians(lat2)) *
+            sin(dLngRad / 2) *
+            sin(dLngRad / 2);
+    final c = 2 * atan2(sqrt(a), sqrt(1 - a));
+    return earthRadiusMiles * c;
+  }
+
+  static double _toRadians(double degrees) => degrees * pi / 180.0;
 }

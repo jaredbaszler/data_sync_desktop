@@ -6,6 +6,7 @@ import 'package:excel/excel.dart' as xl;
 import 'src/categorization/category_service.dart';
 import 'src/categorization/far_lookup.dart';
 import 'src/categorization/website_crawler.dart';
+import 'src/database/business_contacts_repository.dart';
 import 'src/database/businesses_repository.dart';
 import 'src/database/cache_repository.dart';
 import 'src/database/airports_repository.dart';
@@ -44,6 +45,8 @@ Future<void> main(List<String> args) async {
     ..addFlag('import-airports',
         help: 'Import airport data from Excel to MongoDB', defaultsTo: false)
     ..addFlag('skip-crawl', help: 'Skip website crawling for categorization', defaultsTo: false)
+    ..addFlag('enrich-far-145',
+        help: 'Enrich database from FAA 145 file (first 25 rows for testing)', defaultsTo: false)
     ..addFlag('help', abbr: 'h', help: 'Show help', negatable: false);
 
   final ArgResults options;
@@ -79,6 +82,7 @@ Future<void> main(List<String> args) async {
   try {
     final airportsRepo = AirportsRepository(mongoClient);
     final businessesRepo = BusinessesRepository(mongoClient, collectionName: config.mongodbCollection);
+    final contactsRepo = BusinessContactsRepository(mongoClient);
 
     // Handle airport import mode
     if (options['import-airports'] as bool) {
@@ -89,6 +93,7 @@ Future<void> main(List<String> args) async {
     // Ensure indexes
     await airportsRepo.ensureIndexes();
     await businessesRepo.ensureIndexes();
+    await contactsRepo.ensureIndexes();
 
     // Load categorization data
     final categoryService = CategoryService();
@@ -103,12 +108,25 @@ Future<void> main(List<String> args) async {
       print('WARNING: Category dictionary not found at $categoryFile');
     }
 
+    final enrichFar145 = options['enrich-far-145'] as bool;
+
     if (Directory(farDir).existsSync()) {
       await farLookup.loadFarFiles(farDir);
+
       // Geocode FAR entries so GPS proximity can be used in matching.
       // Cached results are loaded from disk — only new addresses hit the API.
       final geocoder = GeocodingService(config.googlePlacesApiKey);
       await farLookup.geocodeEntries(geocoder);
+
+      // Enrich database from FAA 145 if flag is set
+      if (enrichFar145) {
+        // Reconnect to MongoDB in case connection dropped during geocoding
+        await mongoClient.reconnect();
+        final allAirports = await airportsRepo.getEnabledAirports();
+        await farLookup.enrichDatabaseFromFar145(businessesRepo, contactsRepo, allAirports, mongoClient);
+        print('FAA 145 enrichment complete. Exiting.');
+        return;
+      }
     } else {
       print('WARNING: FAR lookup directory not found at $farDir');
     }
@@ -463,7 +481,21 @@ Future<void> _categorizeBusiness(
   final searchTermMatches = categoryService.categorizeBySearchTerms(name, types);
 
   // 2. FAR file lookup (name → address → GPS proximity)
-  final farMatches = farLookup.findMatches(name, city, state, street: street, lat: lat, lng: lng);
+  // Include business DBAs in the name matching for better coverage
+  final bizDbas = [
+    if (business.dba1 != null && business.dba1!.isNotEmpty) business.dba1!,
+    if (business.dba2 != null && business.dba2!.isNotEmpty) business.dba2!,
+    if (business.dba3 != null && business.dba3!.isNotEmpty) business.dba3!,
+  ];
+  final farMatches = farLookup.findMatches(
+    name,
+    city,
+    state,
+    street: street,
+    lat: lat,
+    lng: lng,
+    businessDbas: bizDbas,
+  );
 
   // 3. Website content crawl (only if URL available and crawler enabled)
   var websiteMatches = <CategoryMatch>[];

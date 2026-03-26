@@ -80,6 +80,13 @@ class BusinessesRepository {
     return docs.map((d) => Business.fromMongoDocument(d)).toList();
   }
 
+  Future<List<Business>> findByState(String state) async {
+    final docs = await _collection.find(
+      where.match('state', '^${RegExp.escape(state)}\$', caseInsensitive: true),
+    ).toList();
+    return docs.map((d) => Business.fromMongoDocument(d)).toList();
+  }
+
   Future<void> upsertByPlaceId(Business business) async {
     if (business.placeId == null) {
       throw ArgumentError('Business must have a placeId for upsert');
@@ -102,6 +109,17 @@ class BusinessesRepository {
         {'\$set': doc},
       );
     }
+  }
+
+  /// Insert a new business without a placeId (e.g. FAR 145 imports).
+  /// Assigns a sequenceId and createdAt timestamp.
+  Future<void> insertNew(Business business) async {
+    final doc = business.toMongoDocument();
+    final nextId = await _getNextSequenceId();
+    doc['sequenceId'] = nextId;
+    doc['createdAt'] = DateTime.now();
+    doc['updatedAt'] = DateTime.now();
+    await _collection.insertOne(doc);
   }
 
   Future<void> appendAirportCode(String placeId, String airportCode) async {

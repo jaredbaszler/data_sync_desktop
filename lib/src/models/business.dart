@@ -183,7 +183,7 @@ class Business {
       addressTwo: doc['addressTwo'] as String?,
       city: doc['city'] as String?,
       state: doc['state'] as String?,
-      zipCode: doc['zipCode'] as String?,
+      zipCode: doc['zipCode']?.toString(),
       country: doc['country'] as String?,
       mobileNo: doc['mobileNo'] as String?,
       websiteURL: doc['websiteURL'] as String?,
