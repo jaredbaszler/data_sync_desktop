@@ -55,3 +55,6 @@ GooglePlacesAPIKey.txt
 # Run artifacts
 checkpoint.json
 error_log.json
+
+# exclude node_modules folder if it exists in the project
+node_modules/

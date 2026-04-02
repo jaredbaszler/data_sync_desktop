@@ -23,7 +23,7 @@ class BusinessContactsRepository {
     }
   }
 
-  /// Find all contacts for a given business
+  /// Find all contacts for a given business by placeId
   Future<List<BusinessContact>> findByBusinessPlaceId(String placeId) async {
     final docs = await _collection
         .find(where.eq('businessPlaceId', placeId))
@@ -31,14 +31,25 @@ class BusinessContactsRepository {
     return docs.map((d) => BusinessContact.fromMongoDocument(d)).toList();
   }
 
-  /// Insert a single contact
-  Future<String> insertOne(BusinessContact contact) async {
-    if (contact.businessPlaceId == null || contact.businessPlaceId!.isEmpty) {
-      throw ArgumentError('Contact must have a businessPlaceId');
+  /// Find all contacts for a given business by sequenceId (for non-Google imports)
+  Future<List<BusinessContact>> findByBusinessSequenceId(int sequenceId) async {
+    final docs = await _collection
+        .find(where.eq('businessSequenceId', sequenceId))
+        .toList();
+    return docs.map((d) => BusinessContact.fromMongoDocument(d)).toList();
+  }
+
+  /// Insert a single contact. Must have either businessPlaceId or businessSequenceId.
+  Future<String> insertOne(BusinessContact contact, {int? businessSequenceId}) async {
+    final hasPlaceId = contact.businessPlaceId != null && contact.businessPlaceId!.isNotEmpty;
+    final hasSeqId = businessSequenceId != null;
+    if (!hasPlaceId && !hasSeqId) {
+      throw ArgumentError('Contact must have a businessPlaceId or businessSequenceId');
     }
 
     final doc = contact.toMongoDocument();
     doc['createdAt'] = DateTime.now();
+    if (businessSequenceId != null) doc['businessSequenceId'] = businessSequenceId;
     final result = await _collection.insertOne(doc);
     return result.id.toString();
   }

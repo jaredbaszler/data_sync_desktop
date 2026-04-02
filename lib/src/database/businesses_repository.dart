@@ -24,9 +24,16 @@ class BusinessesRepository {
       } else {
         print('WARNING: Could not create unique placeId index: $e');
       }
+      // Don't attempt further index creation — the connection may be in a bad
+      // state after a failed createIndex. The caller should reconnect.
+      return;
     }
-    await _collection.createIndex(keys: {'airportCode': 1});
-    await _collection.createIndex(keys: {'updatedAt': 1});
+    try {
+      await _collection.createIndex(keys: {'airportCode': 1});
+      await _collection.createIndex(keys: {'updatedAt': 1});
+    } catch (e) {
+      print('WARNING: Could not create secondary indexes: $e');
+    }
   }
 
   Future<Business?> findByPlaceId(String placeId) async {
@@ -112,14 +119,30 @@ class BusinessesRepository {
   }
 
   /// Insert a new business without a placeId (e.g. FAR 145 imports).
-  /// Assigns a sequenceId and createdAt timestamp.
-  Future<void> insertNew(Business business) async {
+  /// Assigns a sequenceId and createdAt timestamp. Returns the assigned sequenceId.
+  Future<int> insertNew(Business business) async {
     final doc = business.toMongoDocument();
     final nextId = await _getNextSequenceId();
     doc['sequenceId'] = nextId;
     doc['createdAt'] = DateTime.now();
     doc['updatedAt'] = DateTime.now();
     await _collection.insertOne(doc);
+    return nextId;
+  }
+
+  /// Update specific fields on a business matched by sequenceId or name+city.
+  Future<void> updateFields(Business business, Map<String, dynamic> fields) async {
+    if (business.sequenceId != null) {
+      await _collection.updateOne(
+        where.eq('sequenceId', business.sequenceId),
+        {'\$set': fields},
+      );
+    } else if (business.placeId != null) {
+      await _collection.updateOne(
+        where.eq('placeId', business.placeId),
+        {'\$set': fields},
+      );
+    }
   }
 
   Future<void> appendAirportCode(String placeId, String airportCode) async {

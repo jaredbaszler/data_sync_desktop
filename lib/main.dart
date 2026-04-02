@@ -5,6 +5,7 @@ import 'package:excel/excel.dart' as xl;
 
 import 'src/categorization/category_service.dart';
 import 'src/categorization/far_lookup.dart';
+import 'src/categorization/fbo_import.dart';
 import 'src/categorization/website_crawler.dart';
 import 'src/database/business_contacts_repository.dart';
 import 'src/database/businesses_repository.dart';
@@ -47,6 +48,10 @@ Future<void> main(List<String> args) async {
     ..addFlag('skip-crawl', help: 'Skip website crawling for categorization', defaultsTo: false)
     ..addFlag('enrich-far-145',
         help: 'Enrich database from FAA 145 file (first 25 rows for testing)', defaultsTo: false)
+    ..addFlag('import-fbos',
+        help: 'Import FBO businesses from scraped GlobalAir data', defaultsTo: false)
+    ..addOption('fbo-limit',
+        help: 'Max FBOs to import (0 = all). Use for test runs before full import.', defaultsTo: '0')
     ..addFlag('help', abbr: 'h', help: 'Show help', negatable: false);
 
   final ArgResults options;
@@ -87,6 +92,34 @@ Future<void> main(List<String> args) async {
     // Handle airport import mode
     if (options['import-airports'] as bool) {
       await _importAirports(airportsRepo, mongoClient);
+      return;
+    }
+
+    // Handle FBO import mode
+    if (options['import-fbos'] as bool) {
+      await airportsRepo.ensureIndexes();
+      await businessesRepo.ensureIndexes();
+      await contactsRepo.ensureIndexes();
+      // Reconnect after ensureIndexes — a failed index creation (e.g. duplicate
+      // placeId=null on an existing non-sparse index) can leave the driver in a
+      // broken state even though the error was caught and logged.
+      await mongoClient.reconnect();
+      final allAirports = await airportsRepo.getEnabledAirports();
+      final fboLimit = int.tryParse(options['fbo-limit'] as String) ?? 0;
+      final geocoder = GeocodingService(
+        config.googlePlacesApiKey,
+        cacheFilePath: 'assets/db_code lookups/fbo_geocode_cache.json',
+      );
+      final fboService = FboImportService();
+      await fboService.importFromJson(
+        ['assets/globalair_fbos.json', 'assets/charterhub_fbos.json', 'assets/airnav_fbos.json'],
+        businessesRepo,
+        contactsRepo,
+        allAirports,
+        mongoClient,
+        geocoder,
+        maxRows: fboLimit > 0 ? fboLimit : null,
+      );
       return;
     }
 
