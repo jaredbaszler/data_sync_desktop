@@ -240,9 +240,23 @@ class FboImportService {
       updates['formattedPhoneNumber'] = phone;
       updates['mobileNo'] = phone;
     }
-    final zip = _parseZip(fbo['cityStateZip'] as String? ?? '');
+    final zip = (fbo['zip'] as String? ?? '').isNotEmpty
+        ? (fbo['zip'] as String)
+        : _parseZip(fbo['cityStateZip'] as String? ?? '');
     if (zip.isNotEmpty && (biz.zipCode == null || biz.zipCode!.isEmpty)) {
       updates['zipCode'] = zip;
+    }
+
+    // Backfill GPS from AOPA (more precise than airport-level coords)
+    final lat = fbo['latitude'] as double?;
+    final lng = fbo['longitude'] as double?;
+    if (lat != null && lng != null && (biz.latitude == null || biz.longitude == null)) {
+      updates['latitude'] = lat;
+      updates['longitude'] = lng;
+      updates['location'] = {
+        'address': biz.fullAddress ?? '',
+        'coordinates': [lng, lat],
+      };
     }
 
     if (updates.isEmpty) return;
@@ -261,21 +275,30 @@ class FboImportService {
     final city = fbo['city'] as String? ?? '';
     final state = fbo['state'] as String? ?? '';
     final airportCode = fbo['airportCode'] as String? ?? '';
-    final websiteURL = fbo['websiteURL'] as String? ?? '';
+    final websiteURL = (fbo['website'] as String? ?? '').isNotEmpty
+        ? (fbo['website'] as String)
+        : (fbo['websiteURL'] as String? ?? '');
     final address = fbo['address'] as String? ?? '';
     final phone = fbo['phone'] as String? ?? '';
-    final manager = fbo['manager'] as String? ?? '';
-    final zip = _parseZip(fbo['cityStateZip'] as String? ?? '');
+    final zip = (fbo['zip'] as String? ?? '').isNotEmpty
+        ? (fbo['zip'] as String)
+        : _parseZip(fbo['cityStateZip'] as String? ?? '');
 
-    // FBOs serve a single airport — look up GPS coords for that airport only.
-    Airport? primaryAirport;
-    if (airportCode.isNotEmpty) {
-      try {
-        primaryAirport = allAirports.firstWhere(
-          (a) => a.icaoCode.toUpperCase() == airportCode.toUpperCase() ||
-                 (a.iataCode ?? '').toUpperCase() == airportCode.toUpperCase(),
-        );
-      } catch (_) {} // not found — GPS will be null
+    // AOPA provides precise GPS for the business itself — prefer that over
+    // airport-level coordinates. Fall back to airport lookup if not available.
+    double? lat = fbo['latitude'] as double?;
+    double? lng = fbo['longitude'] as double?;
+    if (lat == null || lng == null) {
+      if (airportCode.isNotEmpty) {
+        try {
+          final airport = allAirports.firstWhere(
+            (a) => a.icaoCode.toUpperCase() == airportCode.toUpperCase() ||
+                   (a.iataCode ?? '').toUpperCase() == airportCode.toUpperCase(),
+          );
+          lat = airport.latitude;
+          lng = airport.longitude;
+        } catch (_) {}
+      }
     }
 
     final biz = Business(
@@ -293,36 +316,72 @@ class FboImportService {
       isGoogleData: 0,
       ignore: false,
       manual: false,
-      latitude: primaryAirport?.latitude,
-      longitude: primaryAirport?.longitude,
+      latitude: lat,
+      longitude: lng,
     );
 
     final sequenceId = await repo.insertNew(biz);
 
-    // Store manager as a contact if present (linked via sequenceId)
-    if (manager.isNotEmpty) {
-      final contact = BusinessContact(
-        name: manager,
-        role: 'Manager',
-        phoneNumbers: phone.isNotEmpty
-            ? [PhoneNumber(number: phone, type: 'main')]
-            : null,
-      );
-      await contactsRepo.insertOne(contact, businessSequenceId: sequenceId);
+    // Store contacts as BusinessContact records.
+    // AOPA (new format): 'contacts' array with name/title/email/phone per entry.
+    // AOPA (old format): single contactName/contactTitle/contactEmail/contactPhone.
+    // GlobalAir: 'manager' string only.
+    final rawContacts = fbo['contacts'];
+    if (rawContacts is List && rawContacts.isNotEmpty) {
+      // New AOPA format — insert all contacts
+      for (final c in rawContacts.cast<Map<String, dynamic>>()) {
+        final cName = c['name'] as String? ?? '';
+        if (cName.isEmpty) continue;
+        final cPhone = (c['phone'] as String? ?? '').isNotEmpty
+            ? (c['phone'] as String)
+            : phone;
+        await contactsRepo.insertOne(
+          BusinessContact(
+            name: cName,
+            role: (c['title'] as String? ?? '').isNotEmpty ? c['title'] as String : 'Manager',
+            email: (c['email'] as String? ?? '').isNotEmpty ? c['email'] as String : null,
+            phoneNumbers: cPhone.isNotEmpty ? [PhoneNumber(number: cPhone, type: 'main')] : null,
+          ),
+          businessSequenceId: sequenceId,
+        );
+      }
+    } else {
+      // Old AOPA single-contact format or GlobalAir manager field
+      final contactName = (fbo['contactName'] as String? ?? '').isNotEmpty
+          ? (fbo['contactName'] as String)
+          : (fbo['manager'] as String? ?? '');
+      if (contactName.isNotEmpty) {
+        final contactTitle = fbo['contactTitle'] as String? ?? '';
+        final contactEmail = fbo['contactEmail'] as String? ?? '';
+        final contactPhone = (fbo['contactPhone'] as String? ?? '').isNotEmpty
+            ? (fbo['contactPhone'] as String)
+            : phone;
+        await contactsRepo.insertOne(
+          BusinessContact(
+            name: contactName,
+            role: contactTitle.isNotEmpty ? contactTitle : 'Manager',
+            email: contactEmail.isNotEmpty ? contactEmail : null,
+            phoneNumbers: contactPhone.isNotEmpty ? [PhoneNumber(number: contactPhone, type: 'main')] : null,
+          ),
+          businessSequenceId: sequenceId,
+        );
+      }
     }
   }
 
   /// Merge entries from multiple sources, deduplicating by normalized name+city+state.
-  /// GlobalAir entries take priority (richer fields); ChartHub fields backfill gaps.
+  /// Priority: AOPA (richest data) → GlobalAir → AirNav → ChartHub.
   List<Map<String, dynamic>> _mergeAndDeduplicate(List<Map<String, dynamic>> entries) {
     // Key: normalized "name|city|state"
     final seen = <String, Map<String, dynamic>>{};
 
-    // Process GlobalAir first so its entries are the primary record
+    // Process in priority order so the best source wins each key
+    final aopa      = entries.where((e) => (e['source'] as String? ?? '') == 'aopa').toList();
     final globalAir = entries.where((e) => (e['source'] as String? ?? '') == 'globalair').toList();
-    final others = entries.where((e) => (e['source'] as String? ?? '') != 'globalair').toList();
+    final airNav    = entries.where((e) => (e['source'] as String? ?? '') == 'airnav').toList();
+    final others    = entries.where((e) => !['aopa', 'globalair', 'airnav'].contains(e['source'] as String? ?? '')).toList();
 
-    for (final e in [...globalAir, ...others]) {
+    for (final e in [...aopa, ...globalAir, ...airNav, ...others]) {
       final key = _dedupKey(e);
       if (!seen.containsKey(key)) {
         seen[key] = Map<String, dynamic>.from(e);

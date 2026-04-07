@@ -40771,5 +40771,3829 @@
         "comments": "Self Service $6.79, Call Ahead to Confirm Price"
       }
     ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 14134747,
+    "name": "Contour Aviation",
+    "address": "276 Doug Warpoole Rd",
+    "city": "Smyrna",
+    "state": "TN",
+    "zipCode": "37167",
+    "phone": "(615) 534-4580",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/contour-aviation/14134747",
+    "fuelPrices": []
+  },
+  {
+    "source": "charterhub",
+    "locationId": 14189323,
+    "name": "Gallia-Meigs Regional Airport",
+    "address": "312 Airport Road",
+    "city": "Gallipolis",
+    "state": "OH",
+    "zipCode": "45631",
+    "phone": "(740) 446-9004",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/gallia-meigs-regional-airport/14189323",
+    "fuelPrices": [
+      {
+        "type": "Jet A",
+        "brand": "Phillips 66",
+        "price": "$5.25",
+        "updated": "01/16/24  11:00 AM",
+        "comments": "w/prist"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Phillips 66",
+        "price": "$5.95",
+        "updated": "01/16/24  11:00 AM",
+        "comments": "Full Service"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 14234171,
+    "name": "Leading Edge Jet Center",
+    "address": "1050 SE Sisters Ave",
+    "city": "Redmond",
+    "state": "OR",
+    "zipCode": "97756",
+    "phone": "(541) 504-3848",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/leading-edge-jet-center/14234171",
+    "fuelPrices": []
+  },
+  {
+    "source": "charterhub",
+    "locationId": 14259793,
+    "name": "CTI AVIATION SERVICES",
+    "address": "8101 HORNET AVENUE",
+    "city": "Millington",
+    "state": "TN",
+    "zipCode": "38053",
+    "phone": "(901) 873-4359",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/cti-aviation-services/14259793",
+    "fuelPrices": [
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$4.50",
+        "updated": "02/01/24  08:34 AM",
+        "comments": "w/prist"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$4.95",
+        "updated": "02/01/24  08:35 AM",
+        "comments": "Full Service"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 4881163,
+    "name": "Summit Aviation",
+    "address": "4200 Summit Bridge Road",
+    "city": "Middletown",
+    "state": "DE",
+    "zipCode": "19709",
+    "phone": "(302) 449-1018",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/summit-aviation/4881163",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$6.75",
+        "updated": "01/16/24  03:55 PM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$8.35",
+        "updated": "01/16/24  03:55 PM",
+        "comments": "$7.53 w/Prist"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 4592755,
+    "name": "Dillon Flying Service",
+    "address": "2400 Airport Road",
+    "city": "Dillon",
+    "state": "MT",
+    "zipCode": "59725",
+    "phone": "(406) 683-5242",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/dillon-flying-service/4592755",
+    "fuelPrices": [
+      {
+        "type": "Jet A",
+        "brand": "Phillips",
+        "price": "$6.75",
+        "updated": "06/24/24  11:00 AM",
+        "comments": "Volume Discounts Available"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Phillips",
+        "price": "$7.00",
+        "updated": "06/24/24  11:00 AM",
+        "comments": "Volume Discounts Available"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 4499391,
+    "name": "ATLANTIC AVIATION- TUL",
+    "address": "7120 E APACHE ST",
+    "city": "Tulsa",
+    "state": "OK",
+    "zipCode": "74115",
+    "phone": "(918) 836-6592",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/atlantic-aviation-tul/4499391",
+    "fuelPrices": []
+  },
+  {
+    "source": "charterhub",
+    "locationId": 4592451,
+    "name": "SUN AIR JETS",
+    "address": "855 Aviation Dr",
+    "city": "Camarillo",
+    "state": "CA",
+    "zipCode": "93010-8595",
+    "phone": "(805) 389-9301",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/sun-air-jets/4592451",
+    "fuelPrices": [
+      {
+        "type": "Jet A",
+        "brand": "AvFuel",
+        "price": "$4.56",
+        "updated": "02/19/26  09:46 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "AvFuel",
+        "price": "$6.14",
+        "updated": "02/19/26  09:31 AM"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 4798363,
+    "name": "Elite Flight Experience",
+    "address": "106B Sharon Rd",
+    "city": "Robbinsville",
+    "state": "NJ",
+    "zipCode": "08691",
+    "phone": "(609) 259-2400",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/elite-flight-experience/4798363",
+    "fuelPrices": []
+  },
+  {
+    "source": "charterhub",
+    "locationId": 628772,
+    "name": "ATLANTIC AVIATION- BHM",
+    "address": "4243 E LAKE BLVD",
+    "city": "Birmingham",
+    "state": "AL",
+    "zipCode": "35217",
+    "phone": "(205) 849-3820",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/atlantic-aviation-bhm/628772",
+    "fuelPrices": [
+      {
+        "type": "Jet A",
+        "brand": "Independent",
+        "price": "$7.10",
+        "updated": "01/16/24  11:24 AM",
+        "comments": "Full Service"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Independent",
+        "price": "$7.55",
+        "updated": "01/16/24  11:24 AM",
+        "comments": "Full Service, Call to Confirm Price"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 626466,
+    "name": "COLORADO JET CENTER",
+    "address": "1575 Aviation Way",
+    "city": "Colorado Springs",
+    "state": "CO",
+    "zipCode": "80916",
+    "phone": "(720) 346-1123 ext. 409",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/colorado-jet-center/626466",
+    "fuelPrices": [
+      {
+        "type": "Jet A",
+        "brand": "AvFuel",
+        "price": "$7.20",
+        "updated": "06/21/24  08:41 AM",
+        "comments": "Prices subject to change"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "AvFuel",
+        "price": "$7.76",
+        "updated": "06/21/24  08:41 AM",
+        "comments": "Prices subject to change"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 628967,
+    "name": "STATESBORO-BULLOCH COUNTY ARPT",
+    "address": "601 AIRPORT BLVD",
+    "city": "Statesboro",
+    "state": "GA",
+    "zipCode": "30461",
+    "phone": "(912) 764-9083",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/statesboro-bulloch-county-arpt/628967",
+    "fuelPrices": [
+      {
+        "type": "Jet A",
+        "brand": "Phillips 66",
+        "price": "$4.75",
+        "updated": "02/27/26  05:55 AM",
+        "comments": "w/prist, Self Service $4.65"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Phillips 66",
+        "price": "$5.30",
+        "updated": "02/27/26  05:56 AM",
+        "comments": "$5.20 Self Service"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 627961,
+    "name": "VICKSBURG-TALLULAH REG. AIRPORT",
+    "address": "175 VTR AIRPORT RD",
+    "city": "Tallulah",
+    "state": "LA",
+    "zipCode": "71282",
+    "phone": "(318) 574-5841",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/vicksburg-tallulah-reg-airport/627961",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$5.49",
+        "updated": "02/26/26  10:50 AM",
+        "comments": "1.5% discount for using the Titan Aviation card."
+      },
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$5.65",
+        "updated": "02/26/26  10:50 AM",
+        "comments": "Add .04 for Prist: 1.5% discount for Titan Card"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 14205435,
+    "name": "Ingleside Regional Airport",
+    "address": "3141 FM 3512",
+    "city": "Aransas Pass",
+    "state": "TX",
+    "zipCode": "78336",
+    "phone": "(361) 758-2000",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/ingleside-regional-airport/14205435",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "AvFuel",
+        "price": "$5.25",
+        "updated": "06/26/24  08:36 AM",
+        "comments": "$4.90 - FS"
+      },
+      {
+        "type": "Jet A",
+        "brand": "AvFuel",
+        "price": "$6.00",
+        "updated": "06/26/24  08:35 AM",
+        "comments": "FS & SS"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 614689,
+    "name": "TYLER TURBINE INC",
+    "address": "1862 COUNTY ROAD 1143",
+    "city": "Tyler",
+    "state": "TX",
+    "zipCode": "75704",
+    "phone": "(903) 595-6666",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/tyler-turbine-inc/614689",
+    "fuelPrices": []
+  },
+  {
+    "source": "charterhub",
+    "locationId": 621603,
+    "name": "STETSON AVIATION",
+    "address": "1 Airport Road",
+    "city": "Kenedy",
+    "state": "TX",
+    "zipCode": "78119",
+    "phone": "(830) 583-9884",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/stetson-aviation/621603",
+    "fuelPrices": []
+  },
+  {
+    "source": "charterhub",
+    "locationId": 5160595,
+    "name": "JOURNEYS AVIATION BOULDER, LLC",
+    "address": "3335 AIRPORT ROAD",
+    "city": "Boulder",
+    "state": "CO",
+    "zipCode": "80301",
+    "phone": "(303) 449-4210",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/journeys-aviation-boulder-llc/5160595",
+    "fuelPrices": []
+  },
+  {
+    "source": "charterhub",
+    "locationId": 627882,
+    "name": "Lockhart Muni Airport",
+    "address": "LOCKHART MUNICIPAL AIRPORT",
+    "city": "Lockhart",
+    "state": "TX",
+    "zipCode": "78644",
+    "phone": "(512) 398-4359",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/lockhart-muni-airport/627882",
+    "fuelPrices": []
+  },
+  {
+    "source": "charterhub",
+    "locationId": 623617,
+    "name": "GRANITE AIR CENTER, LLC",
+    "address": "58 AIRPORT RD",
+    "city": "West Lebanon",
+    "state": "NH",
+    "zipCode": "03784",
+    "phone": "(603) 298-6555",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/granite-air-center-llc/623617",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "Phillips 66",
+        "price": "$8.30",
+        "updated": "03/04/26  05:36 AM",
+        "comments": "Top Off=(-.05cpg), >25 gal=(-.10cpg),"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Phillips 66",
+        "price": "$8.30",
+        "updated": "02/25/26  06:25 AM"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 1686465,
+    "name": "GENESEE COUNTY AIRPORT",
+    "address": "4701 E SAILE DR",
+    "city": "Batavia",
+    "state": "NY",
+    "zipCode": "14020",
+    "phone": "(585) 343-7367",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/genesee-county-airport/1686465",
+    "fuelPrices": [
+      {
+        "type": "Jet A",
+        "brand": "Phillips",
+        "price": "$5.89",
+        "updated": "01/16/24  01:34 PM",
+        "comments": "W/Prist"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Phillips",
+        "price": "$5.99",
+        "updated": "01/16/24  01:34 PM",
+        "comments": "$7.80 Full service"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 8984205,
+    "name": "Western Aircraft Inc.",
+    "address": "4300 South Kennedy St",
+    "city": "Boise",
+    "state": "ID",
+    "zipCode": "83705",
+    "phone": "(208) 338-1872",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/western-aircraft-inc/8984205",
+    "fuelPrices": [
+      {
+        "type": "Jet A",
+        "brand": "AvFuel",
+        "price": "$6.89",
+        "updated": "03/08/24  09:31 AM",
+        "comments": "Full Service, $6.99 w/prist"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "AvFuel",
+        "price": "$7.99",
+        "updated": "03/08/24  09:31 AM",
+        "comments": "Full Service, Call Ahead to Confirm Price"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 3094048,
+    "name": "Bismarck Aero Center",
+    "address": "2301 University Dr",
+    "city": "Bismarck",
+    "state": "ND",
+    "zipCode": "58504",
+    "phone": "(701) 223-4754",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/bismarck-aero-center/3094048",
+    "fuelPrices": [
+      {
+        "type": "Jet A",
+        "brand": "Ascent",
+        "price": "$5.65",
+        "updated": "01/18/24  02:11 PM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Ascent",
+        "price": "$7.20",
+        "updated": "01/18/24  02:11 PM"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 626252,
+    "name": "BOTTOMLINE AVIATION",
+    "address": "8605 141ST AVE SW",
+    "city": "Bowman",
+    "state": "ND",
+    "zipCode": "58623",
+    "phone": "(701) 523-7484",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/bottomline-aviation/626252",
+    "fuelPrices": []
+  },
+  {
+    "source": "charterhub",
+    "locationId": 7340255,
+    "name": "HOMESTEAD EXECUTIVE JET CENTER",
+    "address": "28790 SW 217th Ave Bld 10",
+    "city": "Homestead",
+    "state": "FL",
+    "zipCode": "33030",
+    "phone": "(305) 248-3595",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/homestead-executive-jet-center/7340255",
+    "fuelPrices": [
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$5.85",
+        "updated": "03/11/24  10:02 AM",
+        "comments": "w/prist, Self Service $5.50"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$6.45",
+        "updated": "03/11/24  10:03 AM",
+        "comments": "Self Service $6.25, Call to Confirm Price"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 628602,
+    "name": "INTERNATIONAL FLIGHT CENTER",
+    "address": "14592 SW 129TH ST",
+    "city": "Miami",
+    "state": "FL",
+    "zipCode": "33186",
+    "phone": "(305) 238-0464",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/international-flight-center/628602",
+    "fuelPrices": [
+      {
+        "type": "Jet A",
+        "brand": "AvFuel",
+        "price": "$6.32",
+        "updated": "01/15/24  01:42 PM",
+        "comments": "$6.82 w/prist, Call for sale prices."
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "AvFuel",
+        "price": "$7.58",
+        "updated": "01/15/24  01:42 PM",
+        "comments": "Full Service"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 5142567,
+    "name": "Million Air Florida Keys",
+    "address": "9850 Overseas Hwy",
+    "city": "Marathon",
+    "state": "FL",
+    "zipCode": "33050",
+    "phone": "(305) 743-4222",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/million-air-florida-keys/5142567",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "AvFuel",
+        "price": "$8.58",
+        "updated": "03/19/24  10:44 AM",
+        "comments": "Self-Serve available $8.08"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 4597135,
+    "name": "Million Air Florida Keys - Jet Terminal",
+    "address": "8800 Overseas hwy",
+    "city": "Marathon",
+    "state": "FL",
+    "zipCode": "33050",
+    "phone": "(305) 743-1995",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/million-air-florida-keys-jet-terminal/4597135",
+    "fuelPrices": []
+  },
+  {
+    "source": "charterhub",
+    "locationId": 628716,
+    "name": "SIGNATURE FLIGHT SUPPORT- EYW",
+    "address": "3471 S ROOSEVELT BLVD",
+    "city": "Key West",
+    "state": "FL",
+    "zipCode": "33040",
+    "phone": "(305) 296-5422",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/signature-flight-support-eyw/628716",
+    "fuelPrices": []
+  },
+  {
+    "source": "charterhub",
+    "locationId": 628559,
+    "name": "FLYING ACADEMY MIAMI",
+    "address": "14569 SW 127TH ST",
+    "city": "Miami",
+    "state": "FL",
+    "zipCode": "33186",
+    "phone": "(305) 255-8753",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/flying-academy-miami/628559",
+    "fuelPrices": []
+  },
+  {
+    "source": "charterhub",
+    "locationId": 615745,
+    "name": "ADF AIRWAYS",
+    "address": "14532 Southwest 129th St",
+    "city": "Miami",
+    "state": "FL",
+    "zipCode": "33186",
+    "phone": "(305) 233-6648",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/adf-airways/615745",
+    "fuelPrices": []
+  },
+  {
+    "source": "charterhub",
+    "locationId": 627516,
+    "name": "GRAND LAKE REGIONAL AIRPORT",
+    "address": "56351 OK-125",
+    "city": "Afton",
+    "state": "OK",
+    "zipCode": "74331",
+    "phone": "(918) 257-4440",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/grand-lake-regional-airport/627516",
+    "fuelPrices": []
+  },
+  {
+    "source": "charterhub",
+    "locationId": 627714,
+    "name": "CITY OF BARTLESVILLE",
+    "address": "401 Wiley Post Road",
+    "city": "Bartlesville",
+    "state": "OK",
+    "zipCode": "74003",
+    "phone": "(918) 661-3121",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/city-of-bartlesville/627714",
+    "fuelPrices": [
+      {
+        "type": "Jet A",
+        "brand": "Phillips 66",
+        "price": "$4.50",
+        "updated": "01/19/24  11:44 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Phillips 66",
+        "price": "$5.75",
+        "updated": "01/19/24  11:44 AM",
+        "comments": "Full Service"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 5144825,
+    "name": "GROVE REGIONAL AIRPORT",
+    "address": "28779 S 630 Rd",
+    "city": "Grove",
+    "state": "OK",
+    "zipCode": "74344",
+    "phone": "(918) 786-6150",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/grove-regional-airport/5144825",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "Phillips 66",
+        "price": "$4.93",
+        "updated": "02/07/24  02:46 PM",
+        "comments": "$5.98 Full Service"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Phillips 66",
+        "price": "$5.41",
+        "updated": "02/07/24  02:45 PM",
+        "comments": "$5.97 Full Service"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 2545204,
+    "name": "Van Bortel Aircraft, Inc.",
+    "address": "4912 S COLLINS ARLINGTON A P",
+    "city": "Arlington",
+    "state": "TX",
+    "zipCode": "76018",
+    "phone": "(817) 468-7788",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/van-bortel-aircraft-inc/2545204",
+    "fuelPrices": []
+  },
+  {
+    "source": "charterhub",
+    "locationId": 5038789,
+    "name": "Miami Muni Airport",
+    "address": "2525 Rex Plott Drive",
+    "city": "Miami",
+    "state": "OK",
+    "zipCode": "74354",
+    "phone": "(918) 541-2290",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/miami-muni-airport/5038789",
+    "fuelPrices": []
+  },
+  {
+    "source": "charterhub",
+    "locationId": 4729025,
+    "name": "Byerly Aviation",
+    "address": "6100 EM Dirkson Pkwy",
+    "city": "Peoria",
+    "state": "IL",
+    "zipCode": "61607",
+    "phone": "(309) 697-6300",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/byerly-aviation/4729025",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "AvFuel",
+        "price": "$6.02",
+        "updated": "01/15/24  01:17 PM",
+        "comments": "Full Service"
+      },
+      {
+        "type": "Jet A",
+        "brand": "AvFuel",
+        "price": "$6.19",
+        "updated": "01/15/24  01:17 PM",
+        "comments": "Full Service, w/prist"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 612569,
+    "name": "FALCON EXECUTIVE AVIATION",
+    "address": "4766 E FALCON DR",
+    "city": "Mesa",
+    "state": "AZ",
+    "zipCode": "85215",
+    "phone": "(480) 981-2242",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/falcon-executive-aviation/612569",
+    "fuelPrices": [
+      {
+        "type": "Jet A",
+        "brand": "AvFuel",
+        "price": "$5.30",
+        "updated": "02/07/24  03:48 PM",
+        "comments": "Please call to confirm current price"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "AvFuel",
+        "price": "$5.95",
+        "updated": "02/07/24  03:48 PM",
+        "comments": "SS $6.55"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 615623,
+    "name": "Samuel's Field Aviation",
+    "address": "1924 BOSTON RD",
+    "city": "Bardstown",
+    "state": "KY",
+    "zipCode": "40004",
+    "phone": "(502) 348-7858",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/samuels-field-aviation/615623",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$4.75",
+        "updated": "03/07/26  09:06 AM",
+        "comments": "Self-Service Also Available, Call Ahead to Confirm"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$4.99",
+        "updated": "03/07/26  09:06 AM",
+        "comments": "w/prist, Self Service Also Available"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 5006605,
+    "name": "SHELTAIR AVIATION",
+    "address": "3051 E Livingston St",
+    "city": "Orlando",
+    "state": "FL",
+    "zipCode": "32803",
+    "phone": "(407) 392-0440",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/sheltair-aviation/5006605",
+    "fuelPrices": []
+  },
+  {
+    "source": "charterhub",
+    "locationId": 4872401,
+    "name": "TOUCH AND GO AVIATION INC",
+    "address": "W 4711 HWY 59",
+    "city": "Monroe",
+    "state": "WI",
+    "zipCode": "53566",
+    "phone": "(608) 329-7777",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/touch-and-go-aviation-inc/4872401",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$4.80",
+        "updated": "03/09/26  07:02 PM",
+        "comments": "$5.80Full Serve. Price subject to change."
+      },
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$5.13",
+        "updated": "03/09/26  07:02 PM",
+        "comments": "Self Serve $6.13 Full Serve"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 19185067,
+    "name": "Clay Lacy Aviation",
+    "address": "7435 Valjean Ave",
+    "city": "Van Nuys",
+    "state": "CA",
+    "zipCode": "91406",
+    "phone": "(818) 989-2900",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/clay-lacy-aviation/19185067",
+    "fuelPrices": [
+      {
+        "type": "Jet A",
+        "brand": "World Fuel",
+        "price": "$8.20",
+        "updated": "03/10/26  12:49 PM"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 630286,
+    "name": "HAMPTON ROADS AIRPORT",
+    "address": "5172 W MILITARY HWY",
+    "city": "Chesapeake",
+    "state": "VA",
+    "zipCode": "23321",
+    "phone": "(757) 465-0260",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/hampton-roads-airport/630286",
+    "fuelPrices": [
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$6.49",
+        "updated": "10/28/22  09:37 AM",
+        "comments": "Full Service, w/prist, Over 200gal $6.29"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$7.39",
+        "updated": "10/28/22  09:39 AM",
+        "comments": "Self-Serve $6.89, Call Ahead to Confirm Price"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 628714,
+    "name": "Tulsair, Inc.",
+    "address": "8182 HORNET AVE",
+    "city": "Millington",
+    "state": "TN",
+    "zipCode": "38053",
+    "phone": "(901) 873-4780",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/tulsair-inc/628714",
+    "fuelPrices": []
+  },
+  {
+    "source": "charterhub",
+    "locationId": 7449495,
+    "name": "Chadron Municiple Airport",
+    "address": "90 Airport Rd",
+    "city": "Chadron",
+    "state": "NE",
+    "zipCode": "69337",
+    "phone": "(308) 432-0505",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/chadron-municiple-airport/7449495",
+    "fuelPrices": [
+      {
+        "type": "Jet A",
+        "brand": "Phillips",
+        "price": "$5.47",
+        "updated": "07/01/24  09:55 AM",
+        "comments": "Prices subject to change"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Phillips",
+        "price": "$5.80",
+        "updated": "07/01/24  09:55 AM",
+        "comments": "Prices subject to change"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 14409235,
+    "name": "Emery Air Inc",
+    "address": "1 Airport Cir",
+    "city": "Rockford",
+    "state": "IL",
+    "zipCode": "61109",
+    "phone": "(815) 968-8287",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/emery-air-inc/14409235",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "World Fuel",
+        "price": "$6.40",
+        "updated": "03/11/26  01:30 PM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "World Fuel",
+        "price": "$7.40",
+        "updated": "03/11/26  01:31 PM"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 4729133,
+    "name": "YOUNGER AVIATION, LLC",
+    "address": "1900 Airport Rd",
+    "city": "Poteau",
+    "state": "OK",
+    "zipCode": "74953",
+    "phone": "(918) 658-8179",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/younger-aviation-llc/4729133",
+    "fuelPrices": []
+  },
+  {
+    "source": "charterhub",
+    "locationId": 627372,
+    "name": "D/W AVIATION",
+    "address": "10 Waldron Dr",
+    "city": "Durant",
+    "state": "OK",
+    "zipCode": "74701",
+    "phone": "(580) 920-0574",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/d-w-aviation/627372",
+    "fuelPrices": [
+      {
+        "type": "Jet A",
+        "brand": "Avfuel",
+        "price": "$4.70",
+        "updated": "03/22/24  09:54 AM",
+        "comments": "with prist"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Avfuel",
+        "price": "$4.95",
+        "updated": "03/22/24  09:54 AM",
+        "comments": "$5.79 (Self Serve)"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 627232,
+    "name": "HENRYETTA MUNI AIRPORT",
+    "address": "10249 Loblolly Rd",
+    "city": "Henryetta",
+    "state": "OK",
+    "zipCode": "74437",
+    "phone": "(918) 652-8634",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/henryetta-muni-airport/627232",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "Phillips 66",
+        "price": "$5.80",
+        "updated": "01/24/24  02:46 PM",
+        "comments": "Prices subject to change"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 15615415,
+    "name": "ATLANTIC AVIATION - SLC",
+    "address": "369 N 2370TH W",
+    "city": "Salt Lake City",
+    "state": "UT",
+    "zipCode": "84116",
+    "phone": "(385) 715-7192",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/atlantic-aviation-slc/15615415",
+    "fuelPrices": []
+  },
+  {
+    "source": "charterhub",
+    "locationId": 15658145,
+    "name": "Bergstrom Aircraft, Inc.",
+    "address": "199 W Fairchild Ave",
+    "city": "Walla Walla",
+    "state": "WA",
+    "zipCode": "99362",
+    "phone": "(509) 529-4243",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/bergstrom-aircraft-inc/15658145",
+    "fuelPrices": []
+  },
+  {
+    "source": "charterhub",
+    "locationId": 15713266,
+    "name": "Summit Aviation, Inc",
+    "address": "490 Wings Way",
+    "city": "Belgrade",
+    "state": "MT",
+    "zipCode": "59714",
+    "phone": "(406) 624-9093",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/summit-aviation-inc/15713266",
+    "fuelPrices": []
+  },
+  {
+    "source": "charterhub",
+    "locationId": 15718979,
+    "name": "KAISERAIR INC",
+    "address": "8519 Halley Ct",
+    "city": "Windsor",
+    "state": "CA",
+    "zipCode": "95492",
+    "phone": "(970) 628-5550",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/kaiserair-inc/15718979",
+    "fuelPrices": [
+      {
+        "type": "Jet A",
+        "brand": "Ascent",
+        "price": "$6.58",
+        "updated": "02/07/24  03:54 PM",
+        "comments": "Significant volume discounts available."
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Ascent",
+        "price": "$7.24",
+        "updated": "02/07/24  03:54 PM",
+        "comments": "Volume Discounts Available"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 15807829,
+    "name": "FlightServ",
+    "address": "1000 Jack Stephan Way",
+    "city": "Ewing",
+    "state": "NJ",
+    "zipCode": "08628",
+    "phone": "(609) 583-4705",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/flightserv/15807829",
+    "fuelPrices": []
+  },
+  {
+    "source": "charterhub",
+    "locationId": 15899758,
+    "name": "Lawrence Air Services",
+    "address": "90295 Air Cargo Way Ste 4",
+    "city": "Eugene",
+    "state": "OR",
+    "zipCode": "97404",
+    "phone": "(541) 689-3331",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/lawrence-air-services/15899758",
+    "fuelPrices": []
+  },
+  {
+    "source": "charterhub",
+    "locationId": 3094035,
+    "name": "DUBUQUE Jet Center",
+    "address": "11000 AIRPORT RD",
+    "city": "Dubuque",
+    "state": "IA",
+    "zipCode": "52003",
+    "phone": "(563) 589-4136",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/dubuque-jet-center/3094035",
+    "fuelPrices": [
+      {
+        "type": "Jet A",
+        "brand": "AvFuel",
+        "price": "$7.37",
+        "updated": "03/30/26  02:54 PM",
+        "comments": "w/prist, All Taxes Included"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "AvFuel",
+        "price": "$7.63",
+        "updated": "03/30/26  02:55 PM",
+        "comments": "7.33(Self Service)"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 5003103,
+    "name": "Beach Aviation Services",
+    "address": "1250 Airdrome St",
+    "city": "Myrtle Beach",
+    "state": "SC",
+    "zipCode": "29577",
+    "phone": "(843) 839-6740",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/beach-aviation-services/5003103",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "Avgas 100LL",
+        "price": "$7.27",
+        "updated": "03/31/26  07:08 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "World Fuel",
+        "price": "$7.87",
+        "updated": "03/31/26  07:08 AM"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 17565701,
+    "name": "Million Air Syracuse",
+    "address": "110 Air Cargo Rd",
+    "city": "Syracuse",
+    "state": "NY",
+    "zipCode": "13212-3916",
+    "phone": "(315) 937-5770",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/million-air-syracuse/17565701",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "World Fuel",
+        "price": "$6.58",
+        "updated": "12/23/25  07:59 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "World Fuel",
+        "price": "$6.60",
+        "updated": "12/16/25  07:11 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "World Fuel",
+        "price": "$6.63",
+        "updated": "12/23/25  07:46 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "World Fuel",
+        "price": "$6.63",
+        "updated": "12/23/25  07:59 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "World Fuel",
+        "price": "$6.64",
+        "updated": "10/28/25  06:07 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "World fuel",
+        "price": "$6.64",
+        "updated": "10/28/25  06:07 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "World Fuel",
+        "price": "$6.64",
+        "updated": "12/02/25  08:09 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "World Fuel",
+        "price": "$6.65",
+        "updated": "12/30/25  08:25 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "World Fuel",
+        "price": "$6.67",
+        "updated": "10/23/25  02:02 PM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "World Fuel",
+        "price": "$6.67",
+        "updated": "10/23/25  02:04 PM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "World Fuel",
+        "price": "$6.67",
+        "updated": "11/04/25  08:17 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "World Fuel",
+        "price": "$6.67",
+        "updated": "12/30/25  08:24 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "World Fuel",
+        "price": "$6.67",
+        "updated": "01/13/26  07:12 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "World Fuel",
+        "price": "$6.70",
+        "updated": "12/16/25  07:11 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "World Fuel",
+        "price": "$6.71",
+        "updated": "01/13/26  07:12 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "World Fuel",
+        "price": "$6.73",
+        "updated": "01/06/26  08:33 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "World Fuel",
+        "price": "$6.74",
+        "updated": "01/06/26  08:33 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "World Fuel",
+        "price": "$6.75",
+        "updated": "12/09/25  07:02 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "World Fuel",
+        "price": "$6.78",
+        "updated": "12/09/25  07:02 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "World Fuel",
+        "price": "$6.81",
+        "updated": "11/11/25  07:53 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "World Fuel",
+        "price": "$6.82",
+        "updated": "11/25/25  07:48 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "World Fuel",
+        "price": "$6.82",
+        "updated": "12/02/25  08:09 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "World Fuel",
+        "price": "$6.82",
+        "updated": "01/20/26  07:58 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "World Fuel",
+        "price": "$6.85",
+        "updated": "01/20/26  07:58 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "World Fuel",
+        "price": "$6.89",
+        "updated": "11/18/25  09:28 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "World Fuel",
+        "price": "$6.89",
+        "updated": "01/27/26  07:04 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "World Fuel",
+        "price": "$6.90",
+        "updated": "02/03/26  07:48 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "World Fuel",
+        "price": "$6.94",
+        "updated": "10/23/25  02:02 PM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "World fuel",
+        "price": "$6.94",
+        "updated": "10/23/25  02:04 PM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "World Fuel",
+        "price": "$6.95",
+        "updated": "02/24/26  07:19 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "World Fuel",
+        "price": "$6.96",
+        "updated": "10/28/25  06:06 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "World Fuel",
+        "price": "$6.96",
+        "updated": "10/28/25  06:07 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "World Fuel",
+        "price": "$6.96",
+        "updated": "02/10/26  06:48 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "World Fuel",
+        "price": "$6.97",
+        "updated": "01/27/26  07:04 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "World Fuel",
+        "price": "$7.00",
+        "updated": "11/11/25  07:52 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "World Fuel",
+        "price": "$7.00",
+        "updated": "11/18/25  09:27 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "World Fuel",
+        "price": "$7.03",
+        "updated": "11/04/25  08:17 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "World Fuel",
+        "price": "$7.03",
+        "updated": "11/25/25  07:48 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "World Fuel",
+        "price": "$7.12",
+        "updated": "02/10/26  06:47 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "World Fuel",
+        "price": "$7.14",
+        "updated": "03/03/26  06:59 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "World Fuel",
+        "price": "$7.17",
+        "updated": "02/03/26  07:48 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "World Fuel",
+        "price": "$7.18",
+        "updated": "03/03/26  06:58 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "World Fuel",
+        "price": "$7.20",
+        "updated": "02/24/26  07:19 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "World Fuel",
+        "price": "$7.91",
+        "updated": "03/17/26  06:52 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "World Fuel",
+        "price": "$8.20",
+        "updated": "03/31/26  07:43 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "World Fuel",
+        "price": "$8.33",
+        "updated": "03/10/26  07:03 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "World Fuel",
+        "price": "$8.63",
+        "updated": "03/17/26  06:52 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "World Fuel",
+        "price": "$9.28",
+        "updated": "03/31/26  07:43 AM"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 628260,
+    "name": "BASE OPS AT PAGE FIELD",
+    "address": "5200 CAPTAIN CHANNING PAGE DR",
+    "city": "Fort Myers",
+    "state": "FL",
+    "zipCode": "33907",
+    "phone": "(239) 590-6600",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/base-ops-at-page-field/628260",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "AvFuel",
+        "price": "$6.62",
+        "updated": "03/31/26  07:28 AM",
+        "comments": "Due to market volatility, fuel prices may change b"
+      },
+      {
+        "type": "Jet A",
+        "brand": "AvFuel",
+        "price": "$7.33",
+        "updated": "03/31/26  07:28 AM",
+        "comments": "Due to market volatility, fuel prices may change b"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 621231,
+    "name": "Resort Jet Center",
+    "address": "112 South Dakota",
+    "city": "Horseshoe Bay",
+    "state": "TX",
+    "zipCode": "78657",
+    "phone": "(830) 598-6386",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/resort-jet-center/621231",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$9.05",
+        "updated": "03/17/26  07:14 AM",
+        "comments": "20% discount for Club Members"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$10.96",
+        "updated": "03/31/26  07:47 AM",
+        "comments": "20% discount for Club Members"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 623693,
+    "name": "MILLION AIR RICHMOND",
+    "address": "400 PORTUGEE RD",
+    "city": "Richmond",
+    "state": "VA",
+    "zipCode": "23250",
+    "phone": "(804) 222-3700",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/million-air-richmond/623693",
+    "fuelPrices": [
+      {
+        "type": "Jet A",
+        "brand": "AvFuel",
+        "price": "$8.30",
+        "updated": "03/31/26  07:27 AM",
+        "comments": "8.38 w/prist, Please call for volume discounts"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "AvFuel",
+        "price": "$9.14",
+        "updated": "03/16/26  08:37 AM"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 617315,
+    "name": "SOLO AVIATION",
+    "address": "801 Airport Dr",
+    "city": "Ann Arbor",
+    "state": "MI",
+    "zipCode": "48108",
+    "phone": "(734) 994-6651",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/solo-aviation/617315",
+    "fuelPrices": [
+      {
+        "type": "Jet A",
+        "brand": "AvFuel",
+        "price": "$6.58",
+        "updated": "03/31/26  07:43 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Avfuel",
+        "price": "$6.91",
+        "updated": "03/31/26  07:43 AM",
+        "comments": "Includes all taxes"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 5281593,
+    "name": "Million Air Orlando",
+    "address": "2841 Flightline Ave",
+    "city": "Sanford",
+    "state": "FL",
+    "zipCode": "32773",
+    "phone": "(407) 585-6300",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/million-air-orlando/5281593",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "Avgas",
+        "price": "$7.64",
+        "updated": "03/31/26  08:03 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Jet A",
+        "price": "$8.91",
+        "updated": "03/31/26  08:03 AM"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 15000231,
+    "name": "Global Aviation, Inc.",
+    "address": "2250 NE 25th Ave",
+    "city": "Hillsboro",
+    "state": "OR",
+    "zipCode": "97124",
+    "phone": "(503) 648-6403",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/global-aviation-inc/15000231",
+    "fuelPrices": [
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$7.20",
+        "updated": "03/31/26  08:09 AM"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 10929541,
+    "name": "Modern Aviation - RUT",
+    "address": "1004 Airport Rd",
+    "city": "North Clarendon",
+    "state": "VT",
+    "zipCode": "05759-9341",
+    "phone": "(802) 773-3348",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/modern-aviation-rut/10929541",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$7.62",
+        "updated": "03/31/26  09:00 AM",
+        "comments": "Self Serve"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$8.22",
+        "updated": "03/31/26  09:00 AM",
+        "comments": "Full Serve"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$9.33",
+        "updated": "03/31/26  09:00 AM",
+        "comments": "Self Serve"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$9.65",
+        "updated": "03/31/26  09:01 AM",
+        "comments": "with out Prist"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 629653,
+    "name": "SKY BRIGHT INC",
+    "address": "65 Aviation Way",
+    "city": "Gilford",
+    "state": "NH",
+    "zipCode": "03249",
+    "phone": "(603) 528-6818",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/sky-bright-inc/629653",
+    "fuelPrices": [
+      {
+        "type": "Jet A",
+        "brand": "Phillips 66",
+        "price": "$4.95",
+        "updated": "02/05/26  09:48 AM",
+        "comments": "Full Service, $7.00 w/prist, Prices Are Subject to"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Phillips 66",
+        "price": "$6.04",
+        "updated": "02/05/26  09:48 AM",
+        "comments": "Self-Serve $6.25, Call Ahead to Confirm Price"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 628115,
+    "name": "MIDWEST AERO",
+    "address": "22563 N BOWMAN AVE",
+    "city": "Danville",
+    "state": "IL",
+    "zipCode": "61834",
+    "phone": "(217) 431-1998",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/midwest-aero/628115",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "Phillips 66",
+        "price": "$6.05",
+        "updated": "12/23/25  03:17 PM",
+        "comments": "$4.68(Self Serve), SELF SERVE 24/7"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Phillips 66",
+        "price": "$7.15",
+        "updated": "03/31/26  09:50 AM",
+        "comments": ".05 off for cash/phillips card Volume discounts WE"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 621585,
+    "name": "ALLIANCE AVIATION",
+    "address": "2221 ALLIANCE BLVD",
+    "city": "Fort Worth",
+    "state": "TX",
+    "zipCode": "76177",
+    "phone": "(800) 318-9268",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/alliance-aviation/621585",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "World Fuel",
+        "price": "$7.65",
+        "updated": "03/24/26  08:57 AM",
+        "comments": "Weekend discount of $0.50"
+      },
+      {
+        "type": "Jet A",
+        "brand": "World Fuel",
+        "price": "$8.70",
+        "updated": "03/31/26  09:30 AM"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 629520,
+    "name": "Elizabeth City Regional Airport",
+    "address": "1028 CONSOLIDATED RD",
+    "city": "Elizabeth City",
+    "state": "NC",
+    "zipCode": "27909",
+    "phone": "(252) 335-5634",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/elizabeth-city-regional-airport/629520",
+    "fuelPrices": [
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$5.99",
+        "updated": "03/24/26  10:47 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$6.99",
+        "updated": "03/31/26  09:58 AM",
+        "comments": "Self Serve $6.74, Call Ahead to Confirm Price"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 5155379,
+    "name": "HIBBING FUELING FACILITY",
+    "address": "11038 HWY 37",
+    "city": "Hibbing",
+    "state": "MN",
+    "zipCode": "55746",
+    "phone": "(218) 263-4353",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/hibbing-fueling-facility/5155379",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$5.97",
+        "updated": "03/12/26  10:40 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$7.47",
+        "updated": "03/31/26  09:28 AM"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 5146097,
+    "name": "Freeman Jet Center - Acadiana",
+    "address": "1314 HANGAR DR",
+    "city": "New Iberia",
+    "state": "LA",
+    "zipCode": "70560",
+    "phone": "(337) 367-1401",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/freeman-jet-center-acadiana/5146097",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "AV Fuel",
+        "price": "$8.24",
+        "updated": "03/31/26  09:46 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "AV Fuel",
+        "price": "$8.64",
+        "updated": "03/31/26  09:46 AM"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 626940,
+    "name": "NORTH STAR AVIATION INC",
+    "address": "801 W AIRPORT Blvd",
+    "city": "Ulysses",
+    "state": "KS",
+    "zipCode": "67880",
+    "phone": "(620) 287-2456",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/north-star-aviation-inc/626940",
+    "fuelPrices": [
+      {
+        "type": "Jet A",
+        "brand": "AvFuel",
+        "price": "$5.90",
+        "updated": "03/31/26  09:12 AM",
+        "comments": "Full 300+ .20 Discount."
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 7503343,
+    "name": "Greenwood Municipal Airport",
+    "address": "897 Airport Pkwy",
+    "city": "Greenwood",
+    "state": "IN",
+    "zipCode": "46143",
+    "phone": "(317) 881-0887",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/greenwood-municipal-airport/7503343",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "Phillips 66",
+        "price": "$7.00",
+        "updated": "03/31/26  08:24 AM",
+        "comments": "Self Serve $6.40"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Phillips 66",
+        "price": "$7.25",
+        "updated": "03/31/26  08:24 AM",
+        "comments": "Self Serve $6.65"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 4596559,
+    "name": "YELVINGTON JET AVIATION",
+    "address": "2326 BELLEVUE AVE EXT",
+    "city": "Daytona Beach",
+    "state": "FL",
+    "zipCode": "32114",
+    "phone": "(386) 257-7791",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/yelvington-jet-aviation/4596559",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "Phillips 66",
+        "price": "$8.06",
+        "updated": "03/31/26  10:48 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Phillips 66",
+        "price": "$8.25",
+        "updated": "03/31/26  10:49 AM"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 614291,
+    "name": "CONCORD NORTH CAROLINA REGIONAL AIRPORT",
+    "address": "9000 AVIATION BLVD",
+    "city": "Concord",
+    "state": "NC",
+    "zipCode": "28027",
+    "phone": "(704) 920-5951",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/concord-north-carolina-regional-airport/614291",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "Phillips 66",
+        "price": "$8.56",
+        "updated": "03/24/26  09:52 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Phillips 66",
+        "price": "$8.89",
+        "updated": "03/31/26  10:08 AM"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 8446745,
+    "name": "Henriksen Jet Center",
+    "address": "6012 AVIATION DR 209",
+    "city": "Pflugerville",
+    "state": "TX",
+    "zipCode": "78660",
+    "phone": "(512) 247-7678",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/henriksen-jet-center/8446745",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "Phillips 66",
+        "price": "$8.99",
+        "updated": "03/31/26  09:59 AM",
+        "comments": "Self serv 6.99"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Phillips 66",
+        "price": "$10.75",
+        "updated": "03/31/26  10:00 AM",
+        "comments": "Volume Discounts Available"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 629524,
+    "name": "Central Jersey Airport Services, Inc",
+    "address": "1034 MILLSTONE RIVER RD",
+    "city": "Hillsborough",
+    "state": "NJ",
+    "zipCode": "08844",
+    "phone": "(908) 526-2822",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/central-jersey-airport-services-inc/629524",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "Phillips 66",
+        "price": "$6.00",
+        "updated": "03/31/26  10:23 AM",
+        "comments": "24 hr self serve"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 16387613,
+    "name": "Crawfordsville Airport",
+    "address": "759 W 400 S",
+    "city": "Crawfordsville",
+    "state": "IN",
+    "zipCode": "47933",
+    "phone": "(765) 362-0707",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/crawfordsville-airport/16387613",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "Phillips",
+        "price": "$5.75",
+        "updated": "03/18/26  02:17 PM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Phillips",
+        "price": "$6.65",
+        "updated": "03/31/26  10:29 AM"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 722972,
+    "name": "AVIATION CLASSICS LTD",
+    "address": "4825 TEXAS AVE",
+    "city": "Reno",
+    "state": "NV",
+    "zipCode": "89506-1237",
+    "phone": "(775) 972-5540",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/aviation-classics-ltd/722972",
+    "fuelPrices": [
+      {
+        "type": "Jet A",
+        "brand": "Phillips 66",
+        "price": "$6.05",
+        "updated": "07/14/25  01:00 PM",
+        "comments": "JET A W/Prist $6.20 - Prices subject to change"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Phillips 66",
+        "price": "$6.36",
+        "updated": "04/23/25  03:43 PM",
+        "comments": "$5.86 (Self Service)"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Phillips 66",
+        "price": "$6.46",
+        "updated": "03/12/26  12:03 PM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Phillips 66",
+        "price": "$6.46",
+        "updated": "03/12/26  12:08 PM",
+        "comments": "With Prist $6.61"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Phillips 66",
+        "price": "$6.48",
+        "updated": "09/24/25  06:46 PM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Phillips 66",
+        "price": "$6.82",
+        "updated": "03/12/26  12:04 PM",
+        "comments": "Self-Serve Fuel Island $6.32"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Phillips",
+        "price": "$6.82",
+        "updated": "03/12/26  12:08 PM",
+        "comments": "Self-Serve Fuel Island $6.32"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Phillips 66",
+        "price": "$6.99",
+        "updated": "03/31/26  01:14 PM",
+        "comments": "Full Service only.  With Prist $7.04 per gallon"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 4888255,
+    "name": "ATLANTIC AVIATION- PHF",
+    "address": "1200 Bland Blvd",
+    "city": "Newport News",
+    "state": "VA",
+    "zipCode": "23602",
+    "phone": "(757) 886-5755",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/atlantic-aviation-phf/4888255",
+    "fuelPrices": [
+      {
+        "type": "Jet A",
+        "brand": "World Fuel",
+        "price": "$7.00",
+        "updated": "06/27/24  09:37 AM",
+        "comments": "10 cents w/Prist Volume Discounts"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "World Fuel",
+        "price": "$7.39",
+        "updated": "06/27/24  09:37 AM",
+        "comments": "Full Service"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 625939,
+    "name": "Holman Aviation",
+    "address": "1940 Airport Ct",
+    "city": "Great Falls",
+    "state": "MT",
+    "zipCode": "59404-5542",
+    "phone": "(406) 453-7613",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/holman-aviation/625939",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "World Fuel",
+        "price": "$6.76",
+        "updated": "03/31/26  12:12 PM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "World Fuel",
+        "price": "$7.60",
+        "updated": "03/31/26  12:13 PM",
+        "comments": "Fuel Volume Discounts Available"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 17899396,
+    "name": "Atlantic Aviation AGC",
+    "address": "1901 Lebanon Rd",
+    "city": "West Mifflin",
+    "state": "PA",
+    "zipCode": "15122",
+    "phone": "(412) 267-8000",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/atlantic-aviation-agc/17899396",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "Independent",
+        "price": "$6.33",
+        "updated": "06/26/24  08:19 AM",
+        "comments": "Full Service"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Independent",
+        "price": "$6.53",
+        "updated": "06/26/24  08:20 AM",
+        "comments": "$6.44 w/prist"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 16403744,
+    "name": "Atlantic Aviation-Worcester",
+    "address": "375 Airport Dr",
+    "city": "Worcester",
+    "state": "MA",
+    "zipCode": "01602",
+    "phone": "(508) 755-5870",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/atlantic-aviation-worcester/16403744",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "Avfuel",
+        "price": "$7.85",
+        "updated": "10/23/24  09:42 AM",
+        "comments": "Full Service"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Avfuel",
+        "price": "$7.90",
+        "updated": "10/23/24  09:43 AM",
+        "comments": "$9.09 w/prist"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 613093,
+    "name": "Fargo Jet Center",
+    "address": "3802 20TH ST N",
+    "city": "Fargo",
+    "state": "ND",
+    "zipCode": "58102",
+    "phone": "(701) 235-3600",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/fargo-jet-center/613093",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "Avfuel",
+        "price": "$7.70",
+        "updated": "03/31/26  01:49 PM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Avfuel",
+        "price": "$9.91",
+        "updated": "03/31/26  01:49 PM"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 616999,
+    "name": "Atlantic Aviation (Hyannis)",
+    "address": "730 BARSTABLE RD",
+    "city": "Hyannis",
+    "state": "MA",
+    "zipCode": "02601",
+    "phone": "(508) 771-7520",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/atlantic-aviation-hyannis/616999",
+    "fuelPrices": []
+  },
+  {
+    "source": "charterhub",
+    "locationId": 615627,
+    "name": "ATLANTIC AVIATION- BNA",
+    "address": "635 HANGAR LANE",
+    "city": "Nashville",
+    "state": "TN",
+    "zipCode": "37217",
+    "phone": "(615) 360-8109",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/atlantic-aviation-bna/615627",
+    "fuelPrices": []
+  },
+  {
+    "source": "charterhub",
+    "locationId": 629467,
+    "name": "LUMBERTON MUNI AIRPORT",
+    "address": "163 Airport Blvd",
+    "city": "Lumberton",
+    "state": "NC",
+    "zipCode": "28358",
+    "phone": "(910) 739-6480",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/lumberton-muni-airport/629467",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "Philips 66",
+        "price": "$4.98",
+        "updated": "11/26/24  07:35 AM",
+        "comments": "Full Service, Call Ahead to Confirm Price"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Phillips 66",
+        "price": "$6.44",
+        "updated": "03/31/26  03:11 PM",
+        "comments": "w/prist, Full Service"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 3094057,
+    "name": "AVFLIGHT KDET",
+    "address": "11499 CONNER AVE",
+    "city": "Detroit",
+    "state": "MI",
+    "zipCode": "48213",
+    "phone": "(313) 527-6620",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/avflight-kdet/3094057",
+    "fuelPrices": []
+  },
+  {
+    "source": "charterhub",
+    "locationId": 615271,
+    "name": "AVFLIGHT KFNT",
+    "address": "3375 W Bristol Rd",
+    "city": "Flint",
+    "state": "MI",
+    "zipCode": "48507",
+    "phone": "(810) 235-0681",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/avflight-kfnt/615271",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "Avfuel",
+        "price": "$5.84",
+        "updated": "03/10/26  01:48 PM",
+        "comments": "Self Serve"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Avfuel",
+        "price": "$6.80",
+        "updated": "03/10/26  01:48 PM",
+        "comments": "SELF SERVE"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Avfuel",
+        "price": "$9.20",
+        "updated": "03/17/26  10:16 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Avfuel",
+        "price": "$9.35",
+        "updated": "03/17/26  10:16 AM",
+        "comments": "With Prist +"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 630122,
+    "name": "AVFLIGHT KMDT",
+    "address": "3 Terminal Drive",
+    "city": "Middletown",
+    "state": "PA",
+    "zipCode": "17057",
+    "phone": "(717) 944-4666",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/avflight-kmdt/630122",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "AvFuel",
+        "price": "$6.99",
+        "updated": "07/01/24  11:32 AM",
+        "comments": "Full Service, Call Ahead to Confirm Price, Prices"
+      },
+      {
+        "type": "Jet A",
+        "brand": "AvFuel",
+        "price": "$7.15",
+        "updated": "07/01/24  11:32 AM",
+        "comments": "Full Service, $9.15 w/prist"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 724094,
+    "name": "AMBASSADOR JET CENTER",
+    "address": "5435 SATURN DR",
+    "city": "Dallas",
+    "state": "TX",
+    "zipCode": "75237",
+    "phone": "(214) 623-8800",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/ambassador-jet-center/724094",
+    "fuelPrices": [
+      {
+        "type": "Jet A",
+        "brand": "AvFuel",
+        "price": "$5.60",
+        "updated": "02/16/24  02:15 PM",
+        "comments": "Full Service, $6.30 w/prist"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "AvFuel",
+        "price": "$6.00",
+        "updated": "02/16/24  02:15 PM",
+        "comments": "Full Service, Call Ahead to Confirm Price"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 624887,
+    "name": "AIRCENTER SAN DIEGO",
+    "address": "1424 CONTINENTAL ST",
+    "city": "San Diego",
+    "state": "CA",
+    "zipCode": "92154",
+    "phone": "(619) 671-9222",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/aircenter-san-diego/624887",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "Avfuel",
+        "price": "$5.99",
+        "updated": "02/15/24  09:07 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Avfuel",
+        "price": "$5.99",
+        "updated": "02/15/24  09:07 AM"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 19184892,
+    "name": "Clay Lacy Aviation",
+    "address": "361 Paularino Ave",
+    "city": "Costa Mesa",
+    "state": "CA",
+    "zipCode": "92626",
+    "phone": "(714) 888-8000",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/clay-lacy-aviation/19184892",
+    "fuelPrices": [
+      {
+        "type": "Jet A",
+        "brand": "World Fuel",
+        "price": "$7.65",
+        "updated": "03/31/26  02:05 PM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "World Fuel",
+        "price": "$7.77",
+        "updated": "03/24/26  04:26 PM"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 617579,
+    "name": "AVFLIGHT KCAK",
+    "address": "5430 LAUBY RD BLDG 4",
+    "city": "North Canton",
+    "state": "OH",
+    "zipCode": "44720",
+    "phone": "(330) 499-3316",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/avflight-kcak/617579",
+    "fuelPrices": []
+  },
+  {
+    "source": "charterhub",
+    "locationId": 4561635,
+    "name": "AVFLIGHT KYIP",
+    "address": "2055 C ST",
+    "city": "Belleville",
+    "state": "MI",
+    "zipCode": "48111",
+    "phone": "(734) 482-2621",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/avflight-kyip/4561635",
+    "fuelPrices": [
+      {
+        "type": "Jet A",
+        "brand": "AvFuel",
+        "price": "$6.30",
+        "updated": "01/31/24  04:30 PM",
+        "comments": "Full Service, w/prist $7.53, Prices Subject to Cha"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "AvFuel",
+        "price": "$6.75",
+        "updated": "01/31/24  04:30 PM",
+        "comments": "Full Service, Call Ahead to Confirm Price"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 626059,
+    "name": "AvFlight Salina",
+    "address": "2035 Beechcraft Rd",
+    "city": "Salina",
+    "state": "KS",
+    "zipCode": "67401-5008",
+    "phone": "(785) 825-6739",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/avflight-salina/626059",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "Avfuel Self Serve",
+        "price": "$5.55",
+        "updated": "03/06/26  08:33 AM",
+        "comments": "SelfService"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Avfuel",
+        "price": "$6.63",
+        "updated": "03/31/26  10:39 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "AvFuel",
+        "price": "$6.93",
+        "updated": "03/18/26  08:27 AM",
+        "comments": "Self Serve $5.30"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 9563241,
+    "name": "AVFLIGHT KROC",
+    "address": "1205 Scottsville Road",
+    "city": "Rochester",
+    "state": "NY",
+    "zipCode": "14624",
+    "phone": "(585) 235-9040",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/avflight-kroc/9563241",
+    "fuelPrices": [
+      {
+        "type": "Jet A",
+        "brand": "AvFuel",
+        "price": "$6.85",
+        "updated": "03/08/24  01:51 PM",
+        "comments": "$7.76 w/prist"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "AvFuel",
+        "price": "$7.05",
+        "updated": "03/08/24  01:51 PM",
+        "comments": "Full Service"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 615541,
+    "name": "AVFLIGHT KMBS",
+    "address": "8430 GARFIELD RD",
+    "city": "Freeland",
+    "state": "MI",
+    "zipCode": "48623",
+    "phone": "(800) 227-7907",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/avflight-kmbs/615541",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "AvFuel",
+        "price": "$6.95",
+        "updated": "03/10/26  12:55 PM",
+        "comments": "includes all taxes"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Av Fuel",
+        "price": "$9.90",
+        "updated": "03/31/26  03:26 PM",
+        "comments": "$10.04 with prist includes all taxes"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 629138,
+    "name": "AVFLIGHT KLAN",
+    "address": "3121 W CIRCLE DR",
+    "city": "Lansing",
+    "state": "MI",
+    "zipCode": "48906",
+    "phone": "(517) 321-7000",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/avflight-klan/629138",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "Avfuel",
+        "price": "$7.19",
+        "updated": "03/11/24  03:39 PM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Avfuel",
+        "price": "$7.30",
+        "updated": "03/11/24  03:39 PM",
+        "comments": "Jet w/prist $8.65"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 16336231,
+    "name": "AVFLIGHT KMKE",
+    "address": "401 East Layton Ave",
+    "city": "Milwaukee",
+    "state": "WI",
+    "zipCode": "53207",
+    "phone": "(844) 383-5653",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/avflight-kmke/16336231",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "AvFuel",
+        "price": "$7.20",
+        "updated": "03/10/26  02:32 PM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "AvFuel",
+        "price": "$7.80",
+        "updated": "03/31/26  08:56 PM"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 630070,
+    "name": "SEVEN RIVERS AVIATION LLC",
+    "address": "129 AIRPORT RD",
+    "city": "Georgetown",
+    "state": "SC",
+    "zipCode": "29440",
+    "phone": "(843) 527-7516",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/seven-rivers-aviation-llc/630070",
+    "fuelPrices": [
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$5.24",
+        "updated": "06/11/25  07:37 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$5.26",
+        "updated": "06/03/25  08:38 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$5.27",
+        "updated": "06/17/25  09:38 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$5.28",
+        "updated": "05/20/25  09:55 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$5.28",
+        "updated": "01/13/26  09:45 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$5.29",
+        "updated": "05/13/25  09:21 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$5.34",
+        "updated": "04/30/25  08:25 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$5.34",
+        "updated": "12/23/25  01:16 PM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$5.36",
+        "updated": "05/27/25  11:15 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$5.41",
+        "updated": "08/26/25  10:11 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$5.42",
+        "updated": "01/27/26  10:09 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$5.43",
+        "updated": "09/09/25  08:41 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$5.45",
+        "updated": "07/08/25  09:47 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$5.45",
+        "updated": "07/15/25  09:32 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$5.48",
+        "updated": "09/16/25  08:56 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$5.50",
+        "updated": "06/24/25  11:47 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$5.52",
+        "updated": "08/13/25  06:54 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$5.52",
+        "updated": "09/30/25  08:48 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$5.52",
+        "updated": "10/21/25  08:54 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$5.54",
+        "updated": "07/22/25  09:47 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$5.55",
+        "updated": "04/22/25  09:50 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$5.56",
+        "updated": "10/07/25  09:15 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$5.57",
+        "updated": "07/29/25  09:22 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$5.57",
+        "updated": "02/03/26  09:47 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$5.58",
+        "updated": "02/24/26  09:39 AM"
+      },
+      {
+        "type": "Jet B",
+        "brand": "Titan",
+        "price": "$5.61",
+        "updated": "02/17/26  09:56 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$5.64",
+        "updated": "03/25/25  09:51 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$5.64",
+        "updated": "04/01/25  08:48 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$5.64",
+        "updated": "11/12/25  06:40 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$5.64",
+        "updated": "11/19/25  10:21 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$5.65",
+        "updated": "07/01/25  11:57 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$5.67",
+        "updated": "03/18/25  09:00 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$5.68",
+        "updated": "02/10/26  09:46 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$5.68",
+        "updated": "03/04/26  07:04 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$5.70",
+        "updated": "04/08/25  09:32 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$5.75",
+        "updated": "01/13/26  09:45 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$5.79",
+        "updated": "12/23/25  01:16 PM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$5.80",
+        "updated": "01/27/26  10:09 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$5.80",
+        "updated": "02/10/26  09:46 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$5.80",
+        "updated": "02/24/26  09:39 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$5.80",
+        "updated": "03/04/26  07:04 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$5.89",
+        "updated": "01/31/25  08:15 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$5.89",
+        "updated": "02/26/25  12:38 PM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$5.99",
+        "updated": "11/19/25  10:21 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$6.03",
+        "updated": "05/20/25  09:55 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$6.03",
+        "updated": "05/27/25  11:15 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$6.03",
+        "updated": "06/03/25  08:38 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$6.03",
+        "updated": "06/11/25  07:38 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$6.03",
+        "updated": "06/17/25  09:39 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "TitAN",
+        "price": "$6.03",
+        "updated": "06/24/25  11:48 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$6.04",
+        "updated": "10/07/25  09:15 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$6.04",
+        "updated": "10/21/25  08:54 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$6.04",
+        "updated": "11/12/25  06:40 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$6.05",
+        "updated": "07/22/25  09:47 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$6.07",
+        "updated": "05/13/25  09:21 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$6.07",
+        "updated": "07/29/25  09:23 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$6.07",
+        "updated": "08/13/25  06:54 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$6.07",
+        "updated": "08/26/25  10:11 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$6.07",
+        "updated": "09/09/25  08:41 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$6.12",
+        "updated": "01/31/25  08:16 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$6.12",
+        "updated": "09/16/25  08:56 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$6.12",
+        "updated": "09/30/25  08:49 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$6.13",
+        "updated": "03/25/25  09:52 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$6.15",
+        "updated": "07/15/25  09:34 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$6.19",
+        "updated": "07/01/25  11:57 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$6.19",
+        "updated": "07/08/25  09:47 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$6.19",
+        "updated": "07/15/25  09:32 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$6.25",
+        "updated": "04/01/25  08:48 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$6.29",
+        "updated": "03/18/25  09:01 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$6.29",
+        "updated": "04/22/25  09:50 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$6.29",
+        "updated": "04/30/25  08:25 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$6.33",
+        "updated": "02/26/25  12:38 PM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$6.36",
+        "updated": "04/08/25  09:32 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$6.46",
+        "updated": "03/11/26  07:08 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$6.93",
+        "updated": "03/17/26  01:32 PM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$6.96",
+        "updated": "03/11/26  07:08 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$7.26",
+        "updated": "04/01/26  09:31 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$7.30",
+        "updated": "03/26/26  07:16 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$7.39",
+        "updated": "03/17/26  01:32 PM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$7.78",
+        "updated": "03/26/26  07:16 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$7.97",
+        "updated": "04/01/26  09:31 AM"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 5156439,
+    "name": "FLY HIGH LEXINGTON",
+    "address": "1673 AVIATION WAY",
+    "city": "Lexington",
+    "state": "NC",
+    "zipCode": "27292-6732",
+    "phone": "(336) 956-7774",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/fly-high-lexington/5156439",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$5.75",
+        "updated": "03/24/26  06:17 PM",
+        "comments": "Self Serve"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$6.55",
+        "updated": "03/24/26  06:17 PM",
+        "comments": "Full Service"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$7.80",
+        "updated": "04/01/26  09:02 AM",
+        "comments": "Full Service, w/prist"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 613533,
+    "name": "HondaJet Southeast / Banyan",
+    "address": "5360 NW 20th Terrace",
+    "city": "Fort Lauderdale",
+    "state": "FL",
+    "zipCode": "33309",
+    "phone": "(954) 492-3552",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/hondajet-southeast-banyan/613533",
+    "fuelPrices": [
+      {
+        "type": "Jet A",
+        "brand": "Avfuel",
+        "price": "$6.17",
+        "updated": "10/07/25  11:50 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Avfuel",
+        "price": "$7.26",
+        "updated": "10/07/25  11:50 AM"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 627006,
+    "name": "AvFlight Minot",
+    "address": "2400 N BROADWAY",
+    "city": "Minot",
+    "state": "ND",
+    "zipCode": "58703",
+    "phone": "(701) 857-4738",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/avflight-minot/627006",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "AvFuel",
+        "price": "$7.00",
+        "updated": "04/01/26  09:52 AM",
+        "comments": "Prices subject to change."
+      },
+      {
+        "type": "Jet A",
+        "brand": "Avfuel",
+        "price": "$9.05",
+        "updated": "03/31/26  10:51 AM",
+        "comments": "With additive 9.17"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 630290,
+    "name": "SHENANDOAH VALLEY REGIONAL",
+    "address": "77 Aviation Cir",
+    "city": "Weyers Cave",
+    "state": "VA",
+    "zipCode": "24486-2706",
+    "phone": "(540) 234-8304",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/shenandoah-valley-regional/630290",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "Avfuel",
+        "price": "$6.99",
+        "updated": "04/01/26  08:01 AM",
+        "comments": "Full Service"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Avfuel",
+        "price": "$8.69",
+        "updated": "04/01/26  08:02 AM",
+        "comments": "Full Service, $8.77 w/prist"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 615319,
+    "name": "DUPAGE FLIGHT CENTER",
+    "address": "2700 INTERNATIONAL DR",
+    "city": "West Chicago",
+    "state": "IL",
+    "zipCode": "60185",
+    "phone": "(630) 208-5600",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/dupage-flight-center/615319",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "Phillips 66",
+        "price": "$7.66",
+        "updated": "03/18/26  06:41 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Phillips 66",
+        "price": "$8.13",
+        "updated": "04/01/26  06:15 AM"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 10609107,
+    "name": "Tradewind Airport Corp",
+    "address": "4105 Tradewind St",
+    "city": "Amarillo",
+    "state": "TX",
+    "zipCode": "79118-7706",
+    "phone": "(806) 376-1008",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/tradewind-airport-corp/10609107",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "Avfuel",
+        "price": "$6.81",
+        "updated": "04/01/26  09:47 AM",
+        "comments": "Self Serve $5.96"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Avuel",
+        "price": "$7.01",
+        "updated": "04/01/26  09:48 AM",
+        "comments": "Self Serve $6.81"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 630288,
+    "name": "RICHMOND JET",
+    "address": "5745 HUNTSMAN RD",
+    "city": "Richmond",
+    "state": "VA",
+    "zipCode": "23250",
+    "phone": "(804) 226-7200",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/richmond-jet/630288",
+    "fuelPrices": [
+      {
+        "type": "Jet A",
+        "brand": "SHELL",
+        "price": "$7.81",
+        "updated": "04/01/26  04:42 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Shell",
+        "price": "$8.46",
+        "updated": "04/01/26  04:43 AM"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 5007335,
+    "name": "CUTTER AVIATION",
+    "address": "2502 Clark Carr Loop SE",
+    "city": "Albuquerque",
+    "state": "NM",
+    "zipCode": "87106",
+    "phone": "(505) 842-4184",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/cutter-aviation/5007335",
+    "fuelPrices": []
+  },
+  {
+    "source": "charterhub",
+    "locationId": 12430653,
+    "name": "AVP / Kenosha Aviation",
+    "address": "9894 52nd St",
+    "city": "Kenosha",
+    "state": "WI",
+    "zipCode": "53144",
+    "phone": "(262) 605-0474",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/avp-kenosha-aviation/12430653",
+    "fuelPrices": [
+      {
+        "type": "Jet A",
+        "brand": "AVFUEL",
+        "price": "$6.44",
+        "updated": "04/01/26  11:08 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "AVFUEL (SELF SERVE)",
+        "price": "$6.49",
+        "updated": "03/17/26  10:32 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "AvFuel",
+        "price": "$6.99",
+        "updated": "03/17/26  10:33 AM"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 5144425,
+    "name": "MODERN AVIATION",
+    "address": "112 CARUSO DR",
+    "city": "Trenton",
+    "state": "ME",
+    "zipCode": "04605-6011",
+    "phone": "(207) 667-5534",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/modern-aviation/5144425",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$8.12",
+        "updated": "03/31/26  07:47 AM",
+        "comments": "Medical charity flights receive 50 cents off per g"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$9.24",
+        "updated": "03/31/26  07:47 AM",
+        "comments": "Prist available (add 15 cents per gallon); JET A D"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 10274721,
+    "name": "FONTAINEBLEAU AVIATION- OPF",
+    "address": "14200 NW 42ND AVE",
+    "city": "Opa-Locka",
+    "state": "FL",
+    "zipCode": "33054",
+    "phone": "(305) 685-4646",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/fontainebleau-aviation-opf/10274721",
+    "fuelPrices": [
+      {
+        "type": "Jet A",
+        "brand": "Phillips 66",
+        "price": "$6.85",
+        "updated": "10/28/24  10:52 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Phillips 66",
+        "price": "$9.21",
+        "updated": "10/28/24  10:52 AM"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 617811,
+    "name": "GRAND AIRE INC",
+    "address": "11777 WEST AIRPORT SERVICE RD",
+    "city": "Swanton",
+    "state": "OH",
+    "zipCode": "43558",
+    "phone": "(419) 861-6700",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/grand-aire-inc/617811",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "Avfuel",
+        "price": "$6.95",
+        "updated": "04/01/26  11:29 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "AvFuel",
+        "price": "$8.10",
+        "updated": "04/01/26  11:29 AM"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 22496090,
+    "name": "MODERN AVIATION",
+    "address": "8285 Perimeter Rd S",
+    "city": "Seattle",
+    "state": "WA",
+    "zipCode": "98108",
+    "phone": "(206) 762-6000",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/modern-aviation/22496090",
+    "fuelPrices": [
+      {
+        "type": "Jet A",
+        "brand": "Independent",
+        "price": "$6.06",
+        "updated": "06/24/24  09:55 AM"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Independent",
+        "price": "$7.59",
+        "updated": "06/24/24  09:55 AM"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 4870463,
+    "name": "Lux Air",
+    "address": "1658 S Litchfield Rd",
+    "city": "Goodyear",
+    "state": "AZ",
+    "zipCode": "85338",
+    "phone": "(623) 932-1200",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/lux-air/4870463",
+    "fuelPrices": [
+      {
+        "type": "Jet A",
+        "brand": "AvFuel",
+        "price": "$6.99",
+        "updated": "06/27/24  09:04 AM",
+        "comments": "Full Service, Prices Subject to Change"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "AvFuel",
+        "price": "$6.99",
+        "updated": "06/27/24  09:05 AM"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 5358429,
+    "name": "Cassone Truck & Equipment Sales",
+    "address": "1950 LAKELAND AVE",
+    "city": "Ronkonkoma",
+    "state": "NY",
+    "zipCode": "11779",
+    "phone": "(631) 389-7800",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/cassone-truck-and-equipment-sales/5358429",
+    "fuelPrices": []
+  },
+  {
+    "source": "charterhub",
+    "locationId": 4594043,
+    "name": "MODERN AVIATION",
+    "address": "Francis S Gabreski  Airport",
+    "city": "Westhampton Beach",
+    "state": "NY",
+    "zipCode": "11978",
+    "phone": "(631) 288-9866",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/modern-aviation/4594043",
+    "fuelPrices": []
+  },
+  {
+    "source": "charterhub",
+    "locationId": 5148749,
+    "name": "MODERN AVIATION",
+    "address": "1817 AVIATION DRIVE",
+    "city": "Wilmington",
+    "state": "NC",
+    "zipCode": "28405",
+    "phone": "(910) 763-0146",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/modern-aviation/5148749",
+    "fuelPrices": [
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$5.47",
+        "updated": "11/01/24  11:37 AM",
+        "comments": "w/prist $7.29"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$6.90",
+        "updated": "11/01/24  11:37 AM",
+        "comments": "Full Service"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 3094070,
+    "name": "AVFLIGHT KTVC",
+    "address": "1150 AIRPORT ACCESS RD",
+    "city": "Traverse City",
+    "state": "MI",
+    "zipCode": "49686-3514",
+    "phone": "(231) 929-1126",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/avflight-ktvc/3094070",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "Avfuel",
+        "price": "$6.50",
+        "updated": "04/01/26  12:27 PM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "AvFuel",
+        "price": "$9.95",
+        "updated": "03/31/26  10:47 AM",
+        "comments": "+0.16 for FSII"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 624275,
+    "name": "MODERN AVIATION",
+    "address": "10510 SUPERFORTRESS AVE",
+    "city": "Mather",
+    "state": "CA",
+    "zipCode": "95655",
+    "phone": "(916) 235-6297",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/modern-aviation/624275",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "EPIC",
+        "price": "$7.32",
+        "updated": "03/28/24  09:00 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "EPIC",
+        "price": "$9.00",
+        "updated": "03/28/24  09:00 AM",
+        "comments": "."
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 629278,
+    "name": "MODERN AVIATION",
+    "address": "193 Tower Ave",
+    "city": "Groton",
+    "state": "CT",
+    "zipCode": "06340-5327",
+    "phone": "(860) 715-8800",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/modern-aviation/629278",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "Titan",
+        "price": "$8.52",
+        "updated": "03/24/26  06:49 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Titan",
+        "price": "$9.39",
+        "updated": "03/31/26  06:51 AM"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 4597595,
+    "name": "MODERN AVIATION",
+    "address": "1 MARINE AIR TERMINAL Road",
+    "city": "Flushing",
+    "state": "NY",
+    "zipCode": "11371",
+    "phone": "(718) 779-4040",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/modern-aviation/4597595",
+    "fuelPrices": []
+  },
+  {
+    "source": "charterhub",
+    "locationId": 630214,
+    "name": "MODERN AVIATION",
+    "address": "90 ARRIVAL AVE",
+    "city": "Ronkonkoma",
+    "state": "NY",
+    "zipCode": "11779",
+    "phone": "(631) 379-5064",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/modern-aviation/630214",
+    "fuelPrices": []
+  },
+  {
+    "source": "charterhub",
+    "locationId": 5006949,
+    "name": "MODERN AVIATION",
+    "address": "1100 NEW HWY",
+    "city": "Farmingdale",
+    "state": "NY",
+    "zipCode": "11735",
+    "phone": "(631) 316-6134",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/modern-aviation/5006949",
+    "fuelPrices": []
+  },
+  {
+    "source": "charterhub",
+    "locationId": 624769,
+    "name": "MODERN AVIATION",
+    "address": "6133 FREEPORT BLVD",
+    "city": "Sacramento",
+    "state": "CA",
+    "zipCode": "95822",
+    "phone": "(916) 428-8292",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/modern-aviation/624769",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "Epic",
+        "price": "$7.15",
+        "updated": "03/11/24  10:15 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Epic",
+        "price": "$9.27",
+        "updated": "03/11/24  10:15 AM",
+        "comments": "With volume discount structure in place."
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 629733,
+    "name": "NANTUCKET MEMORIAL AIRPORT",
+    "address": "14 AIRPORT ROAD",
+    "city": "Nantucket",
+    "state": "MA",
+    "zipCode": "02554",
+    "phone": "(508) 325-5300",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/nantucket-memorial-airport/629733",
+    "fuelPrices": [
+      {
+        "type": "Jet A",
+        "brand": "Phillips 66",
+        "price": "$6.55",
+        "updated": "06/21/24  03:43 PM",
+        "comments": "Full Service, w/prist"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "Phillips 66",
+        "price": "$7.23",
+        "updated": "06/21/24  03:42 PM",
+        "comments": "Full Service, Prices Subject to Change"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 626460,
+    "name": "QUEST AVIATION INC",
+    "address": "4440 US Highway 12 E",
+    "city": "Aberdeen",
+    "state": "SD",
+    "zipCode": "57401-9511",
+    "phone": "(605) 225-8008",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/quest-aviation-inc/626460",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "Avfuel",
+        "price": "$5.75",
+        "updated": "11/24/25  11:13 AM"
+      },
+      {
+        "type": "Jet A",
+        "brand": "Avfuel",
+        "price": "$6.25",
+        "updated": "04/01/26  02:45 PM",
+        "comments": "We'll do our best to match the lowest prices"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 4629849,
+    "name": "Hillsboro Aviation",
+    "address": "3845 NE 30th Ave",
+    "city": "Hillsboro",
+    "state": "OR",
+    "zipCode": "97124",
+    "phone": "(503) 648-2831",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/hillsboro-aviation/4629849",
+    "fuelPrices": [
+      {
+        "type": "Jet A",
+        "brand": "AvFuel",
+        "price": "$5.55",
+        "updated": "01/18/24  02:05 PM",
+        "comments": "W/Prist $5.80"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "AvFuel",
+        "price": "$7.75",
+        "updated": "01/18/24  02:05 PM",
+        "comments": "Prices subject to change"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 4593431,
+    "name": "Avenger Aviation Services",
+    "address": "317 Homer K Taylor Dr",
+    "city": "Sweetwater",
+    "state": "TX",
+    "zipCode": "79556",
+    "phone": "(325) 235-8478",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/avenger-aviation-services/4593431",
+    "fuelPrices": [
+      {
+        "type": "Jet A",
+        "brand": "AvFuel",
+        "price": "$0.01",
+        "updated": "04/02/26  12:11 AM",
+        "comments": "w/Prist Full Service"
+      },
+      {
+        "type": "Avgas 100LL",
+        "brand": "AvFuel",
+        "price": "$0.01",
+        "updated": "04/02/26  12:11 AM",
+        "comments": "Full Service"
+      }
+    ]
+  },
+  {
+    "source": "charterhub",
+    "locationId": 12072809,
+    "name": "EPIC AVIATION",
+    "address": "600 Skyline Dr",
+    "city": "New Smyrna Beach",
+    "state": "FL",
+    "zipCode": "32168",
+    "phone": "(386) 409-5583",
+    "premierFbo": false,
+    "detailUrl": "https://www.charterhub.com/fbo-directory/details/epic-aviation/12072809",
+    "fuelPrices": [
+      {
+        "type": "Avgas 100LL",
+        "brand": "Shell",
+        "price": "$0.00",
+        "updated": "04/02/26  12:11 AM"
+      }
+    ]
   }
 ]

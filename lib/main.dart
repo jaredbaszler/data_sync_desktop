@@ -112,7 +112,7 @@ Future<void> main(List<String> args) async {
       );
       final fboService = FboImportService();
       await fboService.importFromJson(
-        ['assets/globalair_fbos.json', 'assets/charterhub_fbos.json', 'assets/airnav_fbos.json'],
+        ['assets/globalair_fbos.json', 'assets/charterhub_fbos.json', 'assets/airnav_fbos.json', 'assets/aopa_fbos.json'],
         businessesRepo,
         contactsRepo,
         allAirports,
