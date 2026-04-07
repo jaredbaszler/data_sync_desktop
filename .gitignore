@@ -55,3 +55,6 @@ GooglePlacesAPIKey.txt
 # Run artifacts
 checkpoint.json
 error_log.json
+
+# ignore node_modeules
+node_modules/
