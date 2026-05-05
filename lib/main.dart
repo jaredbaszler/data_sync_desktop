@@ -4,6 +4,7 @@ import 'package:args/args.dart';
 import 'package:excel/excel.dart' as xl;
 
 import 'src/categorization/category_service.dart';
+import 'src/categorization/charter_import.dart';
 import 'src/categorization/far_lookup.dart';
 import 'src/categorization/fbo_import.dart';
 import 'src/categorization/website_crawler.dart';
@@ -52,6 +53,10 @@ Future<void> main(List<String> args) async {
         help: 'Import FBO businesses from scraped GlobalAir data', defaultsTo: false)
     ..addOption('fbo-limit',
         help: 'Max FBOs to import (0 = all). Use for test runs before full import.', defaultsTo: '0')
+    ..addFlag('import-charters',
+        help: 'Import Part 135 charter operators from merged ACG+FAA JSON', defaultsTo: false)
+    ..addOption('charter-limit',
+        help: 'Max charters to import (0 = all). Use for test runs.', defaultsTo: '0')
     ..addFlag('help', abbr: 'h', help: 'Show help', negatable: false);
 
   final ArgResults options;
@@ -92,6 +97,31 @@ Future<void> main(List<String> args) async {
     // Handle airport import mode
     if (options['import-airports'] as bool) {
       await _importAirports(airportsRepo, mongoClient);
+      return;
+    }
+
+    // Handle charter operator import mode
+    if (options['import-charters'] as bool) {
+      await airportsRepo.ensureIndexes();
+      await businessesRepo.ensureIndexes();
+      await contactsRepo.ensureIndexes();
+      await mongoClient.reconnect();
+      final allAirports = await airportsRepo.getEnabledAirports();
+      final charterLimit = int.tryParse(options['charter-limit'] as String) ?? 0;
+      final geocoder = GeocodingService(
+        config.googlePlacesApiKey,
+        cacheFilePath: 'assets/db_code lookups/charter_geocode_cache.json',
+      );
+      final charterService = CharterImportService();
+      await charterService.importFromJson(
+        'assets/charter_operators.json',
+        businessesRepo,
+        contactsRepo,
+        allAirports,
+        mongoClient,
+        geocoder,
+        maxRows: charterLimit > 0 ? charterLimit : null,
+      );
       return;
     }
 
